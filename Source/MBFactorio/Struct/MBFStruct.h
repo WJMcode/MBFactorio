@@ -1,33 +1,33 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "UObject/NoExportTypes.h"
 #include "MBFStruct.generated.h"
 
-// ÇÕ¼º¿¡ ÇÊ¿äÇÑ ¾ÆÀÌÅÛ Á¤º¸¸¦ ´ãÀ» ±¸Á¶Ã¼
+// í•©ì„±ì— í•„ìš”í•œ ì•„ì´í…œ ì •ë³´ë¥¼ ë‹´ì„ êµ¬ì¡°ì²´
 USTRUCT(BlueprintType)
 struct FRequiredItem
 {
     GENERATED_USTRUCT_BODY()
 
 public:
-    // ¾ÆÀÌÅÛ ID (°íÀ¯ ¹øÈ£)
+    // ì•„ì´í…œ ID (ê³ ìœ  ë²ˆí˜¸)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Required Item")
     int32 ItemID;
 
-    // ÇØ´ç ¾ÆÀÌÅÛÀÇ ¿ä±¸ °³¼ö
+    // í•´ë‹¹ ì•„ì´í…œì˜ ìš”êµ¬ ê°œìˆ˜
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Required Item")
     int32 RequiredCount;
 
-    // ±âº» »ı¼ºÀÚ
+    // ê¸°ë³¸ ìƒì„±ì
     FRequiredItem()
         : ItemID(0), RequiredCount(0)
     {
     }
 };
 
-// µ¥ÀÌÅÍ Å×ÀÌºí¿¡ »ç¿ëÇÒ ¾ÆÀÌÅÛ µ¥ÀÌÅÍ ±¸Á¶Ã¼
+// ë°ì´í„° í…Œì´ë¸”ì— ì‚¬ìš©í•  ì•„ì´í…œ ë°ì´í„° êµ¬ì¡°ì²´
 USTRUCT(BlueprintType)
 struct FItemData : public FTableRowBase
 {
@@ -35,43 +35,43 @@ struct FItemData : public FTableRowBase
 
 
 public:
-    // ¾ÆÀÌÅÛ ID (°íÀ¯ ¹øÈ£)
+    // ì•„ì´í…œ ID (ê³ ìœ  ë²ˆí˜¸)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     int32 ItemID;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     FString ItemName;
 
-    // ¾ÆÀÌÅÛ Á¶ÇÕ½Ã »ı¼ºµÇ´Â ¼ö·®
+    // ì•„ì´í…œ ì¡°í•©ì‹œ ìƒì„±ë˜ëŠ” ìˆ˜ëŸ‰
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     int32 CreateCount;
 
-    // ¾ÆÀÌÅÛ ÃÖ´ë ¼ö·® (µé°í ÀÖÀ» ¼ö ÀÖ´Â ¼ö·® Á¦ÇÑ)
+    // ì•„ì´í…œ ìµœëŒ€ ìˆ˜ëŸ‰ (ë“¤ê³  ìˆì„ ìˆ˜ ìˆëŠ” ìˆ˜ëŸ‰ ì œí•œ)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     int32 MaxCount;
 
-    // ¾ÆÀÌÅÛ ÀÌ¹ÌÁö (Texture2D Æ÷ÀÎÅÍ)
+    // ì•„ì´í…œ ì´ë¯¸ì§€ (Texture2D í¬ì¸í„°)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     UTexture2D* Image;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     int32 BuildTime;
 
-    // ¾ÆÀÌÅÛ ÇÕ¼º ½Ã ÇÊ¿äÇÑ ´Ù¸¥ ¾ÆÀÌÅÛµé (¾ÆÀÌÅÛ ID¿Í ¿ä±¸ °³¼ö¸¦ °¡Áø ¹è¿­)
+    // ì•„ì´í…œ í•©ì„± ì‹œ í•„ìš”í•œ ë‹¤ë¥¸ ì•„ì´í…œë“¤ (ì•„ì´í…œ IDì™€ ìš”êµ¬ ê°œìˆ˜ë¥¼ ê°€ì§„ ë°°ì—´)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     TArray<FRequiredItem> RequiredItems;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     float Energy;
 
-    // Ä³¸¯ÅÍ Á¦ÀÛ °¡´É ¿©ºÎ
+    // ìºë¦­í„° ì œì‘ ê°€ëŠ¥ ì—¬ë¶€
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     bool CHMake;
-    // ¿¬·á »ç¿ë °¡´É ¿©ºÎ
+    // ì—°ë£Œ ì‚¬ìš© ê°€ëŠ¥ ì—¬ë¶€
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     bool CUFire;
 
-    // ±âº» »ı¼ºÀÚ
+    // ê¸°ë³¸ ìƒì„±ì
     FItemData()
         : ItemID(0), MaxCount(0), Image(nullptr)
     {
