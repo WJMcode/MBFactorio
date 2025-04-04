@@ -18,6 +18,11 @@ class MBFACTORIO_API AMBFController : public APlayerController
 
 	AMBFController();
 
+
+	UPROPERTY(EditAnywhere, Category = "Inventory Item")
+	TArray<FInventoryItem> InventoryItems;
+
+
 protected:
 	virtual void BeginPlay() override;
 

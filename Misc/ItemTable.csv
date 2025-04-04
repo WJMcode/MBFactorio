@@ -1,0 +1,17 @@
+---,ItemID,ItemName,CreateCount,MaxCount,Image,BuildTime,RequiredItems,Energy,bMake,bFire,bCook
+1,1,Wood,4,100,/Script/Engine.Texture2D'/Game/Texture/Wood.Wood',0.5,,2,TRUE,TRUE,FALSE
+2,2,Wood_chest,1,50,/Script/Engine.Texture2D'/Game/Texture/Wooden_chest.Wooden_chest',0.5,,0,TRUE,FALSE,FALSE
+3,3,Coal,1,50,/Script/Engine.Texture2D'/Game/Texture/Coal.Coal',1,,4,TRUE,TRUE,FALSE
+4,4,Iron_ore,1,50,/Script/Engine.Texture2D'/Game/Texture/Copper_cable.Copper_cable',1,"((ItemID=5,RequiredCount=5))",0,TRUE,FALSE,TRUE
+5,5,Iron_plate,2,100,/Script/Engine.Texture2D'/Game/Texture/Iron_plate.Iron_plate',3.2,,0,TRUE,FALSE,TRUE
+6,6,Iron_gear_wheel,1,100,/Script/Engine.Texture2D'/Game/Texture/Iron_gear_wheel.Iron_gear_wheel',0.5,"((ItemID=5,RequiredCount=2))",0,TRUE,FALSE,FALSE
+7,7,Copper_ore,1,50,/Script/Engine.Texture2D'/Game/Texture/Copper_ore.Copper_ore',1,,0,TRUE,FALSE,TRUE
+8,8,Copper_plate,2,100,/Script/Engine.Texture2D'/Game/Texture/Copper_plate.Copper_plate',3.2,,0,TRUE,FALSE,FALSE
+9,9,Copper_cable,2,200,/Script/Engine.Texture2D'/Game/Texture/Copper_cable.Copper_cable',0.5,,0,TRUE,FALSE,FALSE
+10,10,Stone,1,50,/Script/Engine.Texture2D'/Game/Texture/Stone.Stone',1,,0,TRUE,FALSE,TRUE
+11,11,Stone_furnace,1,50,/Script/Engine.Texture2D'/Game/Texture/Stone_furnace.Stone_furnace',0.5,,0,TRUE,FALSE,FALSE
+12,12,Electronic_circuit,1,200,/Script/Engine.Texture2D'/Game/Texture/Electronic_circuit.Electronic_circuit',0.5,"((ItemID=9,RequiredCount=3),(ItemID=5,RequiredCount=1))",0,TRUE,FALSE,FALSE
+13,13,Burner_inserter,1,50,/Script/Engine.Texture2D'/Game/Texture/Burner_inserter.Burner_inserter',0.5,"((ItemID=6,RequiredCount=1),(ItemID=5,RequiredCount=1))",0,TRUE,FALSE,FALSE
+14,14,Burner_mining_drill,1,50,/Script/Engine.Texture2D'/Game/Texture/Burner_mining_drill.Burner_mining_drill',2,"((ItemID=6,RequiredCount=3),(ItemID=5,RequiredCount=3),(ItemID=13,RequiredCount=1))",0,TRUE,FALSE,FALSE
+15,15,Assembling_machine_1,1,50,/Script/Engine.Texture2D'/Game/Texture/Assembling_machine_1.Assembling_machine_1',0.5,"((ItemID=12,RequiredCount=3),(ItemID=6,RequiredCount=5),(ItemID=5,RequiredCount=9))",0,TRUE,FALSE,FALSE
+16,16,Transport_belt,2,100,,0.5,"((ItemID=6,RequiredCount=1),(ItemID=5,RequiredCount=1))",0,TRUE,FALSE,FALSE

@@ -6,6 +6,22 @@
 #include "MBFStruct.generated.h"
 
 // 합성에 필요한 아이템 정보를 담을 구조체
+
+
+
+USTRUCT(BlueprintType)
+struct FInventoryItem
+{
+    GENERATED_USTRUCT_BODY()
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
+    int32 ItemID;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
+    int32 MaxCount;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
+    int32 MCount;
+};
+
 USTRUCT(BlueprintType)
 struct FRequiredItem
 {
@@ -66,10 +82,12 @@ public:
 
     // 캐릭터 제작 가능 여부
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    bool CHMake;
+    bool bMake;
     // 연료 사용 가능 여부
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    bool CUFire;
+    bool bFire;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    bool bCook;
 
     // 기본 생성자
     FItemData()
