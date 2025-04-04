@@ -14,5 +14,16 @@ class MBFACTORIO_API AMBFGamemode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+protected:
 	AMBFGamemode();
+
+    virtual void BeginPlay() override;
+
+    // UI 블루프린트 클래스
+    UPROPERTY(EditDefaultsOnly, Category = "UI")
+    TSubclassOf<class UMBFStartWidget> StartWidgetClass;
+
+    // 실제 생성된 위젯
+    UPROPERTY()
+    class UMBFStartWidget* CurrentWidget;
 };

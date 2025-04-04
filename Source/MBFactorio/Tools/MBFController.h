@@ -18,5 +18,7 @@ class MBFACTORIO_API AMBFController : public APlayerController
 
 	AMBFController();
 
+protected:
+	virtual void BeginPlay() override;
 
 };

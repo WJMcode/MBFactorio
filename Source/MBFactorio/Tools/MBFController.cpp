@@ -6,3 +6,10 @@
 AMBFController::AMBFController()
 {
 }
+
+void AMBFController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetInputMode(FInputModeGameAndUI());
+}
