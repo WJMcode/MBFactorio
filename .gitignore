@@ -363,14 +363,11 @@ MigrationBackup/
 FodyWeavers.xsd
 
 vcpkg_installed/
-
-# Unreal Engine generated files
-/Intermediate/
-/Saved/
-/Binaries/
-/Build/
-/DerivedDataCache/
-
-# Visual Studio solution and user-specific files
+Intermediate/
+Saved/
+Binaries/
+Build/
 MBFactorio.sln
-*.sln
+DerivedDataCache
+Plugins/Network/Binaries/
+Plugins/Network/Intermediate/
