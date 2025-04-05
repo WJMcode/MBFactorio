@@ -5,6 +5,7 @@
 
 AMBFController::AMBFController()
 {
+	InventoryItems.SetNum(80);
 }
 
 void AMBFController::BeginPlay()

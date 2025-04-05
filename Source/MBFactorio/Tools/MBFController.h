@@ -23,6 +23,9 @@ class MBFACTORIO_API AMBFController : public APlayerController
 	TArray<FInventoryItem> InventoryItems;
 
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	TArray<FInventoryItem> GetInventoryItems() { return InventoryItems; }
 protected:
 	virtual void BeginPlay() override;
 

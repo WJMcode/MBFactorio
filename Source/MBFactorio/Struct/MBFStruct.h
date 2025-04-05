@@ -20,6 +20,10 @@ public:
     int32 MaxCount;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
     int32 MCount;
+
+    FInventoryItem()
+        : ItemID(0), MaxCount(0), MCount(0)
+    { }
 };
 
 USTRUCT(BlueprintType)
