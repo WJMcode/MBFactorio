@@ -31,7 +31,7 @@ void AMBFGamemode::BeginPlay()
             CurrentWidget = CreateWidget<UMBFStartWidget>(GetWorld(), StartWidgetClass);
             if (CurrentWidget)
             {
-                //CurrentWidget->AddToViewport(); // 시작 화면까지 PIE 로 재생할 시 주석 풀기
+                CurrentWidget->AddToViewport();
             }
         }
     }
