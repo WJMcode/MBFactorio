@@ -29,5 +29,4 @@ protected:
 
     UFUNCTION()
     void OnClickExit();
-	
 };

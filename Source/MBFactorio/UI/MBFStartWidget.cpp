@@ -22,9 +22,10 @@ void UMBFStartWidget::NativeConstruct()
 
 void UMBFStartWidget::OnClickPlay()
 {
+    // 위젯 제거
     this->RemoveFromParent();
 
-    UGameplayStatics::OpenLevel(this, FName("Factorio"));
+    UGameplayStatics::OpenLevel(this, FName("WJMTestLevel"));
 }
 
 void UMBFStartWidget::OnClickExit()

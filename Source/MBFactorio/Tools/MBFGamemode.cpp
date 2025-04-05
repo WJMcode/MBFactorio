@@ -10,7 +10,7 @@ AMBFGamemode::AMBFGamemode()
 
 	PlayerControllerClass = AMBFController::StaticClass();
 
-    ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/UI_Play.UI_Play_C'"));
+    ConstructorHelpers::FClassFinder<UMBFStartWidget> WidgetClass(TEXT("/Game/UI/UI_Play.UI_Play_C"));
     if (WidgetClass.Succeeded())
     {
         StartWidgetClass = WidgetClass.Class;
@@ -21,13 +21,18 @@ void AMBFGamemode::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (StartWidgetClass != nullptr)
-    {
-        CurrentWidget = CreateWidget<UMBFStartWidget>(GetWorld(), StartWidgetClass);
+    FString CurrentMap = GetWorld()->GetMapName(); 
+    CurrentMap.RemoveFromStart(GetWorld()->StreamingLevelsPrefix); 
 
-        if (CurrentWidget != nullptr)
+    if (CurrentMap.Equals("Factorio")) 
+    {
+        if (StartWidgetClass != nullptr)
         {
-            CurrentWidget->AddToViewport();
+            CurrentWidget = CreateWidget<UMBFStartWidget>(GetWorld(), StartWidgetClass);
+            if (CurrentWidget)
+            {
+                CurrentWidget->AddToViewport();
+            }
         }
-    } 
+    }
 }
