@@ -7,13 +7,10 @@ APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	// 캐릭터 회전 관련 설정
+	// 캐릭터가 이동 방향으로 회전하도록 합니다.
 	{
 		bUseControllerRotationYaw = false; // 컨트롤러 Yaw 회전 비활성화
-		GetCharacterMovement()->bOrientRotationToMovement = true; // 이동 방향으로 자동 회전
 	}
-
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 360.f, 0.f); // 회전 속도 증가
 }
 
 void APlayerCharacter::BeginPlay()
@@ -27,6 +24,7 @@ void APlayerCharacter::BeginPlay()
 			if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 				ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
 			{
+				// IMC 등록
 				Subsystem->AddMappingContext(MoveMappingContext, 0);
 			}
 		}
@@ -48,29 +46,27 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// InputAction을 C++ 함수에 바인딩
 	EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::MoveCharacter);
-	EnhancedInput->BindAction(OpenInventoryAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OpenInventory);
 }
 
 void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 {
 	FVector2D InputVector = Value.Get<FVector2D>();
 
-	if (Controller)
+	if (Controller && !InputVector.IsNearlyZero())
 	{
-		FVector MoveDirection = FVector(InputVector.Y, InputVector.X, 0.f);
-		if (!MoveDirection.IsNearlyZero()) // 입력이 있을 때만 처리
-		{
-			AddMovementInput(MoveDirection);
+		// 회전 기준은 그대로 카메라 방향 유지
+		const FRotator YawRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+		const FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-			// 이동 방향을 바라보도록 회전, 빠른 방향 전환
-			FRotator NewRotation = MoveDirection.Rotation();
-			SetActorRotation(NewRotation);
-		}
+		// 최종 이동 방향 계산
+		FVector MoveDir = (Forward * InputVector.Y + Right * InputVector.X).GetSafeNormal();
 
+		// 이동
+		AddMovementInput(MoveDir);
+
+		// 방향키를 누르면 캐릭터 즉시 회전
+		SetActorRotation(MoveDir.Rotation());
 	}
 }
 
-void APlayerCharacter::OpenInventory(const FInputActionValue& Value)
-{
-
-}
