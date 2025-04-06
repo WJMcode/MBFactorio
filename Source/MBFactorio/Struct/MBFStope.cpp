@@ -8,12 +8,21 @@ AMBFStope::AMBFStope()
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-    RootComponent = StaticMesh;
+    // 2025.04.06 메쉬, 머테리얼 설정 및 에셋 추가
+    StopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+    RootComponent = StopeMesh;
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> StopeAsset(TEXT("/Script/Engine.StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+    static ConstructorHelpers::FObjectFinder<UMaterial> StopeMatAsset(TEXT("/Script/Engine.Material'/Engine/EditorMaterials/GridMaterial.GridMaterial'"));
+    if (StopeAsset.Succeeded())
+    {
+        StopeMesh->SetStaticMesh(StopeAsset.Object);
+        StopeMesh->SetMaterial(0, StopeMatAsset.Object);
+    }
 
     Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
     Box->SetupAttachment(RootComponent);
 
+    Box->SetRelativeScale3D(FVector(3.f, 3.f, 1.f));
     Box->SetGenerateOverlapEvents(true);
     Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     Box->SetCollisionResponseToAllChannels(ECR_Ignore);

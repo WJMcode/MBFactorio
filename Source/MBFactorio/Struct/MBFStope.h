@@ -32,7 +32,7 @@ public:
     class UBoxComponent* Box;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-    class UStaticMeshComponent* StaticMesh;
+    class UStaticMeshComponent* StopeMesh;
 
     UPROPERTY(BlueprintReadOnly, Category = "State")
     bool bIsPlayerNear = false;

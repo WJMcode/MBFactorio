@@ -18,8 +18,15 @@ public:
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 protected:
+    // 컴포넌트들
     UPROPERTY(meta = (BindWidget))
-    UImage* FrameCursor;
+    class UCanvasPanel* CanvasPanel;
+
+    UPROPERTY()
+    class UBorder* Border;
+
+    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+    class UImage* FrameCursor;
 
 private:
     void UpdateCursorPosition();
