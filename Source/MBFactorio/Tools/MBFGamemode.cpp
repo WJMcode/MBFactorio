@@ -9,7 +9,7 @@ AMBFGamemode::AMBFGamemode()
 {
 
 	PlayerControllerClass = AMBFController::StaticClass();
-
+    HUDClass = AMBFHUD::StaticClass();
     ConstructorHelpers::FClassFinder<UMBFStartWidget> WidgetClass(TEXT("/Game/UI/UI_Play.UI_Play_C"));
     if (WidgetClass.Succeeded())
     {
