@@ -39,7 +39,13 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
+
 	bool bOpenInventory;
+
+	void CraftItem(int32 ItemID);
+
+
+	void RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, TMap<FName, int32>& BasicMaterials, int32 ItemID, int32 count);
 
 	void InventoryTogle();
 
