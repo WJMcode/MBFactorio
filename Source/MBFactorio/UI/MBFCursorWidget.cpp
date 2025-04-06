@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Struct/MBFCursorWidget.h"
+#include "UI/MBFCursorWidget.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Image.h"
 #include "Kismet/GameplayStatics.h"
