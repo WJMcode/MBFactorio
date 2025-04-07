@@ -2,6 +2,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Tiles/TileTypes/ResourceTile.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -68,5 +69,27 @@ void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 		// 방향키를 누르면 캐릭터 즉시 회전
 		SetActorRotation(MoveDir.Rotation());
 	}
+}
+
+void APlayerCharacter::StartMining()
+{
+	// 우클릭 누른 상태에서만 호출됨 (ETriggerEvent::Triggered)
+
+	//if (bCanMine)
+	{
+		//FHitResult Hit;
+		//if (PerformTileTrace(Hit)) // 마우스 아래 타일 확인용 라인 트레이스
+		{
+			//if (AResourceTile* ResourceTile = Cast<AResourceTile>(Hit.GetActor()))
+			{
+				//ResourceTile->Mine(); // 캐기 로직
+				PlayMiningAnimation();
+			}
+		}
+	}
+}
+
+void APlayerCharacter::PlayMiningAnimation()
+{
 }
 

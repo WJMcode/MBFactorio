@@ -8,12 +8,6 @@ ATile::ATile()
     RootComponent = TileMesh;
 }
 
-void ATile::InitializeTile(float InTileSize)
-{
-	SetTileScale(InTileSize);
-	//SetRandomMaterial(TileMaterials);
-}
-
 float ATile::GetMeshBaseSize() const
 {
 	if (!TileMesh || !TileMesh->GetStaticMesh())
@@ -23,7 +17,7 @@ float ATile::GetMeshBaseSize() const
 	}
 
 	const FBoxSphereBounds Bounds = TileMesh->GetStaticMesh()->GetBounds();
-	return Bounds.BoxExtent.X * 2.f; // 또는 Y축 기준 등 선택 가능
+	return Bounds.BoxExtent.X * 2.f; // 또는 Y축
 }
 
 void ATile::SetTileScale(float TileSize)

@@ -29,6 +29,13 @@ protected:
 	// 캐릭터 이동을 위한 함수
 	void MoveCharacter(const FInputActionValue& Value);
 	
+	// 채굴을 위한 함수
+	void StartMining();
+
+private:
+	// 채굴 애니메이션 재생
+	void PlayMiningAnimation();
+
 /* 플레이어 움직임 입력 관련 */
 protected:
 	/* 아래 멤버 변수들은 에디터에서 세팅합니다. */
@@ -39,4 +46,8 @@ protected:
 	// IA
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* MoveAction;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+	UAnimMontage* MiningMontage;
 };

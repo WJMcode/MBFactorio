@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "TileGridManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
+#include "Tiles/TileBase/TileStructs.h"
+#include "Tiles/TileTypes/GroundTile.h"
+#include "Tiles/TileTypes/ResourceTile.h"
 
 ATileGridManager::ATileGridManager()
 {
@@ -17,6 +17,18 @@ void ATileGridManager::BeginPlay()
 
     SpawnGroundTiles();
     SpawnResourceTiles();
+}
+
+void ATileGridManager::SpawnGroundTiles()
+{
+	const FTileInfo& GroundTileInfo = TileDataAsset->GroundTileInfo;
+	SpawnTiles(GroundTileInfo.TileClass, 1.0f, 0.f, GroundTileInfo.TileSize, FRotator::ZeroRotator, true);
+}
+
+void ATileGridManager::SpawnResourceTiles()
+{
+	const FTileInfo& ResourceTileInfo = TileDataAsset->ResourceTileInfo;
+	SpawnTiles(ResourceTileInfo.TileClass, 0.3f, 0.1f, ResourceTileInfo.TileSize, FRotator(0.f, 90.f, 0.f), false);
 }
 
 void ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProbability, float ZOffset, float InTileSize, FRotator InRotator, bool bUseRandomRotation)
@@ -34,6 +46,9 @@ void ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProba
 	FVector PlayerLocation = PlayerCharacter->GetActorLocation();
 	float FootZValue = PlayerLocation.Z - HalfHeight;
 
+	int32 GridWidth = TileDataAsset->GridWidth;
+	int32 GridHeight = TileDataAsset->GridHeight;
+
 	// 타일 그리드 중심이 캐릭터 위치로 가도록 보정
 	FVector Origin = PlayerLocation - FVector((GridWidth - 1) * InTileSize * 0.5f, (GridHeight - 1) * InTileSize * 0.5f, 0.f);
 
@@ -50,28 +65,45 @@ void ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProba
 
 			// bUseRandomRotation가 ture면 랜덤 회전값 적용
 			// false면 인자로 받은 회전값 사용
-			FRotator Rotation = bUseRandomRotation
-				? FRotator(0.f, FMath::RandRange(0, 3) * 90, 0.f) // 타일을 0, 90, 180, 270도 중 하나로 회전시킴
-				: InRotator;
+			FRotator Rotation = 
+										// 타일을 0, 90, 180, 270도 중 하나로 회전
+				bUseRandomRotation ? FRotator(0.f, FMath::RandRange(0, 3) * 90, 0.f) : InRotator;
 
 			ATile* NewTile = GetWorld()->SpawnActor<ATile>(TileClass, Location, Rotation);
 			if (NewTile)
 			{
-				// 만약 ResourceTile이면 타입/머티리얼 세팅
+				// 타일 크기 설정
+				NewTile->SetTileScale(InTileSize);
+
+				// 리소스 타일일 경우 타입 설정 및 랜덤 머티리얼 설정
 				if (AResourceTile* ResourceTile = Cast<AResourceTile>(NewTile))
 				{
-					if (ResourceMaterialSets.Num() > 0)
+					if (TileDataAsset && TileDataAsset->ResourceTileMaterialSets.Num() > 0)
 					{
-						int32 Index = FMath::RandRange(0, ResourceMaterialSets.Num() - 1);
-						const FResourceMaterialSet& SelectedSet = ResourceMaterialSets[Index];
+						const TArray<struct FResourceMaterialSet>& Sets = TileDataAsset->ResourceTileMaterialSets;
+						int32 Index = FMath::RandRange(0, Sets.Num() - 1);
+						// Sets에 있는 여러 개의 타입 중 하나를 뽑아, 
+						// 타입과 머티리얼 정보를 SelectedSet에 저장
+						const FResourceMaterialSet& SelectedSet = Sets[Index];
 
-						ResourceTile->SetRandomMaterial(SelectedSet.Materials);
+						// SelectedSet에 담긴 타입 정보로 생성된 타일 타입을 설정
 						ResourceTile->SetResourceType(SelectedSet.ResourceType);
+						// SelectedSet에 담긴 머티리얼 배열을 통해 생성된 타일의 머티리얼을 설정
+						ResourceTile->SetRandomMaterial(SelectedSet.Materials);
 					}
 				}
-
-				// 타일 생성 후 각종 초기화 작업 진행
-				NewTile->InitializeTile(InTileSize);
+				else if (AGroundTile* GroundTile = Cast<AGroundTile>(NewTile))
+				{
+					// 땅 타일은 그냥 머티리얼만 랜덤으로 설정
+					if (TileDataAsset && TileDataAsset->GroundTileMaterials.Num() > 0)
+					{
+						GroundTile->SetRandomMaterial(TileDataAsset->GroundTileMaterials);
+					}
+				}
+				else
+				{
+					UE_LOG(LogTemp, Warning, TEXT("잘못된 타일 클래스입니다."));
+				}
 			}
 			else
 			{
@@ -79,14 +111,4 @@ void ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProba
 			}
 		}
 	}
-}
-
-void ATileGridManager::SpawnGroundTiles()
-{
-	SpawnTiles(GroundTileClass, 1.0f, 0.f, GroundTileSize, FRotator::ZeroRotator, true);
-}
-
-void ATileGridManager::SpawnResourceTiles()
-{
-	SpawnTiles(ResourceTileClass, 0.3f, 0.1f, ResourceTileSize, FRotator(0.f, 90.f, 0.f), false);
 }
