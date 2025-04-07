@@ -1,4 +1,4 @@
-#include "Tiles/Tile.h"
+#include "Tile.h"
 
 ATile::ATile()
 {
@@ -11,7 +11,7 @@ ATile::ATile()
 void ATile::InitializeTile(float InTileSize)
 {
 	SetTileScale(InTileSize);
-	SetRandomMaterial(TileMaterials);
+	//SetRandomMaterial(TileMaterials);
 }
 
 float ATile::GetMeshBaseSize() const

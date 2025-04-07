@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Tiles/Tile.h"
+#include "Tile.h"
 #include "GroundTile.generated.h"
 
 /**
@@ -13,5 +13,10 @@ class MBFACTORIO_API AGroundTile : public ATile
 {
 	GENERATED_BODY()
 	
+private:
+	virtual void InitializeTile(float InTileSize) override;
 
+protected:
+	UPROPERTY(EditAnywhere, Category = "Tile")
+	TArray<UMaterialInterface*> GroundMaterials;
 };

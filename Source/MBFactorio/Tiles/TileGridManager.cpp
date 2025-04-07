@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Tiles/TileGridManager.h"
+#include "TileGridManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
@@ -19,17 +19,14 @@ void ATileGridManager::BeginPlay()
     SpawnResourceTiles();
 }
 
-TArray<ATile*> ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProbability, float ZOffset, float InTileSize, FRotator InRotator, bool bUseRandomRotation)
+void ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProbability, float ZOffset, float InTileSize, FRotator InRotator, bool bUseRandomRotation)
 {
-	// Resource Tile을 생성했다면 SpawnedTiles 저장 후 반환 
-	TArray<ATile*> SpawnedTiles;
-	
 	// 캐릭터 가져오기
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	if (!PlayerCharacter || !TileClass) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("타일 생성 실패: 캐릭터 또는 TileClass 없음"));
-		return {};
+		return;
 	}
 
 	// 캐릭터 발바닥 높이 계산
@@ -60,9 +57,21 @@ TArray<ATile*> ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float 
 			ATile* NewTile = GetWorld()->SpawnActor<ATile>(TileClass, Location, Rotation);
 			if (NewTile)
 			{
+				// 만약 ResourceTile이면 타입/머티리얼 세팅
+				if (AResourceTile* ResourceTile = Cast<AResourceTile>(NewTile))
+				{
+					if (ResourceMaterialSets.Num() > 0)
+					{
+						int32 Index = FMath::RandRange(0, ResourceMaterialSets.Num() - 1);
+						const FResourceMaterialSet& SelectedSet = ResourceMaterialSets[Index];
+
+						ResourceTile->SetRandomMaterial(SelectedSet.Materials);
+						ResourceTile->SetResourceType(SelectedSet.ResourceType);
+					}
+				}
+
 				// 타일 생성 후 각종 초기화 작업 진행
 				NewTile->InitializeTile(InTileSize);
-				SpawnedTiles.Add(NewTile);
 			}
 			else
 			{
@@ -70,7 +79,6 @@ TArray<ATile*> ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float 
 			}
 		}
 	}
-	return SpawnedTiles;
 }
 
 void ATileGridManager::SpawnGroundTiles()
@@ -80,17 +88,5 @@ void ATileGridManager::SpawnGroundTiles()
 
 void ATileGridManager::SpawnResourceTiles()
 {
-	ResourceTiles = SpawnTiles(ResourceTileClass, 0.3f, 0.1f, ResourceTileSize, FRotator(0.f, 90.f, 0.f), false);
-}
-
-void ATileGridManager::ClearResourceTiles()
-{
-	for (ATile* Tile : ResourceTiles)
-	{
-		if (IsValid(Tile))
-		{
-			Tile->Destroy();
-		}
-	}
-	ResourceTiles.Empty();
+	SpawnTiles(ResourceTileClass, 0.3f, 0.1f, ResourceTileSize, FRotator(0.f, 90.f, 0.f), false);
 }

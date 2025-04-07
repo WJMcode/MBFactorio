@@ -4,8 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Tile.h"
+#include "ResourceTile.h"
 #include "TileGridManager.generated.h"
+
+// 머티리얼 세트 구조체
+USTRUCT(BlueprintType)
+struct FResourceMaterialSet
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EResourceType ResourceType = EResourceType::Unknown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UMaterialInterface*> Materials;
+};
 
 /*
  * ATile에서 지정한 타일을 레벨에 배치하는 매니저 클래스입니다.
@@ -30,18 +43,12 @@ private:
 	 * @param InTileSize		 타일의 크기 설정
 	 * @param bUseRandomRotation 랜덤 회전값 사용 여부
 	 */
-	TArray<ATile*> SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProbability, float ZOffset, float InTileSize, FRotator InRotator = FRotator::ZeroRotator, bool bUseRandomRotation = true);
+	void SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProbability, float ZOffset, float InTileSize, FRotator InRotator = FRotator::ZeroRotator, bool bUseRandomRotation = true);
 
 	// 땅 타일을 생성하는 함수
 	void SpawnGroundTiles();
-	// 생성된 땅 타일 위에, 광물 등 다른 리소스를 생성하는 함수
+	// 광물 등 다른 리소스 타일을 생성하는 함수
 	void SpawnResourceTiles();
-	// 배열에 저장한 리소스 타일 제거
-	void ClearResourceTiles();
-
-private:
-	// 생성된 리소스 타일을 배열에 저장하고 관리
-	TArray<ATile*> ResourceTiles;
 
 /* 아래 멤버 변수들은 블루프린트로 ATileGridManager를 상속받아 값을 설정합니다. */
 protected:
@@ -51,6 +58,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Tiles")
 	TSubclassOf<ATile> ResourceTileClass;
 
+	// 에디터에서 설정: 리소스 타입별 머티리얼 세트
+	UPROPERTY(EditAnywhere, Category = "Resource")
+	TArray<FResourceMaterialSet> ResourceMaterialSets;
+protected:
 	UPROPERTY(EditAnywhere)
 	int32 GridWidth = 10;
 

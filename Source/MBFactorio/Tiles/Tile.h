@@ -21,7 +21,7 @@ public:
 
 protected:
 	// 타일 초기화 함수
-	void InitializeTile(float InTileSize);
+	virtual void InitializeTile(float InTileSize);
 	//void ApplyCategoryMaterial();
 
 	// Mesh의 사이즈를 얻어오는 함수입니다.
@@ -37,6 +37,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* TileMesh;
 
-	UPROPERTY(EditAnywhere)
-	TArray<UMaterialInterface*> TileMaterials;
+	/*UPROPERTY(EditAnywhere)
+	TArray<UMaterialInterface*> TileMaterials;*/
 };
