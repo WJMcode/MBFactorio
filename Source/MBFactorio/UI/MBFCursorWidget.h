@@ -14,22 +14,21 @@ class MBFACTORIO_API UMBFCursorWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-    virtual void NativeConstruct() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+    virtual void NativePreConstruct() override;
 
-protected:
-    // 컴포넌트들
-    UPROPERTY(meta = (BindWidget))
-    class UCanvasPanel* CanvasPanel;
+    /** 마우스 커서 UI 색상 변경 */
+    void SetCursorTint(const FLinearColor& TintColor);
 
-    UPROPERTY()
-    class UBorder* Border;
+    /** 오버랩 상태 갱신 (BP_Stope에서 접근) */
+    void SetPlayerNear(bool bIsNear);
 
-    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-    class UImage* FrameCursor;
+public:
+    /** 위젯 디자인에서 바인딩된 이미지 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (BindWidget))
+    UImage* FrameCursor;
 
-private:
-    void UpdateCursorPosition();
-    void UpdateCursorVisibilityAndColor();
-	
+    /** 현재 플레이어가 BP_Stope 범위에 있는지 여부 */
+    bool bPlayerIsNear = false;
+    bool bHit = false;
 };
