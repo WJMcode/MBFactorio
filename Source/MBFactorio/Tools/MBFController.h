@@ -9,6 +9,8 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "Tools/MBFHUD.h"
+#include "Misc/Misc.h"
+#include "Component/MBFInventoryComponent.h"
 #include "MBFController.generated.h"
 
 /**
@@ -24,30 +26,31 @@ class MBFACTORIO_API AMBFController : public APlayerController
 
 	AMBFController();
 
-
-	UPROPERTY(EditAnywhere, Category = "Inventory Item")
-	TArray<FInventoryItem> InventoryItems;
-
-
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	FInventoryItem GetInventoryItem(int32 b) { return InventoryItems[b]; }
+	FInventoryItem GetInventoryItem(int32 b) { return MBFInventoryComponent->GetInventoryItem(b); }
 
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
+	virtual void Tick(float DeltaSeconds) override;
 
 private:
 
 	bool bOpenInventory;
 
-	void CraftItem(int32 ItemID);
+
+	void CraftItem(int32 ItemID, int32 CraftCount);
+	void Crafting(int32 ItemID);
 
 
-	void RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, TMap<FName, int32>& BasicMaterials, int32 ItemID, int32 count);
+	int32 GetInventoryItemCount(int32 ItemID);											//인벤토리에 해당 아이템이 몇개 있는지 검사
 
 	void InventoryTogle();
+
+private:
+	UMBFInventoryComponent* MBFInventoryComponent;
 
 
 };

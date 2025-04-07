@@ -24,6 +24,9 @@ public:
     FInventoryItem()
         : ItemID(0), MaxCount(0), MCount(0)
     { }
+    FInventoryItem(int a, int b, int c)
+        : ItemID(a), MaxCount(b), MCount(c)
+    { }
 };
 
 USTRUCT(BlueprintType)
