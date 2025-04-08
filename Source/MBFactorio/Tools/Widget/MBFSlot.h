@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -20,16 +20,22 @@ class MBFACTORIO_API UMBFSlot : public UUserWidget
 
 
 	
+protected:
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UImage* Back;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UImage* Image;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* Count;
-
+	
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UImage* GetImage() { return Image; }
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UTextBlock* GetTextBlock() { return Count; }
 
+public:
+	
+	void Changed(int32 InSlot);
 
 };

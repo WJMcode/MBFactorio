@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -52,6 +52,7 @@ public:
 	int32 FindInventoryItem(int32 ItemID);												//인벤토리에 해당 아이템이 있는지 검사
 	int32 GetInventoryItemCount(int32 ItemID);
 	FInventoryItem GetInventoryItem(int32 b) { return InventoryItems[b]; }
+	const TArray<TPair<FName, int32>> GetCraftings() { return Craftings; }
 		
 	void InventoryTogle();
 };

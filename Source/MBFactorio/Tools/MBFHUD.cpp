@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Tools/MBFHUD.h"
@@ -7,6 +7,18 @@
 
 
 
+
+AMBFHUD::AMBFHUD()
+{
+	
+}
+
+void AMBFHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
+
+}
 
 void AMBFHUD::OpenInventory()
 {
@@ -26,4 +38,18 @@ void AMBFHUD::CloseInventory()
 
 	Inventory->RemoveFromParent();
 
+}
+
+UCraftings* AMBFHUD::GetCraftingUI()
+{
+	if (CraftingUI == nullptr) {
+		UWorld* World = GetWorld();
+
+		TSubclassOf<UUserWidget> WidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Gamemode/InGame/Craftings.Craftings_C'"));
+
+		CraftingUI = Cast<UCraftings>(CreateWidget<UUserWidget>(World, WidgetClass));
+
+		CraftingUI->AddToViewport();
+	}
+	return CraftingUI;
 }

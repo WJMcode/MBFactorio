@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -25,11 +25,11 @@ class MBFACTORIO_API AMBFController : public APlayerController
 	UInputMappingContext* IMC_Default;
 
 	AMBFController();
-
+	
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	FInventoryItem GetInventoryItem(int32 b) { return MBFInventoryComponent->GetInventoryItem(b); }
-
+	UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; }
 
 protected:
 	virtual void BeginPlay() override;

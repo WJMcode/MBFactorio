@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -27,8 +27,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UMBFSlot* GetItemSlot(int32 b) { return ItemSlot[b]; }
 	void OnChanged();
+	void SlotChanged(int32 i);
 
-private:
+protected:
 	
 	void OnInitialized();
 	void NativeConstruct() override;

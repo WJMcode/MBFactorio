@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Tools/Widget/MBFInventory.h"
+#include "Tools/Widget/Craftings.h"
 #include "MBFHUD.generated.h"
 
 /**
@@ -16,8 +17,13 @@ class MBFACTORIO_API AMBFHUD : public AHUD
 	GENERATED_BODY()
 	
 	UUserWidget* Inventory;
+	UCraftings* CraftingUI;
+
+	AMBFHUD();
+	virtual void BeginPlay() override;
 public:
 	void OpenInventory();
 	void CloseInventory();
-	void OnChanged() { Cast<UMBFInventory>(Inventory)->OnChanged(); }
+	void OnChanged() { if(Inventory != nullptr)Cast<UMBFInventory>(Inventory)->OnChanged(); }
+	UCraftings* GetCraftingUI();
 };

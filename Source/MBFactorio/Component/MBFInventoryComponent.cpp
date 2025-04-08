@@ -1,8 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Component/MBFInventoryComponent.h"
 #include "Tools/MBFInstance.h"
+#include "Tools/Widget/Craftings.h"
 #include "Struct/MBFStruct.h"
 #include "Tools/MBFHUD.h"
 #include "Math/UnrealMathUtility.h"
@@ -13,7 +14,7 @@ UMBFInventoryComponent::UMBFInventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	InventoryItems.SetNum(80);
+	InventoryItems.SetNum(80);	
 	InventoryItems[0] = FInventoryItem(5, 100, 100);
 	InventoryItems[1] = FInventoryItem(8, 100, 100);
 	// ...
@@ -45,6 +46,8 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		}
 		else
 		{
+			AMBFHUD* HUD = Cast<AMBFHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+			HUD->GetCraftingUI()->DeltaChange(ElapsedCraftingTime / BuildTime);
 			ElapsedCraftingTime += DeltaTime;
 			if (BuildTime < ElapsedCraftingTime)
 			{
@@ -60,9 +63,11 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 					BuildItem = nullptr;
 					Craftings.RemoveAt(0);
 					BuildTime = 0;
+					HUD->GetCraftingUI()->DeltaChange(0);
 				}
-				AMBFHUD* HUD = Cast<AMBFHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+				
 				HUD->OnChanged();
+				HUD->GetCraftingUI()->CraftChange();
 			}
 		}
 	}
@@ -125,7 +130,8 @@ void UMBFInventoryComponent::CraftItem(int32 ItemID, int32 CraftCount)
 			}
 		}
 	}
-
+	AMBFHUD* HUD = Cast<AMBFHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+	HUD->GetCraftingUI()->CraftChange();
 }
 // RequiredItemCheck이후
 void UMBFInventoryComponent::Crafting(int32 ItemID)

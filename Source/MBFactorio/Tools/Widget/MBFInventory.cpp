@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Tools/Widget/MBFInventory.h"
@@ -51,47 +51,13 @@ void UMBFInventory::NativeConstruct()
 
 void UMBFInventory::OnChanged()
 {
-    AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
-
-    const UMBFInstance* Instance = Cast<UMBFInstance>(GetGameInstance());
-
     for (int i = 0; i < 80; i++)
     {
-        FInventoryItem Item = PC->GetInventoryItem(i);
-        
-        const FItemData* itemdata = Instance->GetItemData(FName(FString::FromInt(Item.ItemID)));
-        
-       
-
-        //ImageBrush ����
-        {
-            UImage* Image = GetItemSlot(i)->GetImage();
-            
-            if (itemdata == nullptr)
-            {
-                Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
-            }
-            
-            else
-            {
-                Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
-                Image->SetBrushFromTexture(itemdata->Image, false);
-            }
-
-        }
-        
-        //TextBlock Count ����
-        {
-            UTextBlock* TextBlock = ItemSlot[i]->GetTextBlock();
-            if (itemdata == nullptr)
-            {
-                TextBlock->SetText(FText::FromString(TEXT("")));
-            }
-
-            else
-            {
-                TextBlock->SetText(FText::AsNumber(Item.MCount));
-            }
-        }
+        SlotChanged(i);
     }
+}
+
+void UMBFInventory::SlotChanged(int32 InSlot)
+{
+    ItemSlot[InSlot]->Changed(InSlot);
 }
