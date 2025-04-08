@@ -12,6 +12,22 @@ APlayerCharacter::APlayerCharacter()
 	{
 		bUseControllerRotationYaw = false; // 컨트롤러 Yaw 회전 비활성화
 	}
+
+	PickaxeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickaxeMesh"));
+	PickaxeMesh->SetupAttachment(GetMesh(), TEXT("PickaxeSocket")); // 소켓 이름
+	PickaxeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ShowPickaxe(false); // 곡괭이가 기본적으로 안 보이게 설정
+}
+
+void APlayerCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (GEngine)
+	{
+		FString Msg = FString::Printf(TEXT("MiningProgress Value: %.1f"), MiningHoldTime);
+		GEngine->AddOnScreenDebugMessage(1, 0.f, FColor::Emerald, Msg); // ID 1로 고정해서 갱신됨
+	}
 }
 
 void APlayerCharacter::BeginPlay()
@@ -27,15 +43,17 @@ void APlayerCharacter::BeginPlay()
 			{
 				// IMC 등록
 				Subsystem->AddMappingContext(MoveMappingContext, 0);
+				Subsystem->AddMappingContext(WorkMappingContext, 0);
 			}
 		}
 	}
-}
 
-void APlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		/* 현재 재생 중인 몽타주의 재생이 끝나면 
+		OnMiningMontageEnded 함수를 호출하도록델리게이트 바인딩 */
+		AnimInstance->OnMontageEnded.AddDynamic(this, &APlayerCharacter::OnMiningMontageEnded);
+	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -43,14 +61,26 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// Enhanced Input용 컴포넌트로 캐스팅
-	UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
+	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		/* InputAction을 C++ 함수에 바인딩 */
+		// 채굴 관련 액션
+		EnhancedInput->BindAction(MiningAction, ETriggerEvent::Triggered, this, &APlayerCharacter::TryStartMining);
+		EnhancedInput->BindAction(MiningAction, ETriggerEvent::Completed, this, &APlayerCharacter::StopMining);
 
-	// InputAction을 C++ 함수에 바인딩
-	EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::MoveCharacter);
+		// 캐릭터 움직임 관련 액션
+		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::MoveCharacter);
+	}
 }
 
 void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 {
+	// 채굴 중에 움직이면 채굴을 멈춤
+	if (bIsMining)
+	{
+		StopMining();
+	}
+
 	FVector2D InputVector = Value.Get<FVector2D>();
 
 	if (Controller && !InputVector.IsNearlyZero())
@@ -71,25 +101,99 @@ void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 	}
 }
 
+void APlayerCharacter::TryStartMining()
+{
+	////if (bCanMine)
+	//{
+	//	//FHitResult Hit;
+	//	//if (PerformTileTrace(Hit)) // 마우스 아래 타일 확인용 라인 트레이스
+	//	{
+	//		//if (AResourceTile* ResourceTile = Cast<AResourceTile>(Hit.GetActor()))
+	//		{
+	//			//ResourceTile->Mine(); // 캐기 로직
+	{
+		// 우클릭을 쭉 누르면 MiningHoldTime가 점점 증가
+		MiningHoldTime += GetWorld()->GetDeltaSeconds();
+
+		// MiningHoldTime가 MinHoldTimeToPlayAnim보다 크거나 같으면 채굴 시작
+		if (MiningHoldTime >= MinHoldTimeToPlayAnim)
+		{
+			StartMining();
+		}
+	}
+}
+
 void APlayerCharacter::StartMining()
 {
-	// 우클릭 누른 상태에서만 호출됨 (ETriggerEvent::Triggered)
+	SetIsMining(true);
 
-	//if (bCanMine)
+	// 채굴 중인 상태라면 곡괭이를 듦
+	// 그리고 채굴 몽타주가 재생되고 있지 않다면 채굴 몽타주 재생
+	if(bIsMining)
 	{
-		//FHitResult Hit;
-		//if (PerformTileTrace(Hit)) // 마우스 아래 타일 확인용 라인 트레이스
+		ShowPickaxe(true);
+		if (!bIsMiningAnimationPlaying)
 		{
-			//if (AResourceTile* ResourceTile = Cast<AResourceTile>(Hit.GetActor()))
-			{
-				//ResourceTile->Mine(); // 캐기 로직
-				PlayMiningAnimation();
-			}
+			PlayMiningAnimation();
 		}
+	}
+}
+
+void APlayerCharacter::StopMining()
+{
+	SetIsMining(false);
+	
+	// 채굴 중인 상태가 아니라면 곡괭이를 숨기고, 몽타주를 멈춤.
+	// 그리고 채굴 진행바와 우클릭을 유지한 누적 시간을 0으로
+	if(!bIsMining)
+	{
+		ShowPickaxe(false);
+		StopMiningAnimation();
+		MiningProgress = 0.0f;
+
+		MiningHoldTime = 0.0f;
+	}
+}
+
+void APlayerCharacter::SetIsMining(bool IsMining)
+{
+	bIsMining = IsMining;
+}
+
+void APlayerCharacter::ShowPickaxe(bool bVisible)
+{
+	if (PickaxeMesh)
+	{
+		PickaxeMesh->SetVisibility(bVisible);
 	}
 }
 
 void APlayerCharacter::PlayMiningAnimation()
 {
+	if (!MiningMontage || !GetMesh() || !bIsMining) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && !AnimInstance->Montage_IsPlaying(MiningMontage))
+	{
+		AnimInstance->Montage_Play(MiningMontage);
+		// 채굴 몽타주 재생 중임을 나타냄
+		bIsMiningAnimationPlaying = true;
+	}
 }
 
+void APlayerCharacter::StopMiningAnimation()
+{
+	if (!MiningMontage || !GetMesh() || bIsMining) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AnimInstance->Montage_IsPlaying(MiningMontage))
+	{
+		AnimInstance->Montage_Stop(0.0f, MiningMontage); // 부드럽게 끊기
+	}
+}
+
+void APlayerCharacter::OnMiningMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	// 채굴 몽타주가 끝났음 (재생 완료)
+	bIsMiningAnimationPlaying = false;
+}

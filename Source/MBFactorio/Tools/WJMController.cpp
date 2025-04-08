@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Blueprint/UserWidget.h"
+#include "Character/PlayerCharacter.h"
 
 void AWJMController::SetupInputComponent()
 {
@@ -12,7 +13,7 @@ void AWJMController::SetupInputComponent()
 
     if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
     {
-        EnhancedInput->BindAction(MiningAction, ETriggerEvent::Triggered, this, &AWJMController::OnMinePressed);
+        // 인벤토리 관련 액션
         EnhancedInput->BindAction(ToggleInventoryAction, ETriggerEvent::Started, this, &AWJMController::ToggleInventory);
         // ESC로 닫기
         EnhancedInput->BindAction(CancelAction, ETriggerEvent::Started, this, &AWJMController::CloseInventory);
@@ -31,15 +32,9 @@ void AWJMController::BeginPlay()
             ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
             {
                 // IMC 등록
-                Subsystem->AddMappingContext(WorkMappingContext, 0);
                 Subsystem->AddMappingContext(InventoryMappingContext, 0);
             }
     }
-}
-
-void AWJMController::OnMinePressed()
-{
-
 }
 
 void AWJMController::ToggleInventory()

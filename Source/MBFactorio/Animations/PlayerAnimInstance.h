@@ -20,6 +20,6 @@ public:
 
 protected:
 	// 플레이어 속도에 따라 Idle 또는 Run 모션을 출력
-	UPROPERTY(BlueprintReadOnly, Category = "Character")
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	float Speed;
 };

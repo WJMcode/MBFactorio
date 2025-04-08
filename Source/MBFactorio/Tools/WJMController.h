@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -25,9 +23,6 @@ protected:
 	virtual void BeginPlay() override;
 
 protected:
-	// 채굴을 하기 위한 함수
-	void OnMinePressed();
-
 	// 인벤토리를 열고 닫기 위한 함수
 	void ToggleInventory();
 
@@ -46,19 +41,12 @@ protected:
 	
 	/* IMC */
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputMappingContext* WorkMappingContext;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* InventoryMappingContext;
 
 	/* IA */
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* MiningAction;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* ToggleInventoryAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* CancelAction;
-
 };

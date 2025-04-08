@@ -4,6 +4,8 @@
 
 void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
+    Super::NativeUpdateAnimation(DeltaSeconds);
+
     // 캐릭터 속도 가져오기
     APawn* OwnerPawn = TryGetPawnOwner();
     if (OwnerPawn)
@@ -11,4 +13,3 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         Speed = OwnerPawn->GetVelocity().Size();
     }
 }
-
