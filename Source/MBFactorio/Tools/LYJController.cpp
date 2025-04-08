@@ -3,6 +3,10 @@
 
 #include "Tools/LYJController.h"
 #include "UI/MBFCursorWidget.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
+#include "UI/GameMenuWidget.h"
 
 ALYJController::ALYJController()
 {
@@ -25,6 +29,21 @@ void ALYJController::BeginPlay()
 {
     Super::BeginPlay();
 
+    // 게임메뉴 UI 키 등록
+    if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+    {
+        if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+            ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
+        {
+            if (InputMappingContext)
+            {
+                Subsystem->AddMappingContext(InputMappingContext, 1);
+                UE_LOG(LogTemp, Warning, TEXT("Controller: InputMappingContext 등록"));
+            }
+        }
+    }
+
+    // 커서 UI 생성
     if (CursorWidgetClass)
     {
         CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
@@ -43,8 +62,7 @@ void ALYJController::BeginPlay()
         else
         {
             UE_LOG(LogTemp, Warning, TEXT("CursorWidget이 null입니다"));
-        }
-        
+        }        
     }
 }
 
@@ -79,6 +97,25 @@ void ALYJController::Tick(float DeltaTime)
         }
     }
 
+}
+
+void ALYJController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+
+    if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent))
+    {
+        if (GameMenuAction)
+        {
+            Input->BindAction(GameMenuAction, ETriggerEvent::Triggered, this, &ALYJController::OnGameMenuPressed);
+            UE_LOG(LogTemp, Warning, TEXT("Controller: GameMenuAction 바인딩 성공"));
+        }
+    }
+}
+
+void ALYJController::OnGameMenuPressed()
+{
+    ToggleGameMenu();
 }
 
 void ALYJController::UpdateCursorVisibility()
@@ -118,3 +155,49 @@ void ALYJController::SetPlayerNearStope(bool bNear)
         CursorWidget->SetPlayerNear(bNear);
     }
 }
+
+void ALYJController::ToggleGameMenu()
+{
+    if (!bIsGameMenuOpen)
+    {
+        if (!GameMenuWidget && GameMenuWidgetClass)
+        {
+            GameMenuWidget = CreateWidget<UGameMenuWidget>(this, GameMenuWidgetClass);
+        }
+
+        if (GameMenuWidget)
+        {
+            GameMenuWidget->AddToViewport();
+
+            // 입력 모드: UI 전용
+            SetShowMouseCursor(true);
+            FInputModeUIOnly InputMode;
+            InputMode.SetWidgetToFocus(GameMenuWidget->TakeWidget());
+            SetInputMode(InputMode);
+
+            // 게임 일시 정지
+            UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+            bIsGameMenuOpen = true;
+        }
+    }
+    else
+    {
+        if (GameMenuWidget)
+        {
+            GameMenuWidget->RemoveFromParent();
+            GameMenuWidget = nullptr;
+        }
+
+        // 입력 모드: 게임 전용
+        SetShowMouseCursor(false);
+        FInputModeGameOnly InputMode;
+        SetInputMode(InputMode);
+
+        // 게임 재개
+        UGameplayStatics::SetGamePaused(GetWorld(), false);
+
+        bIsGameMenuOpen = false;
+    }
+}
+

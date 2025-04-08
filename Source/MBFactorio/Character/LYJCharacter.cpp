@@ -3,7 +3,6 @@
 
 #include "Character/LYJCharacter.h"
 #include "Tools/LYJController.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 
@@ -23,7 +22,7 @@ ALYJCharacter::ALYJCharacter()
 void ALYJCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+		
 	if (ALYJController* PC = Cast<ALYJController>(GetController()))
 	{
 		if (ULocalPlayer* LocalPlayer = PC->GetLocalPlayer())
@@ -33,6 +32,8 @@ void ALYJCharacter::BeginPlay()
 			{
 				// IMC 등록
 				Subsystem->AddMappingContext(MoveMappingContext, 0);
+
+				UE_LOG(LogTemp, Warning, TEXT("Character: MoveMappingContext 등록"));
 			}
 		}
 	}
@@ -50,11 +51,13 @@ void ALYJCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Enhanced Input용 컴포넌트로 캐스팅
-	UEnhancedInputComponent* EnhancedInput = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
-
-	// InputAction을 C++ 함수에 바인딩
-	EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALYJCharacter::MoveCharacter);
+	if (UEnhancedInputComponent* Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		if (MoveAction)
+		{
+			Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALYJCharacter::MoveCharacter);
+		}
+	}
 }
 
 void ALYJCharacter::MoveCharacter(const FInputActionValue& Value)

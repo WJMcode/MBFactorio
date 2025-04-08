@@ -25,8 +25,6 @@ void UMBFStartWidget::OnClickPlay()
     // 위젯 제거
     this->RemoveFromParent();
 
-    UE_LOG(LogTemp, Warning, TEXT("StartWidget removed"));
-
     UGameplayStatics::OpenLevel(this, FName("LYJ_TestMap"));
 }
 
