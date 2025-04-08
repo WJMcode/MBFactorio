@@ -41,7 +41,7 @@ public:
 
     // 해당 아이템의 요구 개수
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Required Item")
-    int32 RequiredCount;
+    float RequiredCount;
 
     // 기본 생성자
     FRequiredItem()
@@ -78,11 +78,14 @@ public:
     UTexture2D* Image;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    int32 BuildTime;
+    float BuildTime;
 
     // 아이템 합성 시 필요한 다른 아이템들 (아이템 ID와 요구 개수를 가진 배열)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     TArray<FRequiredItem> RequiredItems;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    TArray<FRequiredItem> BasicItems;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     float Energy;
@@ -96,6 +99,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     bool bCook;
 
+    
     // 기본 생성자
     FItemData()
         : ItemID(0), MaxCount(0), Image(nullptr)

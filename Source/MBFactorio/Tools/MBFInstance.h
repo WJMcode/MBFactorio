@@ -23,7 +23,7 @@ class MBFACTORIO_API UMBFInstance : public UGameInstance
 public:
 	UPROPERTY()
 	UDataTable* ItemDataTable;
-	const FItemData* GetItemData(FName RowName) const;
+	FItemData* GetItemData(FName RowName) const;
 public:
 	virtual void Init();
 

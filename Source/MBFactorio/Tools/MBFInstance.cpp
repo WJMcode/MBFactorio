@@ -12,7 +12,7 @@ UMBFInstance::~UMBFInstance()
 {
 }
 
-const FItemData* UMBFInstance::GetItemData(FName RowName) const
+FItemData* UMBFInstance::GetItemData(FName RowName) const
 {
 	FItemData* returndata = ItemDataTable->FindRow<FItemData>(RowName, TEXT("GET ItemData"));;
 	

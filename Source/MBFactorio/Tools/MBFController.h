@@ -41,7 +41,7 @@ private:
 	bool bOpenInventory;
 
 
-	void CraftItem(int32 ItemID, int32 CraftCount);
+	void CraftItem();
 	void Crafting(int32 ItemID);
 
 

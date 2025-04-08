@@ -26,10 +26,11 @@ class MBFACTORIO_API UMBFInventory : public UUserWidget
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UMBFSlot* GetItemSlot(int32 b) { return ItemSlot[b]; }
+	void OnChanged();
 
 private:
 	
 	void OnInitialized();
 	void NativeConstruct() override;
-	void OnChanged();
+	
 };

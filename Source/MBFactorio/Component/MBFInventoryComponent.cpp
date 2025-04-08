@@ -14,10 +14,8 @@ UMBFInventoryComponent::UMBFInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	InventoryItems.SetNum(80);
-	for (int i = 0; i < 80; i++)
-	{
-		InventoryItems[i] = FInventoryItem(i + 1, i + 1, i + 1);
-	}
+	InventoryItems[0] = FInventoryItem(5, 100, 100);
+	InventoryItems[1] = FInventoryItem(8, 100, 100);
 	// ...
 }
 
@@ -37,6 +35,37 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (Craftings.Num())
+	{
+		if (BuildItem == nullptr)
+		{
+			BuildItem = Cast<UMBFInstance>(GetWorld()->GetGameInstance())->GetItemData(Craftings[0].Key);
+			BuildTime = BuildItem->BuildTime;
+			ElapsedCraftingTime = 0;
+		}
+		else
+		{
+			ElapsedCraftingTime += DeltaTime;
+			if (BuildTime < ElapsedCraftingTime)
+			{
+				ElapsedCraftingTime -= BuildTime;
+				Craftings[0].Value -= 1;
+				for (auto& RequiredItem : BuildItem->RequiredItems)
+				{
+					RemoveItem(RequiredItem.ItemID, RequiredItem.RequiredCount);
+				}
+				AddItem(BuildItem->ItemID, BuildItem->CreateCount);
+				if (Craftings[0].Value == 0)
+				{
+					BuildItem = nullptr;
+					Craftings.RemoveAt(0);
+					BuildTime = 0;
+				}
+				AMBFHUD* HUD = Cast<AMBFHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
+				HUD->OnChanged();
+			}
+		}
+	}
 	// ...
 }
 
@@ -54,7 +83,7 @@ bool UMBFInventoryComponent::CanCraftItem(int32 ItemID, int32 CraftCount, TMap<F
 	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
 	const FItemData* Itemdata = Instance->GetItemData(FName(FString::FromInt(ItemID)));
 
-	if (!Itemdata || !Itemdata->bCook) { return false; }
+	if (!Itemdata || !Itemdata->bMake) { return false; }
 
 	TMap<FName, int32> LocalMap;
 	TArray<FName> LocalRequiredCraftings;
@@ -64,8 +93,9 @@ bool UMBFInventoryComponent::CanCraftItem(int32 ItemID, int32 CraftCount, TMap<F
 	TMap<FName, int32>& MapRef = OutMap ? *OutMap : LocalMap;
 	TArray<FName>& CraftingsRef = OutRequiredCraftings ? *OutRequiredCraftings : LocalRequiredCraftings;
 
+	
 
-	RequiredItemsCheck(MapRef, CraftingsRef, BasicMaterials, ItemID, TPair<int32, int32>(CraftCount, CraftCount));
+	RequiredItemsCheck(MapRef, CraftingsRef, ItemID, CraftCount);
 
 	for (auto& BasicMaterial : BasicMaterials)
 	{
@@ -73,7 +103,8 @@ bool UMBFInventoryComponent::CanCraftItem(int32 ItemID, int32 CraftCount, TMap<F
 			return false;
 		// 경고 문구 추가시 요기에
 	}
-
+	MapRef.FindOrAdd(FName(FString::FromInt(ItemID))) += CraftCount;
+	CraftingsRef.Add(FName(FString::FromInt(ItemID)));
 	return true;
 
 
@@ -96,6 +127,7 @@ void UMBFInventoryComponent::CraftItem(int32 ItemID, int32 CraftCount)
 	}
 
 }
+// RequiredItemCheck이후
 void UMBFInventoryComponent::Crafting(int32 ItemID)
 {
 	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
@@ -139,7 +171,7 @@ void UMBFInventoryComponent::AddItem(int32 ItemID, int32 Count)
 	{
 		UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
 		const FItemData* ItemData = Instance->GetItemData(FName(FString::FromInt(ItemID)));
-		InventoryItems[minSlot] = FInventoryItem(ItemID, Count, ItemData->MaxCount);
+		InventoryItems[minSlot] = FInventoryItem(ItemID, ItemData->MaxCount, Count);
 
 
 	}
@@ -180,47 +212,36 @@ void UMBFInventoryComponent::RemoveItem(int32 ItemID, int32 Count)
 void UMBFInventoryComponent::RequiredItemsCheck(
 	TMap<FName, int32>& Map,			// Craft things, count
 	TArray<FName>& RequiredCraftings,	// Have to Craft thigs
-	TMap<int32, TPair<int32, int32>>& BasicMaterials, // Basic Material Map
 	int32 ItemID,
-	TPair<int32, int32> count
+	int32 count
 )
 {
-
-	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
-	const FItemData* Itemdata = Instance->GetItemData(FName(FString::FromInt(ItemID)));
-
-
-	if (Itemdata->RequiredItems.Num() == 0)
-	{
-		BasicMaterials.FindOrAdd(ItemID).Key += count.Key;
-		BasicMaterials.FindOrAdd(ItemID).Value += count.Value;
+	if (count <= 0) {
 		return;
 	}
+	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
+	FName RowName = FName(FString::FromInt(ItemID));
 
-	int32 CreateCount = FMath::Max(Itemdata->CreateCount, 1); //		 0방지
-	int32 CraftCount = FMath::CeilToInt((float)count.Key / CreateCount);
-	int32 VCraftCount = FMath::CeilToInt((float)count.Value / CreateCount);
+	const FItemData* Itemdata = Instance->GetItemData(RowName);
 
-
-	for (auto k : Itemdata->RequiredItems)
+	for (auto& RequiredItem : Itemdata->RequiredItems)
 	{
-		int32 FullNeeded = CraftCount * k.RequiredCount;
-		int32 Needed = VCraftCount * k.RequiredCount;
-		TPair<int32, int32> NextCount(FullNeeded, Needed);
-		RequiredItemsCheck(Map, RequiredCraftings, BasicMaterials, k.ItemID, NextCount);
+		float ratio = static_cast<float>(count) / FMath::Max(Itemdata->CreateCount, 1);
+		int32 needCount = FMath::CeilToInt(ratio * RequiredItem.RequiredCount);
+		needCount -= GetInventoryItemCount(RequiredItem.ItemID);
+		if (needCount <= 0) { return; }
+		RequiredItemsCheck(Map, RequiredCraftings, RequiredItem.ItemID, needCount);
 
-		FName Item = FName(FString::FromInt(k.ItemID));
-
-		Map.FindOrAdd(Item) += Needed;
-
-		if (!RequiredCraftings.Contains(Item))
-		{
-			RequiredCraftings.Add(Item);
-		}
-
+		FName ID = FName(FString::FromInt(RequiredItem.ItemID));
+		Map.FindOrAdd(ID) += needCount;
+		RequiredCraftings.Add(ID);
 	}
 
 
+
+	
+	
+	
 
 }
 

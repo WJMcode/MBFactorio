@@ -18,6 +18,11 @@ class MBFACTORIO_API UMBFInventoryComponent : public UActorComponent
 	TArray<FInventoryItem> InventoryItems;
 	TArray<TPair<FName, int32>> Craftings;
 
+	FItemData* BuildItem;
+	float BuildTime;
+	float ElapsedCraftingTime;
+	
+
 public:	
 	// Sets default values for this component's properties
 	UMBFInventoryComponent();
@@ -39,7 +44,7 @@ public:
 	void AddItem(int32 ItemID, int32 Count);
 	void RemoveItem(int32 ItemID, int32 Count);
 
-	void RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, TMap<int32, TPair<int32, int32>>& BasicMaterials, int32 ItemID, TPair<int32, int32> count);
+	void RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, int32 ItemID, int32 count);
 
 
 	EMaterialCheckResult CheckMaterialAvailability(int32 ItemID, int32 RequiredCount);	//제작하는데 재료가 충분한지 검사

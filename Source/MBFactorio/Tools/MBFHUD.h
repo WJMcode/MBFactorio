@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Tools/Widget/MBFInventory.h"
 #include "MBFHUD.generated.h"
 
 /**
@@ -18,4 +19,5 @@ class MBFACTORIO_API AMBFHUD : public AHUD
 public:
 	void OpenInventory();
 	void CloseInventory();
+	void OnChanged() { Cast<UMBFInventory>(Inventory)->OnChanged(); }
 };

@@ -20,11 +20,11 @@ void UMBFInventory::NativeConstruct()
 
     for (int32 i = 0; i < 80; ++i)
     {
-        // ÀÌ¸§ ±¸¼º: "ItemSlot_0", "ItemSlot_1", ...
+        // ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½ï¿½: "ItemSlot_0", "ItemSlot_1", ...
         FString SlotName = FString::Printf(TEXT("ItemSlot_%d"), i);
         FName WidgetName(*SlotName);
 
-        // ÀÌ¸§À¸·Î À§Á¬ Ã£±â
+        // ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½
         UWidget* FoundWidget = GetWidgetFromName(WidgetName);
         if (FoundWidget)
         {
@@ -35,12 +35,12 @@ void UMBFInventory::NativeConstruct()
             }
             else
             {
-                UE_LOG(LogTemp, Warning, TEXT("'%s' ´Â UMBFSlotÀÌ ¾Æ´Õ´Ï´Ù."), *SlotName);
+                UE_LOG(LogTemp, Warning, TEXT("'%s' ï¿½ï¿½ UMBFSlotï¿½ï¿½ ï¿½Æ´Õ´Ï´ï¿½."), *SlotName);
             }
         }
         else
         {
-            UE_LOG(LogTemp, Warning, TEXT("'%s' À§Á¬À» Ã£À» ¼ö ¾ø½À´Ï´Ù."), *SlotName);
+            UE_LOG(LogTemp, Warning, TEXT("'%s' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½."), *SlotName);
         }
     }
 
@@ -63,7 +63,7 @@ void UMBFInventory::OnChanged()
         
        
 
-        //ImageBrush º¯°æ
+        //ImageBrush ï¿½ï¿½ï¿½ï¿½
         {
             UImage* Image = GetItemSlot(i)->GetImage();
             
@@ -80,7 +80,7 @@ void UMBFInventory::OnChanged()
 
         }
         
-        //TextBlock Count º¯°æ
+        //TextBlock Count ï¿½ï¿½ï¿½ï¿½
         {
             UTextBlock* TextBlock = ItemSlot[i]->GetTextBlock();
             if (itemdata == nullptr)
