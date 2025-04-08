@@ -9,7 +9,7 @@ ALYJController::ALYJController()
     bShowMouseCursor = true;
     PrimaryActorTick.bCanEverTick = true;
     
-    /*CursorWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr, TEXT("/Game/UI/UI_Cursor.UI_Cursor_C"));
+    CursorWidgetClass = StaticLoadClass(UUserWidget::StaticClass(), nullptr, TEXT("/Game/UI/UI_MBFCursor.UI_MBFCursor_C"));
     if (CursorWidgetClass)
     {
         UE_LOG(LogTemp, Warning, TEXT("CursorWidgetClass 로드 성공"));
@@ -17,7 +17,7 @@ ALYJController::ALYJController()
     else
     {
         UE_LOG(LogTemp, Error, TEXT("CursorWidgetClass 로드 실패"));
-    }*/
+    }
    
 }
 
@@ -40,6 +40,11 @@ void ALYJController::BeginPlay()
             FInputModeGameOnly InputMode;
             SetInputMode(InputMode);
         }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("CursorWidget이 null입니다"));
+        }
+        
     }
 }
 
@@ -52,7 +57,7 @@ void ALYJController::Tick(float DeltaTime)
     // 마우스 위치에서 HitTest (Visibility 채널 사용)
     FHitResult HitResult;
     CursorWidget->bHit = GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, HitResult); // Visibility
-
+    
     if (AMBFStope* Stope = Cast<AMBFStope>(HitResult.GetActor()))
     {
         bIsCursorOverStope = CursorWidget->bHit;

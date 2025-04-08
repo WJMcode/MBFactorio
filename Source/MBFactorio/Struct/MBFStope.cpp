@@ -13,7 +13,10 @@ AMBFStope::AMBFStope()
 
     Box->SetGenerateOverlapEvents(true);
     Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Box->SetCollisionObjectType(ECC_WorldDynamic);
+
     Box->SetCollisionResponseToAllChannels(ECR_Ignore);
+    Box->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block); 
     Box->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 
     StopeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));

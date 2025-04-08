@@ -36,13 +36,6 @@ void ALYJCharacter::BeginPlay()
 			}
 		}
 	}
-
-	//UCapsuleComponent* CapsuleComponent = GetCapsuleComponent();
-	//if (CapsuleComponent) // 플레이어에 붙은 BoxCollision 같은 컴포넌트
-	//{
-	//	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ALYJCharacter::OnStopeBeginOverlap);
-	//	CapsuleComponent->OnComponentEndOverlap.AddDynamic(this, &ALYJCharacter::OnStopeEndOverlap);
-	//}
 }
 
 // Called every frame
@@ -83,36 +76,6 @@ void ALYJCharacter::MoveCharacter(const FInputActionValue& Value)
 
 		// 방향키를 누르면 캐릭터 즉시 회전
 		SetActorRotation(MoveDir.Rotation());
-	}
-}
-
-void ALYJCharacter::OnStopeBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (OtherActor && OtherActor->IsA(AMBFStope::StaticClass())) // 오버랩 대상이 Stope일 때
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OnStopeBeginOverlap"));
-		if (Controller)
-		{
-			if (ALYJController* PC = Cast<ALYJController>(Controller))
-			{
-				PC->SetPlayerNearStope(true); // 오버랩 진입
-			}
-		}
-	}
-}
-
-void ALYJCharacter::OnStopeEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (OtherActor && OtherActor->IsA(AMBFStope::StaticClass()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OnStopeEndOverlap"));
-		if (Controller)
-		{
-			if (ALYJController* PC = Cast<ALYJController>(Controller))
-			{
-				PC->SetPlayerNearStope(false); // 오버랩 해제
-			}
-		}
 	}
 }
 

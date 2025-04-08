@@ -14,6 +14,7 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
     FHitResult HitResult;
     bHit = PC->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Visibility), false, HitResult);
+
     if (bHit && HitResult.GetActor())
     {
         if (HitResult.GetActor()->IsA<AMBFStope>())
@@ -21,19 +22,6 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
             SetCursorTint(bPlayerIsNear ? FLinearColor::Yellow : FLinearColor::Red);
         }
     }
-
-    //if (bHit && HitResult.GetActor() && HitResult.GetActor()->IsA(AMBFStope::StaticClass()))
-    //{
-    //    // 커서가 BP_Stope 위에 있을 때
-    //    if (bPlayerIsNear)
-    //    {
-    //        SetCursorTint(FLinearColor::Yellow); // 오버랩 중이면 노란색
-    //    }
-    //    else
-    //    {
-    //        SetCursorTint(FLinearColor::Red);    // 오버랩 아니면 빨간색
-    //    }
-    //} 
 }
 
 void UMBFCursorWidget::NativePreConstruct()

@@ -17,7 +17,7 @@ ALYJGameMode::ALYJGameMode()
     }
 
     // 시작 위젯 지정
-    ConstructorHelpers::FClassFinder<UMBFStartWidget> WidgetClass(TEXT("/Game/UI/UI_MBFCursor.UI_MBFCursor_C"));
+    ConstructorHelpers::FClassFinder<UMBFStartWidget> WidgetClass(TEXT("/Game/UI/UI_Play.UI_Play_C"));
     if (WidgetClass.Succeeded())
     {
         StartWidgetClass = WidgetClass.Class;
@@ -28,17 +28,17 @@ void ALYJGameMode::BeginPlay()
 {
     Super::BeginPlay();
 
-    FString CurrentMap = GetWorld()->GetMapName();
-    CurrentMap.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+    FString CurrentLevelName = GetWorld()->GetMapName();
+    CurrentLevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix); 
 
-    if (CurrentMap.Equals("Factorio"))
+    if (CurrentLevelName == TEXT("Factorio"))
     {
-        if (StartWidgetClass != nullptr)
+        if (StartWidgetClass)
         {
-            CurrentWidget = CreateWidget<UMBFStartWidget>(GetWorld(), StartWidgetClass);
-            if (CurrentWidget)
+            StartWidget = CreateWidget<UMBFStartWidget>(GetWorld(), StartWidgetClass);
+            if (StartWidget)
             {
-                CurrentWidget->AddToViewport(); // 시작 화면까지 PIE 로 재생할 시 주석 풀기
+                StartWidget->AddToViewport(); // 시작화면 필요 X 시 주석 걸 것
             }
         }
     }
