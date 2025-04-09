@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Components/Button.h"
 #include "MBFSlot.generated.h"
 
 /**
@@ -27,13 +28,18 @@ protected:
 	UImage* Image;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* Count;
+
 	
+
+	FName ItemID;
 public:
+
+	UButton* MyButton;
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UImage* GetImage() { return Image; }
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UTextBlock* GetTextBlock() { return Count; }
-
+	void SetItemID(FName InItemID) { ItemID = InItemID; }
 public:
 	
 	void Changed(int32 InSlot);

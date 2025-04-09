@@ -43,8 +43,33 @@ void UMBFInventory::NativeConstruct()
             UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
         }
     }
+    for (int32 i = 0; i < 4; ++i)
+    {
+        FString SlotName = FString::Printf(TEXT("SelectedSlot_%d"), i);
+        FName WidgetName(*SlotName);
 
-
+        // �̸����� ���� ã��
+        UWidget* FoundWidget = GetWidgetFromName(WidgetName);
+        if (FoundWidget)
+        {
+            USelectedSlot* SlotWidget = Cast<USelectedSlot>(FoundWidget);
+            if (SlotWidget)
+            {
+                SlotWidget->SetNum(i);
+                SelectedSlot[i] = SlotWidget;
+                SelectedSlot[i]->OnSlotClicked.AddDynamic(this, &ThisClass::SelectedSlotChange);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
+        }
+    }
+    SelectedSlot[0]->Selected();
     OnChanged();
     
 }
@@ -61,3 +86,25 @@ void UMBFInventory::SlotChanged(int32 InSlot)
 {
     ItemSlot[InSlot]->Changed(InSlot);
 }
+
+void UMBFInventory::BindingSelectedAction(USelectedSlot* InSlot)
+{
+    InSlot->OnSlotClicked.AddDynamic(this, &ThisClass::SelectedSlotChange);
+}
+
+void UMBFInventory::SelectedSlotChange(int32 SlotID)
+{
+    if (SelectedSlotNum == SlotID)
+    {
+        return;
+    }
+    else
+    {
+        SelectedSlot[SelectedSlotNum]->UnSelected();
+        SelectedSlotNum = SlotID;
+    }
+}
+
+
+
+

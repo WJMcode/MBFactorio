@@ -15,16 +15,18 @@ void UMBFSlot::Changed(int32 InSlot)
     FInventoryItem Item = PC->GetInventoryItem(InSlot);
 
     const FItemData* itemdata = Instance->GetItemData(FName(FString::FromInt(Item.ItemID)));
-    
+
     
     if (itemdata == nullptr) {
         Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
         Count->SetText(FText::FromString(TEXT("")));
+        SetItemID(FName(FString(TEXT(""))));
     }
     else {
         Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
         Image->SetBrushFromTexture(itemdata->Image, false);
         Count->SetText(FText::AsNumber(Item.MCount));
+        SetItemID(FName(FString::FromInt(Item.ItemID)));
     }
 
     //TextBlock Count ����
