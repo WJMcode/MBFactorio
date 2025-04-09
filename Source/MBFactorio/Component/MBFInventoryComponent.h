@@ -17,6 +17,9 @@ class MBFACTORIO_API UMBFInventoryComponent : public UActorComponent
 
 	TArray<FInventoryItem> InventoryItems;
 	TArray<TPair<FName, int32>> Craftings;
+	TMap<FName, int32>			BringItems;
+	TMap<FName, int32>			AfterChanged;
+
 
 	FItemData* BuildItem;
 	float BuildTime;
@@ -35,16 +38,19 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void SortInventory();
+
 	bool bOpenInventory;
 
-	bool CanCraftItem(int32 ItemID, int32 CraftCount, TMap<FName, int32>* OutMap = nullptr, TArray<FName>* OutRequiredCraftings = nullptr);
+	bool CanCraftItem(int32 ItemID, int32 CraftCount, TMap<FName, int32>* OutMap = nullptr, TArray<FName>* OutRequiredCraftings = nullptr, TMap<FName, int32>* OutChnaged = nullptr);
 	void CraftItem(int32 ItemID, int32 CraftCount);
 	void Crafting(int32 ItemID);
 
 	void AddItem(int32 ItemID, int32 Count);
 	void RemoveItem(int32 ItemID, int32 Count);
 
-	void RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, int32 ItemID, int32 count);
+	void RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, TMap<FName, int32>& ChangedItems, int32 ItemID, int32 count);
+
 
 
 	EMaterialCheckResult CheckMaterialAvailability(int32 ItemID, int32 RequiredCount);	//제작하는데 재료가 충분한지 검사

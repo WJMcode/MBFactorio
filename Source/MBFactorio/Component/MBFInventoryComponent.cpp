@@ -7,6 +7,7 @@
 #include "Struct/MBFStruct.h"
 #include "Tools/MBFHUD.h"
 #include "Math/UnrealMathUtility.h"
+#include "Tools/MBFController.h"
 
 // Sets default values for this component's properties
 UMBFInventoryComponent::UMBFInventoryComponent()
@@ -26,6 +27,11 @@ void UMBFInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	for (int i = 1; i < 17; i++)
+	{
+		BringItems.FindOrAdd(FName(FString::FromInt(i))) += GetInventoryItemCount(i);
+		AfterChanged.Add(FName(FString::FromInt(i)));
+	}
 	// ...
 	
 }
@@ -53,11 +59,14 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 			{
 				ElapsedCraftingTime -= BuildTime;
 				Craftings[0].Value -= 1;
+				
 				for (auto& RequiredItem : BuildItem->RequiredItems)
 				{
 					RemoveItem(RequiredItem.ItemID, RequiredItem.RequiredCount);
+					AfterChanged.FindOrAdd(FName(FString::FromInt(RequiredItem.ItemID))) += RequiredItem.RequiredCount;
 				}
 				AddItem(BuildItem->ItemID, BuildItem->CreateCount);
+				AfterChanged.FindOrAdd(FName(FString::FromInt(BuildItem->ItemID))) -= BuildItem->CreateCount;
 				if (Craftings[0].Value == 0)
 				{
 					BuildItem = nullptr;
@@ -74,6 +83,42 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+void UMBFInventoryComponent::SortInventory()
+{
+	int32 Islot = 0;
+	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
+
+	for (int i = 1; i < 17; i++)
+	{
+		FName ItemID = FName(FString::FromInt(i));
+		int32 ItemCount = *(BringItems.Find(ItemID));
+		if (0 < ItemCount)
+		{
+			FItemData* Itemdata = Instance->GetItemData(ItemID);
+			int32 MaxCount = Itemdata->MaxCount;
+			while (ItemCount != 0)
+			{
+				if (MaxCount <= ItemCount)
+				{
+					InventoryItems[Islot] = FInventoryItem(i, MaxCount, MaxCount);
+					ItemCount -= MaxCount;
+				}
+				else
+				{
+					InventoryItems[Islot] = FInventoryItem(i, MaxCount, ItemCount);
+					ItemCount = 0;
+				}
+				Islot += 1;
+			}
+		}
+
+	}
+	for (int i = Islot; i < 80; i++)
+	{
+		InventoryItems[i] = FInventoryItem();
+	}
+}
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
@@ -82,7 +127,7 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 
 // 아이템 제작
-bool UMBFInventoryComponent::CanCraftItem(int32 ItemID, int32 CraftCount, TMap<FName, int32>* OutMap, TArray<FName>* OutRequiredCraftings)
+bool UMBFInventoryComponent::CanCraftItem(int32 ItemID, int32 CraftCount, TMap<FName, int32>* OutMap, TArray<FName>* OutRequiredCraftings, TMap<FName, int32>* OutChanged)
 {
 	
 	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
@@ -92,15 +137,17 @@ bool UMBFInventoryComponent::CanCraftItem(int32 ItemID, int32 CraftCount, TMap<F
 
 	TMap<FName, int32> LocalMap;
 	TArray<FName> LocalRequiredCraftings;
+	TMap<FName, int32> LocalChanged;
 	TMap<int32, TPair<int32, int32>> BasicMaterials;
+
 
 
 	TMap<FName, int32>& MapRef = OutMap ? *OutMap : LocalMap;
 	TArray<FName>& CraftingsRef = OutRequiredCraftings ? *OutRequiredCraftings : LocalRequiredCraftings;
-
+	TMap<FName, int32>& ChangedRef = OutChanged ? *OutChanged : LocalChanged;
 	
 
-	RequiredItemsCheck(MapRef, CraftingsRef, ItemID, CraftCount);
+	RequiredItemsCheck(MapRef, CraftingsRef, ChangedRef, ItemID, CraftCount);
 
 	for (auto& BasicMaterial : BasicMaterials)
 	{
@@ -118,7 +165,8 @@ void UMBFInventoryComponent::CraftItem(int32 ItemID, int32 CraftCount)
 {
 	TMap<FName, int32> Map;
 	TArray<FName> RequiredItems;
-	if (CanCraftItem(ItemID, CraftCount, &Map, &RequiredItems))
+	TMap<FName, int32> Changed;
+	if (CanCraftItem(ItemID, CraftCount, &Map, &RequiredItems, &Changed))
 	{
 		for (auto& RequiredItem : RequiredItems)
 		{
@@ -129,6 +177,15 @@ void UMBFInventoryComponent::CraftItem(int32 ItemID, int32 CraftCount)
 				Craftings.Add(Crafting);
 			}
 		}
+		for (int i = 1; i < 17; i++)
+		{
+			FName NameItem = FName(FString::FromInt(i));
+			if (Changed.Find(NameItem) != nullptr)
+			{
+				AfterChanged.FindOrAdd(NameItem) += *(Changed.Find(NameItem));
+			}
+		}
+		
 	}
 	AMBFHUD* HUD = Cast<AMBFHUD>(GetWorld()->GetFirstPlayerController()->GetHUD());
 	HUD->GetCraftingUI()->CraftChange();
@@ -150,74 +207,21 @@ void UMBFInventoryComponent::Crafting(int32 ItemID)
 }
 void UMBFInventoryComponent::AddItem(int32 ItemID, int32 Count)
 {
-	int32 minSlot = -1;
-	for (int i = 0; i < 80; i++)
-	{
-		if (InventoryItems[i].ItemID == ItemID)
-		{
-			int32 CanAdd = InventoryItems[i].MaxCount - InventoryItems[i].MCount;
-			if (CanAdd < Count)
-			{
-				InventoryItems[i].MCount = InventoryItems[i].MaxCount;
-				Count -= CanAdd;
-			}
-			else
-			{
-				InventoryItems[i].MCount += Count;
-				return;
-			}
-		}
-		else if (InventoryItems[i].ItemID == 0)
-		{
-			minSlot = i;
-			break;
-		}
-	}
-	if (minSlot != -1)
-	{
-		UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
-		const FItemData* ItemData = Instance->GetItemData(FName(FString::FromInt(ItemID)));
-		InventoryItems[minSlot] = FInventoryItem(ItemID, ItemData->MaxCount, Count);
-
-
-	}
-	else
-	{
-		//칸이 없을경우 바닥에 타일로 생성
-	}
-
-
+	FName ItemIDName = FName(FString::FromInt(ItemID));
+	BringItems.FindOrAdd(ItemIDName) += Count;
+	SortInventory();
 }
 void UMBFInventoryComponent::RemoveItem(int32 ItemID, int32 Count)
 {
-	int32 need = Count;
-	for (int i = 79; i >= 0; i--)
-	{
-		if (InventoryItems[i].ItemID == ItemID)
-		{
-			if (InventoryItems[i].MCount < need)
-			{
-				need -= InventoryItems[i].MCount;
-				InventoryItems[i] = FInventoryItem();
-			}
-			else if (InventoryItems[i].MCount == need)
-			{
-				InventoryItems[i] = FInventoryItem();
-				break;
-			}
-			else
-			{
-				InventoryItems[i].MCount -= need;
-				break;
-			}
-		}
-	}
-
+	FName ItemIDName = FName(FString::FromInt(ItemID));
+	BringItems.FindOrAdd(ItemIDName) -= Count;
+	SortInventory();
 }
 // 2025.04.06 21:56 shs
 void UMBFInventoryComponent::RequiredItemsCheck(
 	TMap<FName, int32>& Map,			// Craft things, count
 	TArray<FName>& RequiredCraftings,	// Have to Craft thigs
+	TMap<FName, int32>& ChangedItems,
 	int32 ItemID,
 	int32 count
 )
@@ -225,21 +229,44 @@ void UMBFInventoryComponent::RequiredItemsCheck(
 	if (count <= 0) {
 		return;
 	}
+	
 	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
 	FName RowName = FName(FString::FromInt(ItemID));
 
 	const FItemData* Itemdata = Instance->GetItemData(RowName);
-
-	for (auto& RequiredItem : Itemdata->RequiredItems)
+	//changedItems에 바로 추가 만들어지는 아이템
 	{
-		float ratio = static_cast<float>(count) / FMath::Max(Itemdata->CreateCount, 1);
-		int32 needCount = FMath::CeilToInt(ratio * RequiredItem.RequiredCount);
-		needCount -= GetInventoryItemCount(RequiredItem.ItemID);
-		if (needCount <= 0) { return; }
-		RequiredItemsCheck(Map, RequiredCraftings, RequiredItem.ItemID, needCount);
-
+		float CraftCount = (float)count / Itemdata->CreateCount;
+		ChangedItems.FindOrAdd(RowName) += FMath::CeilToInt(CraftCount)*Itemdata->CreateCount;
+	}
+	for (auto& RequiredItem : Itemdata->RequiredItems)	//electronic
+	{
+		float ratio = static_cast<float>(count) / FMath::Max(Itemdata->CreateCount, 1);	// cable ratio = 1
+		int32 needCount = FMath::CeilToInt(ratio * RequiredItem.RequiredCount);			// cable needCount = 15
+		
+		
+	
 		FName ID = FName(FString::FromInt(RequiredItem.ItemID));
-		Map.FindOrAdd(ID) += needCount;
+		FName ItemName = FName(FString::FromInt(RequiredItem.ItemID));
+		ChangedItems.FindOrAdd(ID) -= needCount;
+		if (BringItems.Find(ItemName) != nullptr)
+		{
+			needCount -= (*(BringItems.Find(ItemName)));						// cable needCount = 15
+		}
+		if (AfterChanged.Find(ItemName) != nullptr)
+		{
+			needCount -= *(AfterChanged.Find(ItemName));
+		}
+		if (needCount <= 0) { return; }
+		RequiredItemsCheck(Map, RequiredCraftings, ChangedItems, RequiredItem.ItemID, needCount);
+	
+		FItemData* data = Instance->GetItemData(FName(FString::FromInt(RequiredItem.ItemID)));
+		int32 CraftCount = FMath::CeilToInt(static_cast<float>(needCount) / data->CreateCount);
+		Map.FindOrAdd(ID) += CraftCount;
+		// 재료아이템 감산연산
+
+		
+
 		RequiredCraftings.Add(ID);
 	}
 
@@ -260,7 +287,7 @@ EMaterialCheckResult UMBFInventoryComponent::CheckMaterialAvailability(int32 Ite
 		return EMaterialCheckResult::NotFound;
 	}
 
-	if (GetInventoryItemCount(ItemID) >= RequiredCount)
+	if (*(BringItems.Find(FName(FString::FromInt(ItemID)))) >= RequiredCount)
 	{
 		return EMaterialCheckResult::Success;
 	}
