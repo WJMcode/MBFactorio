@@ -1,15 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// 2025 04 10 : UMBFCursorWidget::NativeTick 수정, 헤더 파일 Include (원재민)
 
 #include "UI/MBFCursorWidget.h"
 #include "Struct/MBFStope.h"
 #include "Components/Image.h"
 
+#include "Tiles/TileTypes/ResourceTile.h"
+#include "Tools/WJMController.h"
+
 void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    APlayerController* PC = GetOwningPlayer();
+    AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
     if (!PC || !FrameCursor) { return; }
 
     FHitResult HitResult;
@@ -17,9 +19,19 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
     if (bHit && HitResult.GetActor())
     {
-        if (HitResult.GetActor()->IsA<AMBFStope>())
+        if (HitResult.GetActor()->IsA<AResourceTile>())
         {
-            SetCursorTint(bPlayerIsNear ? FLinearColor::Yellow : FLinearColor::Red);
+            AResourceTile* PlayerDetectedStope = PC->GetDetectedStope();
+            
+            /* 플레이어가 감지한 광물과 마우스가 감지한 광물이 같다면,
+               마우스 커서를 노란색으로 설정합니다.             */
+            if (PlayerDetectedStope == HitResult.GetActor())
+            {
+                SetCursorTint(FLinearColor::Yellow);
+                return;
+            }
+
+            SetCursorTint(FLinearColor::Red);
         }
     }
 }

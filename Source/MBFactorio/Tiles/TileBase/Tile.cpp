@@ -6,6 +6,7 @@ ATile::ATile()
 
 	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TileMesh"));
     RootComponent = TileMesh;
+
 }
 
 float ATile::GetMeshBaseSize() const

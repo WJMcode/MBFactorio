@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// 2025 04 10 : friend class AWJMController 처리 (원재민)
 
 #pragma once
 
@@ -14,6 +14,7 @@ class MBFACTORIO_API UMBFCursorWidget : public UUserWidget
 	GENERATED_BODY()
 
     friend class ALYJController;
+    friend class AWJMController;
 
 public:
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;

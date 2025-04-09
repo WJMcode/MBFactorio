@@ -2,6 +2,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -101,25 +102,35 @@ void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 	}
 }
 
+//void APlayerCharacter::TryReDetectStope()
+//{
+//	TArray<AActor*> OverlappingActors;
+//	GetOverlappingActors(OverlappingActors, AResourceTile::StaticClass());
+//
+//	AResourceTile* NewTarget = nullptr;
+//	for (AActor* Actor : OverlappingActors)
+//	{
+//		if (AResourceTile* Tile = Cast<AResourceTile>(Actor))
+//		{
+//			NewTarget = Tile;
+//			break; // 하나만 기억하는 구조니까 하나만
+//		}
+//	}
+//
+//	SetCurrentTargetTile(NewTarget);
+//}
+
 void APlayerCharacter::TryStartMining()
 {
-	////if (bCanMine)
-	//{
-	//	//FHitResult Hit;
-	//	//if (PerformTileTrace(Hit)) // 마우스 아래 타일 확인용 라인 트레이스
-	//	{
-	//		//if (AResourceTile* ResourceTile = Cast<AResourceTile>(Hit.GetActor()))
-	//		{
-	//			//ResourceTile->Mine(); // 캐기 로직
-	{
-		// 우클릭을 쭉 누르면 MiningHoldTime가 점점 증가
-		MiningHoldTime += GetWorld()->GetDeltaSeconds();
+	if (!CurrentTargetTile) return;
 
-		// MiningHoldTime가 MinHoldTimeToPlayAnim보다 크거나 같으면 채굴 시작
-		if (MiningHoldTime >= MinHoldTimeToPlayAnim)
-		{
-			StartMining();
-		}
+	// 우클릭을 쭉 누르면 MiningHoldTime가 점점 증가
+	MiningHoldTime += GetWorld()->GetDeltaSeconds();
+
+	// MiningHoldTime가 MinHoldTimeToPlayAnim보다 크거나 같으면 채굴 시작
+	if (MiningHoldTime >= MinHoldTimeToPlayAnim)
+	{
+		StartMining();
 	}
 }
 
@@ -158,6 +169,11 @@ void APlayerCharacter::StopMining()
 void APlayerCharacter::SetIsMining(bool IsMining)
 {
 	bIsMining = IsMining;
+}
+
+void APlayerCharacter::SetCurrentTargetTile(AResourceTile* InResourceTile)
+{
+	CurrentTargetTile = InResourceTile;
 }
 
 void APlayerCharacter::ShowPickaxe(bool bVisible)

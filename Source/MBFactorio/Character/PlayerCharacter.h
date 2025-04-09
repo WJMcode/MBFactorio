@@ -33,6 +33,7 @@ protected:
 public:
 	// 플레이어 입력을 처리하기 위해 호출되는 함수
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void TryReDetectStope();
 
 protected:
 	// 캐릭터 이동을 위한 함수
@@ -49,6 +50,10 @@ protected:
 	
 	// 캐릭터의 채굴 상태를 변경하는 함수
 	void SetIsMining(bool IsMining);
+
+public:
+	// 현재 캐릭터와 오버랩된 타일을 설정하는 함수입니다.
+	void SetCurrentTargetTile(class AResourceTile* InResourceTile);
 
 	// 곡괭이 메시를 화면에 보이거나 숨깁니다.
 	UFUNCTION()
@@ -97,6 +102,11 @@ protected:
 
 	// 채굴 몽타주의 재생 여부를 나타냅니다.
 	bool bIsMiningAnimationPlaying = false;
+
+	UPROPERTY(EditAnywhere, Category = "Mining")
+	float MiningRange = 300.f;
+
+	AResourceTile* CurrentTargetTile = nullptr;
 
 	// 우클릭을 유지한 누적 시간입니다.
 	float MiningHoldTime = 0.f;
