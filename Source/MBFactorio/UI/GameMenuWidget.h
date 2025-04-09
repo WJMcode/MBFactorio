@@ -7,6 +7,7 @@
 #include "GameMenuWidget.generated.h"
 
 class UButton;
+class UReplayMenuWidget;
 
 UCLASS()
 class MBFACTORIO_API UGameMenuWidget : public UUserWidget
@@ -16,6 +17,18 @@ class MBFACTORIO_API UGameMenuWidget : public UUserWidget
 protected:
     virtual void NativeConstruct() override;
 
+protected:
+    // 클릭 시 호출될 함수들
+    UFUNCTION()
+    void OnClickContinue();
+
+    UFUNCTION()
+    void OnClickReplay();
+
+    UFUNCTION()
+    void OnClickExit();
+
+protected:
     // 버튼을 바인딩할 변수들
     UPROPERTY(meta = (BindWidget))
     UButton* ButtonContinue;
@@ -26,13 +39,10 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UButton* ButtonExit;
 
-    // 클릭 시 호출될 함수들
-    UFUNCTION()
-    void OnClickContinue();
+    UPROPERTY()
+    UReplayMenuWidget* ReplayMenu;
 
-    UFUNCTION()
-    void OnClickReplay();
-
-    UFUNCTION()
-    void OnClickExit();
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<UReplayMenuWidget> ReplayMenuClass;    
 };

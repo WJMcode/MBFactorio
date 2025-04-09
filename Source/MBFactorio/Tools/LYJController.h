@@ -12,6 +12,7 @@ class UInputAction;
 class UInputMappingContext;
 class UGameMenuWidget;
 class UMBFCursorWidget;
+class UReplayMenuWidget;
 
 UCLASS()
 class MBFACTORIO_API ALYJController : public APlayerController
@@ -28,9 +29,10 @@ protected:
 
     void OnGameMenuPressed();
 
-protected:
+public:
     void UpdateCursorVisibility();
     void ToggleGameMenu();
+    void OpenReplayMenu();
 
 public:
     void SetPlayerNearStope(bool bNear);
@@ -43,6 +45,9 @@ public:
     /** GameMenu UI 위젯 클래스 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
     TSubclassOf<UGameMenuWidget> GameMenuWidgetClass;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<UReplayMenuWidget> ReplayMenuWidgetClass;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputMappingContext* IMC_Menu;
@@ -58,9 +63,10 @@ protected:
     UPROPERTY()
     UGameMenuWidget* GameMenuWidget;
 
-private:       
+    UPROPERTY()
+    UReplayMenuWidget* ReplayMenuWidget;
+
+public:       
     bool bIsGameMenuOpen = false;
-
     bool bIsCursorOverStope = false;
-
 };

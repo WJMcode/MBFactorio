@@ -4,6 +4,7 @@
 #include "Tools/LYJController.h"
 #include "UI/MBFCursorWidget.h"
 #include "UI/GameMenuWidget.h"
+#include "UI/ReplayMenuWidget.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
@@ -168,6 +169,10 @@ void ALYJController::ToggleGameMenu()
             SetInputMode(InputMode);
 
             SetShowMouseCursor(true);
+
+            // 게임 정지
+            UGameplayStatics::SetGamePaused(GetWorld(), true);
+
             bIsGameMenuOpen = true;
         }
     }
@@ -181,7 +186,34 @@ void ALYJController::ToggleGameMenu()
 
         SetInputMode(FInputModeGameOnly());
         SetShowMouseCursor(false);
+
+        // 게임 재개
+        UGameplayStatics::SetGamePaused(GetWorld(), false);
+
         bIsGameMenuOpen = false;
+    }
+}
+
+void ALYJController::OpenReplayMenu()
+{
+    if (ReplayMenuWidgetClass)
+    {
+        ReplayMenuWidget = CreateWidget<UReplayMenuWidget>(this, ReplayMenuWidgetClass);
+        if (ReplayMenuWidget)
+        {
+            ReplayMenuWidget->AddToViewport();
+
+            FInputModeGameAndUI InputMode;
+            InputMode.SetWidgetToFocus(nullptr);
+            InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+            SetInputMode(InputMode);
+
+            SetShowMouseCursor(true);
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("ReplayMenuWidgetClass가 설정되지 않았습니다!"));
     }
 }
 

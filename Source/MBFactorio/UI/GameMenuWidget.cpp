@@ -2,8 +2,10 @@
 
 
 #include "UI/GameMenuWidget.h"
+#include "Tools/LYJController.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/ReplayMenuWidget.h"
 
 void UGameMenuWidget::NativeConstruct()
 {
@@ -44,15 +46,17 @@ void UGameMenuWidget::OnClickContinue()
 
 void UGameMenuWidget::OnClickReplay()
 {
-    // UI 제거
+    // 현재 GameMenu 위젯 제거
     this->RemoveFromParent();
 
-    // 게임 시간 재개 (안 해주면 다음 레벨도 정지된 상태일 수 있음)
-    UGameplayStatics::SetGamePaused(GetWorld(), false);
-
-    // 현재 레벨 다시 불러오기
-    FName CurrentLevel = *UGameplayStatics::GetCurrentLevelName(GetWorld());
-    UGameplayStatics::OpenLevel(this, CurrentLevel);
+    // 컨트롤러에 위임
+    if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+    {
+        if (ALYJController* LYJController = Cast<ALYJController>(PC))
+        {
+            LYJController->OpenReplayMenu(); 
+        }
+    }       
 }
 
 void UGameMenuWidget::OnClickExit()
