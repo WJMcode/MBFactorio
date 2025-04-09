@@ -12,6 +12,8 @@ class MBFACTORIO_API ALYJCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	friend class ALYJController;
+
 public:
 	// Sets default values for this character's properties
 	ALYJCharacter();

@@ -11,12 +11,13 @@
 class UInputAction;
 class UInputMappingContext;
 class UGameMenuWidget;
+class UMBFCursorWidget;
 
 UCLASS()
 class MBFACTORIO_API ALYJController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 public:
     ALYJController();
 
@@ -27,32 +28,37 @@ protected:
 
     void OnGameMenuPressed();
 
-public:
+protected:
     void UpdateCursorVisibility();
-    void SetPlayerNearStope(bool bNear);
-
     void ToggleGameMenu();
 
 public:
+    void SetPlayerNearStope(bool bNear);
+
+public:    
+    /** Cursor UI 위젯 클래스 (BP에서 할당) */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<UMBFCursorWidget> CursorWidgetClass;
+
+    /** GameMenu UI 위젯 클래스 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<UGameMenuWidget> GameMenuWidgetClass;
+
     UPROPERTY(EditDefaultsOnly, Category = "Input")
-    UInputMappingContext* InputMappingContext;
+    UInputMappingContext* IMC_Menu;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* GameMenuAction;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-    TSubclassOf<UGameMenuWidget> GameMenuWidgetClass;
-
-    /** Cursor UI 위젯 클래스 (BP에서 할당) */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
-    TSubclassOf<class UMBFCursorWidget> CursorWidgetClass;
-
+protected:
     /** 생성된 커서 위젯 */
     UPROPERTY()
-    class UMBFCursorWidget* CursorWidget;
+    UMBFCursorWidget* CursorWidget;
 
-protected:    
+    UPROPERTY()
     UGameMenuWidget* GameMenuWidget;
+
+private:       
     bool bIsGameMenuOpen = false;
 
     bool bIsCursorOverStope = false;

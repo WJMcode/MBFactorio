@@ -13,10 +13,13 @@ class MBFACTORIO_API UMBFCursorWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+    friend class ALYJController;
+
 public:
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
     virtual void NativePreConstruct() override;
 
+protected:
     /** 마우스 커서 UI 색상 변경 */
     void SetCursorTint(const FLinearColor& TintColor);
 
@@ -28,6 +31,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (BindWidget))
     UImage* FrameCursor;
 
+private:
     /** 현재 플레이어가 BP_Stope 범위에 있는지 여부 */
     bool bPlayerIsNear = false;
     bool bHit = false;
