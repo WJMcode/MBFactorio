@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,7 +18,7 @@ class UTexture2D;
 class UUniformGridPanel;
 class UHorizontalBox;
 class UMBFSlot;
-class USelectedSlot;
+class UCraftSelectSlot;
 
 UCLASS()
 class MBFACTORIO_API UGameHUD : public UUserWidget
@@ -71,7 +71,7 @@ protected:
     TSubclassOf<UMBFSlot> SlotWidgetClass;
 
     UPROPERTY(EditDefaultsOnly, Category = "UI")
-    TSubclassOf<USelectedSlot> SelectedSlotClass;
+    TSubclassOf<UCraftSelectSlot> SelectedSlotClass;
 
 protected:
     // 내부에서 사용할 리소스 정보 맵
@@ -89,7 +89,7 @@ private:
     TArray<UMBFSlot*> ItemSlots;
 
     UPROPERTY()
-    TArray<USelectedSlot*> SelectedSlots;
+    TArray<UCraftSelectSlot*> SelectedSlots;
 
     void CreateSlots();
 };

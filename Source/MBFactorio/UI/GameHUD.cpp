@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UI/GameHUD.h"
@@ -7,7 +7,7 @@
 #include "Components/UniformGridPanel.h"
 #include "Components/HorizontalBox.h"
 #include "Tools/Widget/MBFSlot.h"
-#include "Tools/Widget/SelectedSlot.h"
+#include "Tools/Widget/CraftSelectSlot.h"
 
 void UGameHUD::NativeConstruct()
 {
@@ -106,7 +106,7 @@ void UGameHUD::CreateSlots()
     {
         for (int32 i = 0; i < 4; ++i)
         {
-            USelectedSlot* Selected = CreateWidget<USelectedSlot>(this, SelectedSlotClass);
+            UCraftSelectSlot* Selected = CreateWidget<UCraftSelectSlot>(this, SelectedSlotClass);
             if (Selected)
             {
                 SelectedSlotsBox->AddChildToHorizontalBox(Selected);
