@@ -9,7 +9,7 @@ AResourceTile::AResourceTile()
     
     OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
     OverlapBox->SetupAttachment(RootComponent);
-
+    
     OverlapBox->SetGenerateOverlapEvents(true);
     OverlapBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     OverlapBox->SetCollisionObjectType(ECC_WorldDynamic);
@@ -22,6 +22,9 @@ AResourceTile::AResourceTile()
 void AResourceTile::BeginPlay()
 {
     Super::BeginPlay();
+
+    // 충돌을 위한 OverlapBox의 크기를 Mesh와 같게 해줌
+    OverlapBox->SetBoxExtent(TileMesh->Bounds.BoxExtent);
 
     OverlapBox->OnComponentBeginOverlap.AddDynamic(this, &AResourceTile::OnBoxBeginOverlap);
     OverlapBox->OnComponentEndOverlap.AddDynamic(this, &AResourceTile::OnBoxEndOverlap);

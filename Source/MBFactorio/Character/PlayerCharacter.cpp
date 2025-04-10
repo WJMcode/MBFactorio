@@ -3,6 +3,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -120,16 +121,38 @@ void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 //	SetCurrentTargetTile(NewTarget);
 //}
 
+void APlayerCharacter::RotateToMiningTarget()
+{
+	if (!CurrentTargetTile)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CurrentTargetTile이 없습니다!"));
+		return;
+	}
+	
+	FVector TargetLocation = CurrentTargetTile->GetActorLocation();
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), TargetLocation);
+	// Z축(Yaw)만 회전
+	LookAtRotation.Pitch = 0.f;
+	LookAtRotation.Roll = 0.f;
+
+	SetActorRotation(LookAtRotation);
+}
+
 void APlayerCharacter::TryStartMining()
 {
-	if (!CurrentTargetTile) return;
+	// 캐릭터와 오버랩된 타일이 없거나 채굴 불가능한 상태이면 return
+	if (!CurrentTargetTile || !bCanMine) return;
 
 	// 우클릭을 쭉 누르면 MiningHoldTime가 점점 증가
 	MiningHoldTime += GetWorld()->GetDeltaSeconds();
-
+	
 	// MiningHoldTime가 MinHoldTimeToPlayAnim보다 크거나 같으면 채굴 시작
+	// 즉 채굴 모션 시작 시간입니다. (광클 모션 방지)
 	if (MiningHoldTime >= MinHoldTimeToPlayAnim)
 	{
+		// CurrentTargetTile이 있는 방향으로 캐릭터를 회전
+		RotateToMiningTarget();
+
 		StartMining();
 	}
 }
@@ -138,15 +161,12 @@ void APlayerCharacter::StartMining()
 {
 	SetIsMining(true);
 
-	// 채굴 중인 상태라면 곡괭이를 듦
-	// 그리고 채굴 몽타주가 재생되고 있지 않다면 채굴 몽타주 재생
-	if(bIsMining)
+	// 채굴 몽타주가 재생되고 있지 않다면, 채굴 몽타주 재생
+	if(!bIsMiningAnimationPlaying)
 	{
 		ShowPickaxe(true);
-		if (!bIsMiningAnimationPlaying)
-		{
-			PlayMiningAnimation();
-		}
+
+		PlayMiningAnimation();
 	}
 }
 
@@ -154,22 +174,30 @@ void APlayerCharacter::StopMining()
 {
 	SetIsMining(false);
 	
-	// 채굴 중인 상태가 아니라면 곡괭이를 숨기고, 몽타주를 멈춤.
-	// 그리고 채굴 진행바와 우클릭을 유지한 누적 시간을 0으로
-	if(!bIsMining)
-	{
-		ShowPickaxe(false);
-		StopMiningAnimation();
-		MiningProgress = 0.0f;
+	// 채굴 진행바와 우클릭 누적 시간을 0으로
+	MiningProgress = 0.0f;
 
-		MiningHoldTime = 0.0f;
+	MiningHoldTime = 0.0f;
+
+	// 채굴 몽타주가 재생되고 있다면 몽타주를 멈춤.
+	if (bIsMiningAnimationPlaying)
+	{
+		StopMiningAnimation();
+
+		ShowPickaxe(false);
 	}
+}
+
+void APlayerCharacter::SetCanMine(bool CanMine)
+{
+	bCanMine = CanMine;
 }
 
 void APlayerCharacter::SetIsMining(bool IsMining)
 {
 	bIsMining = IsMining;
 }
+
 
 void APlayerCharacter::SetCurrentTargetTile(AResourceTile* InResourceTile)
 {

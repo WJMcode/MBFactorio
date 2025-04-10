@@ -4,8 +4,9 @@
 #include "Struct/MBFStope.h"
 #include "Components/Image.h"
 
-#include "Tiles/TileTypes/ResourceTile.h"
+#include "Character/PlayerCharacter.h"
 #include "Tools/WJMController.h"
+#include "Tiles/TileTypes/ResourceTile.h"
 
 void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
@@ -13,6 +14,9 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
     AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
     if (!PC || !FrameCursor) { return; }
+
+    APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn());
+    if (!Player) { return; }
 
     FHitResult HitResult;
     bHit = PC->GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Visibility), false, HitResult);
@@ -28,10 +32,14 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
             if (PlayerDetectedStope == HitResult.GetActor())
             {
                 SetCursorTint(FLinearColor::Yellow);
+                // 캐릭터를 채굴 가능한 상태로 설정합니다.
+                Player->SetCanMine(true);
                 return;
             }
 
             SetCursorTint(FLinearColor::Red);
+            // 캐릭터를 채굴 불가능한 상태로 설정합니다.
+            Player->SetCanMine(false);
         }
     }
 }

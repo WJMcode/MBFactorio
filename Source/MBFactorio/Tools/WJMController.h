@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "WJMController.generated.h"
 
-// LYJController.h의 코드를 복사한 상태입니다.
+// LYJController.h의 코드를 복사, 수정한 상태입니다.
 
 class UMBFCursorWidget;
 class AResourceTile;
@@ -23,14 +23,19 @@ protected:
     virtual void Tick(float DeltaTime) override;
 
 public:
-    // 최근에 플레이어가 감지한 광물을 반환합니다.
+    // 최근에 캐릭터가 감지한 광물을 반환합니다.
     AResourceTile* GetDetectedStope() const { return DetectedStope; }
 
     void UpdateCursorVisibility(AResourceTile* InResourceTile);
 
 public:
+    // 캐릭터가 감지한 광물을 저장합니다.
     void SetDetectedStope(AResourceTile* InStope);
     void SetPlayerNearStope(bool bNear);
+
+private:
+    // 캐릭터의 채굴 동작을 멈춥니다.
+    void StopCharacterAction();
 
 public:
     /** Cursor UI 위젯 클래스 (BP에서 할당) */
@@ -46,8 +51,9 @@ public:
     bool bIsCursorOverStope = false;
 
 private:
-    // 플레이어가 최근 감지한 광물
-    AResourceTile* DetectedStope;
+    // 캐릭터가 최근 감지한 광물
+    UPROPERTY()
+    AResourceTile* DetectedStope = nullptr;
 };
 
 /**

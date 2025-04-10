@@ -7,15 +7,14 @@
 #include "InputMappingContext.h"
 #include "InputTriggers.h"
 
+#include "Character/PlayerCharacter.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 
-// LYJController.h의 코드를 복사한 상태입니다.
+// LYJController.h의 코드를 복사, 수정한 상태입니다.
 
 AWJMController::AWJMController()
 {
-    bShowMouseCursor = true;
     PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void AWJMController::BeginPlay()
@@ -32,10 +31,10 @@ void AWJMController::BeginPlay()
             CursorWidget->AddToViewport(10);
 
             // 마우스 커서 숨김
-            bShowMouseCursor = false;
+            SetShowMouseCursor(false);
 
-            // 입력 모드: 게임 전용
-            FInputModeGameOnly InputMode;
+            // 입력 모드: 게임 + UI
+            FInputModeGameAndUI InputMode;
             SetInputMode(InputMode);
         }
         else
@@ -82,7 +81,8 @@ void AWJMController::Tick(float DeltaTime)
 void AWJMController::UpdateCursorVisibility(AResourceTile* InStope)
 {
     if (!CursorWidget) return;
-
+    
+    // 디버깅 메시지
     if (GEngine)
     {
         GEngine->AddOnScreenDebugMessage(
@@ -95,14 +95,13 @@ void AWJMController::UpdateCursorVisibility(AResourceTile* InStope)
 
     const bool bNear = CursorWidget->bPlayerIsNear;
 
-    /* 플레이어가 감지한 광물과 마우스가 감지한 광물이 다르면, 
-       마우스 커서를 빨간색으로 설정합니다. */
-    if (bIsCursorOverStope && DetectedStope != InStope)
+    // 캐릭터와 광물이 오버랩되지 않았거나, 
+    // 마우스 커서와 광물이 오버랩되지 않았거나,
+    // 캐릭터와 오버랩된 광물과 마우스 커서와 오버랩된 광물이 서로 다른 경우,
+    // 캐릭터의 채굴 동작을 멈춥니다.
+    if (!bNear || !bIsCursorOverStope || DetectedStope != InStope)
     {
-        bShowMouseCursor = false;
-        CursorWidget->SetVisibility(ESlateVisibility::Visible);
-        CursorWidget->SetCursorTint(FLinearColor::Red);
-        return;
+        StopCharacterAction();
     }
 
     if (!bNear && !bIsCursorOverStope)
@@ -139,6 +138,20 @@ void AWJMController::SetPlayerNearStope(bool bNear)
     if (CursorWidget)
     {
         CursorWidget->SetPlayerNear(bNear);
+    }
+}
+
+void AWJMController::StopCharacterAction()
+{
+    APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+    if (!PlayerCharacter) { return; }
+    // 캐릭터를 채굴할 수 없는 상태로 설정
+    PlayerCharacter->SetCanMine(false);
+
+    // 채굴 중이었다면 채굴을 멈춤
+    if (PlayerCharacter->GetIsMining())
+    {
+        PlayerCharacter->StopMining();
     }
 }
 

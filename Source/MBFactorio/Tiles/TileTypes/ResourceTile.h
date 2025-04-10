@@ -5,6 +5,8 @@
 #include "Tiles/TileBase/TileStructs.h"
 #include "ResourceTile.generated.h"
 
+//이슈:
+//		OverlapBox의 크기가 너무 작음
 
 /**
  * 리소스 타일 클래스입니다.
