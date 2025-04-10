@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "Tools/Widget/MBFInventory.h"
-#include "Tools/Widget/Craftings.h"
+#include "Tools/Widget/CraftList.h"
 #include "MBFHUD.generated.h"
 
 /**
@@ -17,7 +17,7 @@ class MBFACTORIO_API AMBFHUD : public AHUD
 	GENERATED_BODY()
 	
 	UUserWidget* Inventory;
-	UCraftings* CraftingUI;
+	UCraftList* CraftingUI;
 
 	AMBFHUD();
 	virtual void BeginPlay() override;
@@ -25,5 +25,5 @@ public:
 	void OpenInventory();
 	void CloseInventory();
 	void OnChanged() { if(Inventory != nullptr)Cast<UMBFInventory>(Inventory)->OnChanged(); }
-	UCraftings* GetCraftingUI();
+	UCraftList* GetCraftListUI();
 };

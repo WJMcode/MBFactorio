@@ -15,16 +15,16 @@ struct FInventoryItem
     GENERATED_USTRUCT_BODY()
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
-    int32 ItemID;
+    FName ItemID;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
     int32 MaxCount;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
     int32 MCount;
 
     FInventoryItem()
-        : ItemID(0), MaxCount(0), MCount(0)
+        : ItemID(FName("0")), MaxCount(0), MCount(0)
     { }
-    FInventoryItem(int ID, int MaxCount, int MCount)
+    FInventoryItem(FName ID, int MaxCount, int MCount)
         : ItemID(ID), MaxCount(MaxCount), MCount(MCount)
     { }
 };
@@ -37,7 +37,7 @@ struct FRequiredItem
 public:
     // 아이템 ID (고유 번호)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Required Item")
-    int32 ItemID;
+    FName ItemID;
 
     // 해당 아이템의 요구 개수
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Required Item")
@@ -45,7 +45,7 @@ public:
 
     // 기본 생성자
     FRequiredItem()
-        : ItemID(0), RequiredCount(0)
+        : ItemID(FName("0")), RequiredCount(0)
     {
     }
 };
@@ -60,7 +60,7 @@ struct FItemData : public FTableRowBase
 public:
     // 아이템 ID (고유 번호)
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-    int32 ItemID;
+    FName ItemID;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     FString ItemName;
@@ -102,7 +102,7 @@ public:
     
     // 기본 생성자
     FItemData()
-        : ItemID(0), MaxCount(0), Image(nullptr)
+        : ItemID(FName()), MaxCount(0), Image(nullptr)
     {
     }
 };

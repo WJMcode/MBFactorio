@@ -49,11 +49,6 @@ void AMBFController::SetupInputComponent() {
 			const UInputAction* InputAction = It.Action.Get();
 			EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Started, this, &ThisClass::InventoryTogle);
 		}
-		else if (It.Action->GetName() == TEXT("CraftItem"))
-		{
-			const UInputAction* InputAction = It.Action.Get();
-			EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Started, this, &ThisClass::CraftItem);
-		}
 	}
 }
 
@@ -63,21 +58,9 @@ void AMBFController::Tick(float DeltaSeconds)
 }
 
 
-void AMBFController::CraftItem()
-{
-	MBFInventoryComponent->CraftItem(12, 5);
-
-}
-void AMBFController::Crafting(int32 ItemID)
-{
-	MBFInventoryComponent->Crafting(ItemID);
-}
-// 2025.04.06 21:56 shs
 
 
-
-
-int32 AMBFController::GetInventoryItemCount(int32 ItemID)
+int32 AMBFController::GetInventoryItemCount(FName ItemID)
 {
 	return MBFInventoryComponent->GetInventoryItemCount(ItemID);
 }

@@ -40,14 +40,14 @@ void AMBFHUD::CloseInventory()
 
 }
 
-UCraftings* AMBFHUD::GetCraftingUI()
+UCraftList* AMBFHUD::GetCraftListUI()
 {
 	if (CraftingUI == nullptr) {
 		UWorld* World = GetWorld();
 
-		TSubclassOf<UUserWidget> WidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Gamemode/InGame/Craftings.Craftings_C'"));
+		TSubclassOf<UUserWidget> WidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Gamemode/InGame/CraftList.CraftList_C'"));
 
-		CraftingUI = Cast<UCraftings>(CreateWidget<UUserWidget>(World, WidgetClass));
+		CraftingUI = Cast<UCraftList>(CreateWidget<UUserWidget>(World, WidgetClass));
 
 		CraftingUI->AddToViewport();
 	}

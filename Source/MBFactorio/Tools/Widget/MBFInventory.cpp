@@ -45,14 +45,14 @@ void UMBFInventory::NativeConstruct()
     }
     for (int32 i = 0; i < 4; ++i)
     {
-        FString SlotName = FString::Printf(TEXT("SelectedSlot_%d"), i);
+        FString SlotName = FString::Printf(TEXT("CraftSelectSlot_%d"), i);
         FName WidgetName(*SlotName);
 
         // �̸����� ���� ã��
         UWidget* FoundWidget = GetWidgetFromName(WidgetName);
         if (FoundWidget)
         {
-            USelectedSlot* SlotWidget = Cast<USelectedSlot>(FoundWidget);
+            UCraftSelectSlot* SlotWidget = Cast<UCraftSelectSlot>(FoundWidget);
             if (SlotWidget)
             {
                 SlotWidget->SetNum(i);
@@ -69,9 +69,44 @@ void UMBFInventory::NativeConstruct()
             UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
         }
     }
-    SelectedSlot[0]->Selected();
+    if (SelectedSlot[0])
+    {
+
+        SelectedSlot[0]->Selected();
+    }
     OnChanged();
     
+    for (int32 i = 0; i < 70; ++i)
+    {
+        // �̸� ����: "ItemSlot_0", "ItemSlot_1", ...
+        FString SlotName = FString::Printf(TEXT("BPCraftSlot_%d"), i);
+        FName WidgetName(*SlotName);
+
+        // �̸����� ���� ã��
+        UWidget* FoundWidget = GetWidgetFromName(WidgetName);
+        if (FoundWidget)
+        {
+            UCraftSlot* SlotWidget = Cast<UCraftSlot>(FoundWidget);
+            if (SlotWidget)
+            {
+                CraftSlot[i] = SlotWidget;
+                if (i != 0)
+                {
+                    CraftSlot[i]->SetItemID(FName(FString::FromInt(i)));
+                    CraftSlot[i]->CraftChange();
+                }
+                
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
+        }
+    }
 }
 
 void UMBFInventory::OnChanged()
@@ -87,7 +122,7 @@ void UMBFInventory::SlotChanged(int32 InSlot)
     ItemSlot[InSlot]->Changed(InSlot);
 }
 
-void UMBFInventory::BindingSelectedAction(USelectedSlot* InSlot)
+void UMBFInventory::BindingSelectedAction(UCraftSelectSlot* InSlot)
 {
     InSlot->OnSlotClicked.AddDynamic(this, &ThisClass::SelectedSlotChange);
 }

@@ -8,6 +8,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Components/Border.h"
 #include "MBFSlot.generated.h"
 
 /**
@@ -28,10 +29,17 @@ protected:
 	UImage* Image;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* Count;
-
+	UBorder* LRBorder;
+	UBorder* UpBorder;
+	UBorder* DownBorder;
 	
 
 	FName ItemID;
+
+protected:
+	virtual void NativeConstruct() override;
+
+
 public:
 
 	UButton* MyButton;
@@ -40,6 +48,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UTextBlock* GetTextBlock() { return Count; }
 	void SetItemID(FName InItemID) { ItemID = InItemID; }
+
 public:
 	
 	void Changed(int32 InSlot);

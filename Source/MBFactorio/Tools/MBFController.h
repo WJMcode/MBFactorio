@@ -41,11 +41,7 @@ private:
 	bool bOpenInventory;
 
 
-	void CraftItem();
-	void Crafting(int32 ItemID);
-
-
-	int32 GetInventoryItemCount(int32 ItemID);											//인벤토리에 해당 아이템이 몇개 있는지 검사
+	int32 GetInventoryItemCount(FName ItemID);											//인벤토리에 해당 아이템이 몇개 있는지 검사
 
 	void InventoryTogle();
 

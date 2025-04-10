@@ -42,21 +42,21 @@ public:
 
 	bool bOpenInventory;
 
-	bool CanCraftItem(int32 ItemID, int32 CraftCount, TMap<FName, int32>* OutMap = nullptr, TArray<FName>* OutRequiredCraftings = nullptr, TMap<FName, int32>* OutChnaged = nullptr);
-	void CraftItem(int32 ItemID, int32 CraftCount);
-	void Crafting(int32 ItemID);
+	bool CanCraftItem(FName ItemID, int32 CraftCount, TMap<FName, int32>* OutMap = nullptr, TArray<FName>* OutRequiredCraftings = nullptr, TMap<FName, int32>* OutChnaged = nullptr);
+	void CraftItem(FName ItemID, int32 CraftCount);
+	void Crafting(FName ItemID);
 
-	void AddItem(int32 ItemID, int32 Count);
-	void RemoveItem(int32 ItemID, int32 Count);
+	void AddItem(FName ItemID, int32 Count);
+	void RemoveItem(FName ItemID, int32 Count);
 
-	void RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, TMap<FName, int32>& ChangedItems, int32 ItemID, int32 count);
+	bool RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, TMap<FName, int32>& ChangedItems, FName ItemID, int32 count);
 
 
 
-	EMaterialCheckResult CheckMaterialAvailability(int32 ItemID, int32 RequiredCount);	//제작하는데 재료가 충분한지 검사
+	EMaterialCheckResult CheckMaterialAvailability(FName ItemID, int32 RequiredCount);	//제작하는데 재료가 충분한지 검사
 
-	int32 FindInventoryItem(int32 ItemID);												//인벤토리에 해당 아이템이 있는지 검사
-	int32 GetInventoryItemCount(int32 ItemID);
+	int32 FindInventoryItem(FName ItemID);												//인벤토리에 해당 아이템이 있는지 검사
+	int32 GetInventoryItemCount(FName ItemID);
 	FInventoryItem GetInventoryItem(int32 b) { return InventoryItems[b]; }
 	const TArray<TPair<FName, int32>> GetCraftings() { return Craftings; }
 		
