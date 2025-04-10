@@ -8,7 +8,7 @@
 #include "Struct/MBFStope.h"
 #include "LYJController.generated.h"
 
-// LYJController를 상속받은 블루프린트(PC_MBF)에서 클래스 설정할 것
+// WJMController.h의 코드를 복사한 상태입니다.
 
 class UInputAction;
 class UInputMappingContext;
@@ -17,6 +17,8 @@ class UGameHUD;
 class UGameMenuWidget;
 class UMBFCursorWidget;
 class UReplayMenuWidget;
+
+class AResourceTile;
 
 UCLASS()
 class MBFACTORIO_API ALYJController : public APlayerController
@@ -31,15 +33,23 @@ protected:
     virtual void Tick(float DeltaTime) override;
     virtual void SetupInputComponent() override;
 
-    void OnGameMenuPressed();
-
 public:
-    void UpdateCursorVisibility();
+    // 최근에 플레이어가 감지한 광물을 반환합니다.
+    AResourceTile* GetDetectedStope() const { return DetectedStope; }
+
+    //void UpdateCursorVisibility(); // MBFStope 감지 시
+
+    void UpdateCursorVisibility(AResourceTile* InStope);
     void GameHUD();
     void ToggleGameMenu();
+    void OpenGameMenu();
+    void CloseGameMenu();
     void OpenReplayMenu();
+    void OnGameMenuPressed();
+    void RecreateCursorWidget();
 
 public:
+    void SetDetectedStope(AResourceTile* InStope);
     void SetPlayerNearStope(bool bNear);
 
 public:    
@@ -81,4 +91,8 @@ protected:
 public:       
     bool bIsGameMenuOpen = false;
     bool bIsCursorOverStope = false;
+
+private:
+    // 플레이어가 최근 감지한 광물
+    AResourceTile* DetectedStope;
 };

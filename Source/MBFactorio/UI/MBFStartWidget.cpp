@@ -25,7 +25,7 @@ void UMBFStartWidget::OnClickPlay()
     // 위젯 제거
     this->RemoveFromParent();
 
-    UGameplayStatics::OpenLevel(this, FName("LYJ_TestMap"));
+    UGameplayStatics::OpenLevel(this, FName("WJMTestLevel"));
 }
 
 void UMBFStartWidget::OnClickExit()

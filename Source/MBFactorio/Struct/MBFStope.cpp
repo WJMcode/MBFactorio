@@ -1,8 +1,11 @@
 #include "MBFStope.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Character/LYJCharacter.h"
+//#include "Character/LYJCharacter.h"
+#include "Character/PlayerCharacter.h"
 #include "Tools/LYJController.h" 
+
+// 2025.04.10 GameHUD 테스트 위해 PlayerCharacter 활용 중
 
 AMBFStope::AMBFStope()
 {
@@ -44,7 +47,7 @@ void AMBFStope::BeginPlay()
 void AMBFStope::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (ALYJCharacter* Player = Cast<ALYJCharacter>(OtherActor))
+    if (APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor))
     {
         bIsPlayerNear = true;
 
@@ -56,12 +59,25 @@ void AMBFStope::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* O
             }
         }
     }
+
+    /*if (ALYJCharacter* Player = Cast<ALYJCharacter>(OtherActor))
+    {
+        bIsPlayerNear = true;
+
+        if (AController* Controller = Player->GetController())
+        {
+            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            {
+                PC->SetPlayerNearStope(true);
+            }
+        }
+    }*/
 }
 
 void AMBFStope::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    if (ALYJCharacter* Player = Cast<ALYJCharacter>(OtherActor))
+    if (APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor))
     {
         bIsPlayerNear = false;
 
@@ -73,6 +89,19 @@ void AMBFStope::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
             }
         }
     }
+
+    /*if (ALYJCharacter* Player = Cast<ALYJCharacter>(OtherActor))
+    {
+        bIsPlayerNear = false;
+
+        if (AController* Controller = Player->GetController())
+        {
+            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            {
+                PC->SetPlayerNearStope(false);
+            }
+        }
+    }*/
 }
 
 void AMBFStope::Tick(float DeltaTime)

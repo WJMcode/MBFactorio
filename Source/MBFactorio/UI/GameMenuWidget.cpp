@@ -42,6 +42,12 @@ void UGameMenuWidget::OnClickContinue()
         FInputModeGameOnly InputMode;
         PC->SetInputMode(InputMode);
     }
+
+    // 커서 UI 재생성
+    if (ALYJController* LYJ = Cast<ALYJController>(UGameplayStatics::GetPlayerController(this, 0)))
+    {
+        LYJ->RecreateCursorWidget(); 
+    }
 }
 
 void UGameMenuWidget::OnClickReplay()

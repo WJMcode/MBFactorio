@@ -1,15 +1,18 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Tools/LYJController.h"
 #include "UI/GameHUD.h"
 #include "UI/MBFCursorWidget.h"
 #include "UI/GameMenuWidget.h"
 #include "UI/ReplayMenuWidget.h"
+
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "InputTriggers.h"
+
+#include "Tiles/TileTypes/ResourceTile.h"
+
+// WJMController.h의 코드를 복사한 상태입니다.
+// ResourceTile에서 플레이어 감지하게 하려면 LYJController로 바꿔서 사용할 것
 
 ALYJController::ALYJController()
 {
@@ -22,16 +25,20 @@ void ALYJController::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 현재 로드된 레벨 이름 확인
+    // 게임 시작 화면에서만 HUD 생성
     FString LevelName = GetWorld()->GetMapName();
-    LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix); // "UEDPIE_0_" 제거
+    LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
 
-    // 특정 레벨에서만 GameHUD 생성
-    if (LevelName == TEXT("LYJ_TestMap"))
+    if (LevelName == TEXT("WJMTestLevel")) // 해당 레벨에 게임모드 BPGM_MBF로 등록시켜야 HUD가 뜸
     {
-        GameHUD(); 
+        ALYJController* LYJPC = Cast<ALYJController>(UGameplayStatics::GetPlayerController(this, 0));
+        if (LYJPC)
+        {
+            GameHUD();
+            UE_LOG(LogTemp, Warning, TEXT("GameHUD 생성됨 (GameMode::BeginPlay)"));
+        }
     }
-       
+
     // 커서 UI 생성
     if (CursorWidgetClass)
     {
@@ -65,7 +72,9 @@ void ALYJController::Tick(float DeltaTime)
     FHitResult HitResult;
     CursorWidget->bHit = GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, HitResult); // Visibility
     
-    if (AMBFStope* Stope = Cast<AMBFStope>(HitResult.GetActor()))
+    // 마우스가 감지한 광물(타일)
+    AResourceTile* HitStope = Cast<AResourceTile>(HitResult.GetActor());
+    if (HitStope)
     {
         bIsCursorOverStope = CursorWidget->bHit;
     }
@@ -74,7 +83,19 @@ void ALYJController::Tick(float DeltaTime)
         bIsCursorOverStope = false;
     }
 
-    UpdateCursorVisibility();
+    UpdateCursorVisibility(HitStope);
+
+    // MBFStope 감지 시
+    /*if (AMBFStope* Stope = Cast<AMBFStope>(HitResult.GetActor()))
+    {
+        bIsCursorOverStope = CursorWidget->bHit;
+    }
+    else
+    {
+        bIsCursorOverStope = false;
+    }
+
+    UpdateCursorVisibility();*/
 
     // 마우스 따라 UI 위치 이동
     if (CursorWidget)
@@ -127,14 +148,85 @@ void ALYJController::OnGameMenuPressed()
     ToggleGameMenu();
 }
 
-void ALYJController::UpdateCursorVisibility()
-{   
+void ALYJController::RecreateCursorWidget()
+{
+    if (CursorWidget)
+    {
+        CursorWidget->RemoveFromParent();
+        CursorWidget = nullptr;
+    }
+
+    if (CursorWidgetClass)
+    {
+        CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
+        if (CursorWidget)
+        {
+            CursorWidget->AddToViewport(10);
+        }
+    }
+}
+
+//void ALYJController::UpdateCursorVisibility()
+//{   
+//    if (!CursorWidget) return;
+//
+//    const bool bNear = CursorWidget->bPlayerIsNear;
+//
+//    if (!bNear && !bIsCursorOverStope)
+//    {        
+//        bShowMouseCursor = true;
+//        CursorWidget->SetVisibility(ESlateVisibility::Hidden);
+//    }
+//    else if (!bNear && bIsCursorOverStope)
+//    {
+//        bShowMouseCursor = false;
+//        CursorWidget->SetVisibility(ESlateVisibility::Visible);
+//        CursorWidget->SetCursorTint(FLinearColor::Red);
+//    }
+//    else if (bNear && bIsCursorOverStope)
+//    {
+//        bShowMouseCursor = false;
+//        CursorWidget->SetVisibility(ESlateVisibility::Visible);
+//        CursorWidget->SetCursorTint(FLinearColor::Yellow);
+//    }
+//    else if (bNear && !bIsCursorOverStope)
+//    {
+//        bShowMouseCursor = true;
+//        CursorWidget->SetVisibility(ESlateVisibility::Hidden);
+//    }
+//}
+
+void ALYJController::UpdateCursorVisibility(AResourceTile* InStope)
+{
     if (!CursorWidget) return;
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            2, // 다른 ID로 출력하면 따로 나옴
+            0.f,
+            FColor::Yellow,
+            FString::Printf(TEXT("bIsPlayerNear: %s"), CursorWidget->bPlayerIsNear ? TEXT("true") : TEXT("false"))
+        );
+
+        UE_LOG(LogTemp, Warning, TEXT("Detected: %s / Hit: %s"),
+            *GetNameSafe(DetectedStope), *GetNameSafe(InStope));
+    }
 
     const bool bNear = CursorWidget->bPlayerIsNear;
 
+    /* 플레이어가 감지한 광물과 마우스가 감지한 광물이 다르면,
+       마우스 커서를 빨간색으로 설정합니다. */
+    if (bIsCursorOverStope && DetectedStope != InStope)
+    {
+        bShowMouseCursor = false;
+        CursorWidget->SetVisibility(ESlateVisibility::Visible);
+        CursorWidget->SetCursorTint(FLinearColor::Red);
+        return;
+    }
+
     if (!bNear && !bIsCursorOverStope)
-    {        
+    {
         bShowMouseCursor = true;
         CursorWidget->SetVisibility(ESlateVisibility::Hidden);
     }
@@ -177,42 +269,119 @@ void ALYJController::GameHUD()
 
 void ALYJController::ToggleGameMenu()
 {
-    if (!bIsGameMenuOpen)
+    if (bIsGameMenuOpen)
     {
-        GameMenuWidget = CreateWidget<UGameMenuWidget>(this, GameMenuWidgetClass);
-        if (GameMenuWidget)
-        {
-            GameMenuWidget->AddToViewport();
-
-            FInputModeGameAndUI InputMode;
-            InputMode.SetWidgetToFocus(nullptr); // UI에 포커스 안 줌
-            InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-            SetInputMode(InputMode);
-
-            SetShowMouseCursor(true);
-
-            // 게임 정지
-            UGameplayStatics::SetGamePaused(GetWorld(), true);
-
-            bIsGameMenuOpen = true;
-        }
+        CloseGameMenu();
     }
     else
     {
-        if (GameMenuWidget)
-        {
-            GameMenuWidget->RemoveFromParent();
-            GameMenuWidget = nullptr;
-        }
-
-        SetInputMode(FInputModeGameOnly());
-        SetShowMouseCursor(false);
-
-        // 게임 재개
-        UGameplayStatics::SetGamePaused(GetWorld(), false);
-
-        bIsGameMenuOpen = false;
+        OpenGameMenu();
     }
+
+    //if (!bIsGameMenuOpen)
+    //{
+    //    GameMenuWidget = CreateWidget<UGameMenuWidget>(this, GameMenuWidgetClass);
+    //    if (GameMenuWidget)
+    //    {
+    //        GameMenuWidget->AddToViewport();
+
+    //        SetShowMouseCursor(true);
+    //        FInputModeGameAndUI InputMode;
+    //        InputMode.SetWidgetToFocus(nullptr); // UI에 포커스 안 줌
+    //        InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+    //        SetInputMode(InputMode);
+
+    //        if (CursorWidget)
+    //        {
+    //            CursorWidget->SetVisibility(ESlateVisibility::Hidden); // ❌ RemoveFromParent() 하지 않기
+    //        }
+
+    //        // 게임 정지
+    //        UGameplayStatics::SetGamePaused(GetWorld(), true);
+    //        bIsGameMenuOpen = true;
+    //    }
+    //}
+    //else
+    //{
+    //    if (GameMenuWidget)
+    //    {
+    //        GameMenuWidget->RemoveFromParent();
+    //        GameMenuWidget = nullptr;
+    //    }
+
+    //    SetInputMode(FInputModeGameOnly());
+    //    SetShowMouseCursor(false);
+
+    //    // 커서 UI 다시 생성
+    //    if (CursorWidgetClass && !CursorWidget)
+    //    {
+    //        CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
+    //        if (CursorWidget)
+    //        {
+    //            CursorWidget->AddToViewport(10);
+    //        }
+    //    }
+
+    //    // 게임 재개
+    //    UGameplayStatics::SetGamePaused(GetWorld(), false);
+    //    bIsGameMenuOpen = false;
+    //}
+}
+
+void ALYJController::OpenGameMenu()
+{
+    if (!GameMenuWidgetClass) return;
+
+    GameMenuWidget = CreateWidget<UGameMenuWidget>(this, GameMenuWidgetClass);
+    if (!GameMenuWidget) return;
+
+    GameMenuWidget->AddToViewport();
+
+    // 커서 설정
+    SetShowMouseCursor(true);
+    FInputModeGameAndUI InputMode;
+    InputMode.SetWidgetToFocus(nullptr); // 포커스 안 줌
+    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+    SetInputMode(InputMode);
+
+    // 커서 UI 제거
+    if (CursorWidget)
+    {
+        CursorWidget->RemoveFromParent();
+        CursorWidget = nullptr; // 꼭 nullptr로 만들어줘야 이후 재생성됨
+    }
+
+    UGameplayStatics::SetGamePaused(GetWorld(), true);
+    bIsGameMenuOpen = true;
+}
+
+void ALYJController::CloseGameMenu()
+{
+    if (GameMenuWidget)
+    {
+        GameMenuWidget->RemoveFromParent();
+        GameMenuWidget = nullptr;
+    }
+
+    SetInputMode(FInputModeGameOnly());
+    SetShowMouseCursor(false);
+
+    // 커서 UI 복원 (있으면 활성화, 없으면 생성)
+    if (!CursorWidget && CursorWidgetClass)
+    {
+        CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
+        if (CursorWidget)
+        {
+            CursorWidget->AddToViewport(10);
+        }
+    }
+    else if (CursorWidget)
+    {
+        CursorWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+
+    UGameplayStatics::SetGamePaused(GetWorld(), false);
+    bIsGameMenuOpen = false;
 }
 
 void ALYJController::OpenReplayMenu()
@@ -236,6 +405,11 @@ void ALYJController::OpenReplayMenu()
     {
         UE_LOG(LogTemp, Error, TEXT("ReplayMenuWidgetClass가 설정되지 않았습니다!"));
     }
+}
+
+void ALYJController::SetDetectedStope(AResourceTile* InStope)
+{
+    DetectedStope = InStope;
 }
 
 void ALYJController::SetPlayerNearStope(bool bNear)
