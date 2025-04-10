@@ -6,9 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "LYJGameMode.generated.h"
 
-/**
- * 
- */
+// LYJGameMode를 상속받은 블루프린트 게임 모드(BPGM_MBF)에서 클래스 설정할 것
+
 UCLASS()
 class MBFACTORIO_API ALYJGameMode : public AGameModeBase
 {
@@ -22,9 +21,6 @@ protected:
     // UI 블루프린트 클래스
     UPROPERTY(EditDefaultsOnly, Category = "UI")
     TSubclassOf<class UMBFStartWidget> StartWidgetClass;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Pawn")
-    TSubclassOf<class APlayerCharacter> DefaultPlayerClass;
 
     // 실제 생성된 위젯
     UPROPERTY()

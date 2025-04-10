@@ -2,6 +2,7 @@
 
 
 #include "Tools/LYJController.h"
+#include "UI/GameHUD.h"
 #include "UI/MBFCursorWidget.h"
 #include "UI/GameMenuWidget.h"
 #include "UI/ReplayMenuWidget.h"
@@ -20,7 +21,17 @@ ALYJController::ALYJController()
 void ALYJController::BeginPlay()
 {
     Super::BeginPlay();
-   
+
+    // 현재 로드된 레벨 이름 확인
+    FString LevelName = GetWorld()->GetMapName();
+    LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix); // "UEDPIE_0_" 제거
+
+    // 특정 레벨에서만 GameHUD 생성
+    if (LevelName == TEXT("LYJ_TestMap"))
+    {
+        GameHUD(); 
+    }
+       
     // 커서 UI 생성
     if (CursorWidgetClass)
     {
@@ -146,11 +157,21 @@ void ALYJController::UpdateCursorVisibility()
     }
 }
 
-void ALYJController::SetPlayerNearStope(bool bNear)
+void ALYJController::GameHUD()
 {
-    if (CursorWidget)
+    // GameHUD 생성
+    if (GameHUDClass)
     {
-        CursorWidget->SetPlayerNear(bNear);
+        GameHUDWidget = CreateWidget<UGameHUD>(this, GameHUDClass);
+
+        if (GameHUDWidget)
+        {
+            GameHUDWidget->AddToViewport(0);
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("GameHUDWidget이 null입니다"));
+        }
     }
 }
 
@@ -217,3 +238,10 @@ void ALYJController::OpenReplayMenu()
     }
 }
 
+void ALYJController::SetPlayerNearStope(bool bNear)
+{
+    if (CursorWidget)
+    {
+        CursorWidget->SetPlayerNear(bNear);
+    }
+}

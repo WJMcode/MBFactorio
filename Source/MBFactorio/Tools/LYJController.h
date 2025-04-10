@@ -8,8 +8,12 @@
 #include "Struct/MBFStope.h"
 #include "LYJController.generated.h"
 
+// LYJController를 상속받은 블루프린트(PC_MBF)에서 클래스 설정할 것
+
 class UInputAction;
 class UInputMappingContext;
+
+class UGameHUD;
 class UGameMenuWidget;
 class UMBFCursorWidget;
 class UReplayMenuWidget;
@@ -31,6 +35,7 @@ protected:
 
 public:
     void UpdateCursorVisibility();
+    void GameHUD();
     void ToggleGameMenu();
     void OpenReplayMenu();
 
@@ -38,6 +43,10 @@ public:
     void SetPlayerNearStope(bool bNear);
 
 public:    
+    /** GameHUD 위젯 클래스 */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<UGameHUD> GameHUDClass;
+
     /** Cursor UI 위젯 클래스 (BP에서 할당) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
     TSubclassOf<UMBFCursorWidget> CursorWidgetClass;
@@ -57,6 +66,9 @@ public:
 
 protected:
     /** 생성된 커서 위젯 */
+    UPROPERTY()
+    UGameHUD* GameHUDWidget;
+
     UPROPERTY()
     UMBFCursorWidget* CursorWidget;
 
