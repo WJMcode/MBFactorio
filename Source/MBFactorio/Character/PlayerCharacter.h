@@ -29,6 +29,7 @@ class MBFACTORIO_API APlayerCharacter : public ACharacter
 	GENERATED_BODY()
 
 	friend class AWJMController;
+	friend class ALYJController;
 
 public:
 	APlayerCharacter();

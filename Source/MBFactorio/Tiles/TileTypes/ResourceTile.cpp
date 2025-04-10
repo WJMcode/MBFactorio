@@ -3,6 +3,8 @@
 #include "Character/PlayerCharacter.h"
 #include "Tools/WJMController.h"
 
+#include "Tools/LYJController.h"
+
 AResourceTile::AResourceTile()
 {
 	PrimaryActorTick.bCanEverTick = true;

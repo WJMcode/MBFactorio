@@ -1,43 +1,33 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Conveyor.generated.h"
 
+class UBoxComponent;
+class UStaticMeshComponent;
+
 UCLASS()
 class MBFACTORIO_API AConveyor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
 	AConveyor();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-    // 컴포넌트
-    UPROPERTY(VisibleAnywhere)
-    class UBoxComponent* Box;
+	// 블루프린트에서 구성한 컴포넌트들을 바인딩
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conveyor")
+	UBoxComponent* ConveyorBox;
 
-    UPROPERTY(VisibleAnywhere)
-    class UArrowComponent* Arrow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conveyor")
+	UStaticMeshComponent* ConveyorMesh;
 
-    UPROPERTY(VisibleAnywhere)
-    class UStaticMeshComponent* ConveyorMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conveyor")
+	float Speed = 200.0f;
 
-    // 이동 속도
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Conveyor")
-    float Speed = 200.0f;
-
-    UPROPERTY(VisibleAnywhere)
-    bool bGenerateOverlapEvents = false;
+	UPROPERTY(VisibleAnywhere)
+	bool bGenerateOverlapEvents = false;
 };
