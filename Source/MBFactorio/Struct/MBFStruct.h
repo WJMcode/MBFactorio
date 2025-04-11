@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "UObject/NoExportTypes.h"
+#include "Misc/Misc.h"
 #include "MBFStruct.generated.h"
 
 // 합성에 필요한 아이템 정보를 담을 구조체
@@ -20,13 +21,24 @@ public:
     int32 MaxCount;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
     int32 MCount;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Item")
+    EItemType ItemType;
 
     FInventoryItem()
-        : ItemID(FName("0")), MaxCount(0), MCount(0)
+        : ItemID(FName("0")), MaxCount(0), MCount(0), ItemType(EItemType::None)
     { }
-    FInventoryItem(FName ID, int MaxCount, int MCount)
-        : ItemID(ID), MaxCount(MaxCount), MCount(MCount)
+    FInventoryItem(FName ID, int MaxCount, int MCount, EItemType ItemType)
+        : ItemID(ID), MaxCount(MaxCount), MCount(MCount), ItemType(ItemType)
     { }
+
+    bool IsEmpty() const
+    {
+        if (ItemID == FName(""))
+        {
+            return true;
+        }
+        return false;
+    }
 };
 
 USTRUCT(BlueprintType)
@@ -98,11 +110,12 @@ public:
     bool bFire;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     bool bCook;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    EItemType ItemType;
     
     // 기본 생성자
     FItemData()
-        : ItemID(FName()), MaxCount(0), Image(nullptr)
+        : ItemID(FName("0")), MaxCount(0), Image(nullptr)
     {
     }
 };

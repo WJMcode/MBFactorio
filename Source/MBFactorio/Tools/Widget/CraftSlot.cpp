@@ -2,7 +2,7 @@
 
 
 #include "Tools/Widget/CraftSlot.h"
-#include "Component/MBFInventoryComponent.h"
+#include "Component/CraftComponent.h"
 #include "Tools/MBFInstance.h"
 #include "Struct/MBFStruct.h"
 #include "Components/CanvasPanelSlot.h"
@@ -22,7 +22,7 @@ void UCraftSlot::NativeConstruct() {
 
 FReply UCraftSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	UMBFInventoryComponent* IVC = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetInventoryComponent();
+	UCraftComponent* IVC = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftComponent();
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
 		UE_LOG(LogTemp, Log, TEXT("좌클릭!"));

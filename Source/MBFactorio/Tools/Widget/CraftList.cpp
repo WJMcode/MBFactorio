@@ -44,7 +44,7 @@ void UCraftList::CraftChange()
 {
     AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
 
-    TArray<TPair<FName, int32>> Craftings = PC->GetInventoryComponent()->GetCraftings();
+    TArray<TPair<FName, int32>> Craftings = PC->GetCraftComponent()->GetCraftings();
     
     int32 Craftingcount = FMath::Min(Craftings.Num(), 10);
 

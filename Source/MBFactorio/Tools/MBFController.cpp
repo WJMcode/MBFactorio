@@ -33,6 +33,17 @@ void AMBFController::BeginPlay()
 			MBFInventoryComponent->RegisterComponent();
 		}
 	}
+	if (!CraftComponent)
+	{
+		CraftComponent = NewObject<UCraftComponent>(this, UCraftComponent::StaticClass());
+		if (CraftComponent)
+		{
+			
+			CraftComponent->RegisterComponent();
+			CraftComponent->SetInventoryComponent(MBFInventoryComponent);
+		}
+	}
+
 }
 
 void AMBFController::SetupInputComponent() {

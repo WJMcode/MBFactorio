@@ -16,15 +16,13 @@ class MBFACTORIO_API UMBFInventoryComponent : public UActorComponent
 
 
 	TArray<FInventoryItem> InventoryItems;
-	TArray<TPair<FName, int32>> Craftings;
-	TMap<FName, int32>			BringItems;
-	TMap<FName, int32>			AfterChanged;
+
+	// 다른 컴포넌트에서 봣을 때 가독성이 좋은 이름
+	TArray<FInventoryItem> Inventory;
 
 
-	FItemData* BuildItem;
-	float BuildTime;
-	float ElapsedCraftingTime;
-	
+	bool SortOption = false;
+	EInventoryType InventoryType;
 
 public:	
 	// Sets default values for this component's properties
@@ -35,6 +33,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+
+	TMap<FName, int32>			BringItems;
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -42,23 +42,24 @@ public:
 
 	bool bOpenInventory;
 
-	bool CanCraftItem(FName ItemID, int32 CraftCount, TMap<FName, int32>* OutMap = nullptr, TArray<FName>* OutRequiredCraftings = nullptr, TMap<FName, int32>* OutChnaged = nullptr);
-	void CraftItem(FName ItemID, int32 CraftCount);
-	void Crafting(FName ItemID);
 
 	void AddItem(FName ItemID, int32 Count);
 	void RemoveItem(FName ItemID, int32 Count);
 
-	bool RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>& RequiredCraftings, TMap<FName, int32>& ChangedItems, FName ItemID, int32 count);
-
-
-
-	EMaterialCheckResult CheckMaterialAvailability(FName ItemID, int32 RequiredCount);	//제작하는데 재료가 충분한지 검사
+	
 
 	int32 FindInventoryItem(FName ItemID);												//인벤토리에 해당 아이템이 있는지 검사
 	int32 GetInventoryItemCount(FName ItemID);
 	FInventoryItem GetInventoryItem(int32 b) { return InventoryItems[b]; }
-	const TArray<TPair<FName, int32>> GetCraftings() { return Craftings; }
 		
 	void InventoryTogle();
+
+	void SetInventoryNum(int32 Num) { Inventory.SetNum(Num); }
+
+	void SetSortOption(bool InSortOption) { SortOption = InSortOption; }
+
+	void SetInventoryType(EInventoryType InInventoryType) { InventoryType = InInventoryType; }
+
+	bool IsValidSlot(int32 SlotIndex) const;
+	void TrySwapOrMoveItems(int32 FromIndex, int32 ToIndex, UMBFInventoryComponent* FromInventory, FInventoryItem* InventoryItem);
 };

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Component/CraftComponent.h"
 #include "Struct/MBFStruct.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -30,6 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	FInventoryItem GetInventoryItem(int32 b) { return MBFInventoryComponent->GetInventoryItem(b); }
 	UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; }
+	UCraftComponent* GetCraftComponent() { return CraftComponent; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,6 +49,7 @@ private:
 
 private:
 	UMBFInventoryComponent* MBFInventoryComponent;
+	UCraftComponent* CraftComponent;
 
 
 };
