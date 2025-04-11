@@ -33,6 +33,9 @@ public:
     void SetDetectedStope(AResourceTile* InStope);
     void SetPlayerNearStope(bool bNear);
 
+    // 캐릭터와 오버랩된 AResourceTile들 중 첫 번째 요소를 반환하는 함수입니다.
+    AActor* FindOverlappingStope();
+
 private:
     // 캐릭터의 채굴 동작을 멈춥니다.
     void StopCharacterAction();

@@ -25,8 +25,10 @@ void AResourceTile::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 충돌을 위한 OverlapBox의 크기를 Mesh와 같게 해줌
-    OverlapBox->SetBoxExtent(TileMesh->Bounds.BoxExtent);
+    // 충돌을 위한 OverlapBox의 크기를 Mesh 크기와 같게 설정
+    FVector MeshBoxExtent = TileMesh->Bounds.BoxExtent;
+    MeshBoxExtent.Z = 10.f; // 높이는 적당히
+    OverlapBox->SetBoxExtent(MeshBoxExtent);
 
     OverlapBox->OnComponentBeginOverlap.AddDynamic(this, &AResourceTile::OnBoxBeginOverlap);
     OverlapBox->OnComponentEndOverlap.AddDynamic(this, &AResourceTile::OnBoxEndOverlap);
@@ -36,16 +38,25 @@ void AResourceTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
 {
     if (APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor))
     {
-        Player->SetCurrentTargetTile(this); // 오버랩된 캐릭터에게 자신을 넘김
-
-        bIsPlayerNear = true;
-
         if (AController* Controller = Player->GetController())
         {
             if (AWJMController* PC = Cast<AWJMController>(Controller))
             {
-                PC->SetDetectedStope(this);
+                // 광물 입장에서 봤을 때, 플레이어와 오버랩됨
+                bIsPlayerNear = true;
+
+                /* 플레이어와 오버랩된 광물이 없을 때에만
+                   DetectedStope값을 세팅          */
+                if(!PC->GetDetectedStope())
+                {
+                    PC->SetDetectedStope(this);
+                }
+
+                // 플레이어 입장에서 봤을 때에도 광물과 오버랩되었으므로 true를 넘김
                 PC->SetPlayerNearStope(true);
+
+                // 오버랩된 플레이어에게 자신(광물)을 넘김
+                Player->SetCurrentTargetTile(this); 
             }
         }
     }
@@ -55,25 +66,41 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
 {
     if (APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor))
     {
-        Player->SetCurrentTargetTile(nullptr);
-
-        bIsPlayerNear = false;
-
         if (AController* Controller = Player->GetController())
         {
             if (AWJMController* PC = Cast<AWJMController>(Controller))
             {
-                PC->SetDetectedStope(nullptr);
-                PC->SetPlayerNearStope(false);
+                // 광물 입장에서 봤을 때, 플레이어와 오버랩 해제됨
+                bIsPlayerNear = false;
+
+                /* 광물과 플레이어 사이의 오버랩이 해제되면, 
+                    중복으로 오버랩되었던 다른 광물을 찾음       */
+                AResourceTile* FoundStope = Cast<AResourceTile>(PC->FindOverlappingStope());
+                
+                 /* 오버랩 해제된 광물 외의 다른 광물이 오버랩된 상태라면
+                    그 광물을 DetectedStope으로 설정함                       */
+                if (FoundStope)
+                {
+                    PC->SetDetectedStope(FoundStope);
+                    // 플레이어 입장에서는 광물과 오버랩된 상태이므로 true를 넘김
+                    PC->SetPlayerNearStope(true);
+                    
+                    // 감지된 다른 광물을 플레이어에게 넘김  
+                    Player->SetCurrentTargetTile(FoundStope);
+                }
+                /*  광물과 플레이어 사이의 오버랩이 해제된 상태에서 
+                     다른 중복 오버랩된 광물이 없다면 DetectedStope을 nullptr로 세팅   */
+                else
+                {
+                    PC->SetDetectedStope(nullptr);
+                    // 플레이어 입장에서도 광물과 오버랩 해제된 상태이므로 false를 넘김
+                    PC->SetPlayerNearStope(false);
+
+                    // 아무 광물도 감지되지 않았으므로 nullptr을 플레이어에게 넘김
+                    Player->SetCurrentTargetTile(nullptr);
+                }
             }
         }
-
-        // 한 틱 뒤에 다시 감지 시도
-        //FTimerHandle DummyHandle;
-        //Player->GetWorldTimerManager().SetTimerForNextTick([Player]()
-        //    {
-        //        Player->TryReDetectStope();
-        //    });
     }
 }
 

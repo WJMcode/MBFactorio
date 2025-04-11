@@ -103,24 +103,6 @@ void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 	}
 }
 
-//void APlayerCharacter::TryReDetectStope()
-//{
-//	TArray<AActor*> OverlappingActors;
-//	GetOverlappingActors(OverlappingActors, AResourceTile::StaticClass());
-//
-//	AResourceTile* NewTarget = nullptr;
-//	for (AActor* Actor : OverlappingActors)
-//	{
-//		if (AResourceTile* Tile = Cast<AResourceTile>(Actor))
-//		{
-//			NewTarget = Tile;
-//			break; // 하나만 기억하는 구조니까 하나만
-//		}
-//	}
-//
-//	SetCurrentTargetTile(NewTarget);
-//}
-
 void APlayerCharacter::RotateToMiningTarget()
 {
 	if (!CurrentTargetTile)

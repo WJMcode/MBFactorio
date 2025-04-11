@@ -43,6 +43,7 @@ private:
 	void SetResourceType(EResourceType InType);
 
 private:
+	// 캐릭터와 광물 사이의 오버랩 판정을 위한 BoxComponent입니다.
 	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* OverlapBox;
 
@@ -51,6 +52,7 @@ private:
 	EResourceType ResourceType = EResourceType::Unknown;
 
 protected:
+	// 자신(광물) 입장에서 플레이어가 근처에 있는지에 대한 플래그입니다.
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	bool bIsPlayerNear = false;
 };

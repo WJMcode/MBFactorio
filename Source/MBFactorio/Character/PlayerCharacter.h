@@ -6,7 +6,6 @@
 #include "PlayerCharacter.generated.h"
 
 //@TODO: 
-//		 채굴 시 마우스 방향으로 캐릭터 회전
 //		 채굴 진행바 표시
 //		 채굴 완료 시 아이템 습득 텍스트 출력
 //		 채굴한 광물 인벤토리에 추가
@@ -14,7 +13,6 @@
 
 // 이슈:
 // 채굴 모션 자체가 움직이는 모션이라 루트를 잠금 -> 방향에 따라 모션이 달라지는 문제 발생
-// 광물 위를 왔다갔다하면, 캐릭터와 광물 사이의 오버랩 이벤트가 제대로 작동하지 않음
 
 class UInputComponent;
 class AResourceTile;
@@ -43,7 +41,6 @@ protected:
 public:
 	// 플레이어 입력을 처리하기 위해 호출되는 함수
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	//void TryReDetectStope();
 
 protected:
 	// 캐릭터 이동을 위한 함수

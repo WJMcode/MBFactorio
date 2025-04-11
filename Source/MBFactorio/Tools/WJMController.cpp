@@ -82,17 +82,6 @@ void AWJMController::UpdateCursorVisibility(AResourceTile* InStope)
 {
     if (!CursorWidget) return;
     
-    // 디버깅 메시지
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(
-            2, // 다른 ID로 출력하면 따로 나옴
-            0.f,
-            FColor::Yellow,
-            FString::Printf(TEXT("bIsPlayerNear: %s"), CursorWidget->bPlayerIsNear ? TEXT("true") : TEXT("false"))
-        );
-    }
-
     const bool bNear = CursorWidget->bPlayerIsNear;
 
     // 캐릭터와 광물이 오버랩되지 않았거나, 
@@ -138,6 +127,36 @@ void AWJMController::SetPlayerNearStope(bool bNear)
     if (CursorWidget)
     {
         CursorWidget->SetPlayerNear(bNear);
+    }
+}
+
+AActor* AWJMController::FindOverlappingStope()
+{
+    // 캐릭터와 오버랩된 Actor들을 저장할 배열
+    TArray<AActor*> OverlappingActors;
+
+    APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+    if (!PlayerCharacter) 
+    {
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::foundstope(): PlayerCharacter가 nullptr입니다!"));
+
+        return nullptr; 
+    }
+    // 캐릭터와 오버랩된 ResourceTile들을 찾아 OverlappingActors에 저장
+    PlayerCharacter->GetOverlappingActors(OverlappingActors, AResourceTile::StaticClass());
+
+    if (OverlappingActors.IsEmpty()) 
+    {
+        return nullptr; 
+    }
+    // 오버랩된 ResourceTile들 중 첫 번째 요소를 반환
+    else if(OverlappingActors[0]) 
+    {
+        return OverlappingActors[0];
+    }
+    else
+    {
+        return nullptr;
     }
 }
 
