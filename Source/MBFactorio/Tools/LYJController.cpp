@@ -1,5 +1,5 @@
 #include "Tools/LYJController.h"
-#include "UI/GameHUD.h"
+#include "UI/GameHUD/GameHUD.h"
 #include "UI/MBFCursorWidget.h"
 #include "UI/GameMenuWidget.h"
 #include "UI/ReplayMenuWidget.h"
@@ -167,53 +167,10 @@ void ALYJController::RecreateCursorWidget()
     }
 }
 
-//void ALYJController::UpdateCursorVisibility()
-//{   
-//    if (!CursorWidget) return;
-//
-//    const bool bNear = CursorWidget->bPlayerIsNear;
-//
-//    if (!bNear && !bIsCursorOverStope)
-//    {        
-//        bShowMouseCursor = true;
-//        CursorWidget->SetVisibility(ESlateVisibility::Hidden);
-//    }
-//    else if (!bNear && bIsCursorOverStope)
-//    {
-//        bShowMouseCursor = false;
-//        CursorWidget->SetVisibility(ESlateVisibility::Visible);
-//        CursorWidget->SetCursorTint(FLinearColor::Red);
-//    }
-//    else if (bNear && bIsCursorOverStope)
-//    {
-//        bShowMouseCursor = false;
-//        CursorWidget->SetVisibility(ESlateVisibility::Visible);
-//        CursorWidget->SetCursorTint(FLinearColor::Yellow);
-//    }
-//    else if (bNear && !bIsCursorOverStope)
-//    {
-//        bShowMouseCursor = true;
-//        CursorWidget->SetVisibility(ESlateVisibility::Hidden);
-//    }
-//}
-
 void ALYJController::UpdateCursorVisibility(AResourceTile* InStope)
 {
     if (!CursorWidget) return;
-
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(
-            2, // 다른 ID로 출력하면 따로 나옴
-            0.f,
-            FColor::Yellow,
-            FString::Printf(TEXT("bIsPlayerNear: %s"), CursorWidget->bPlayerIsNear ? TEXT("true") : TEXT("false"))
-        );
-
-        UE_LOG(LogTemp, Warning, TEXT("Detected: %s / Hit: %s"),
-            *GetNameSafe(DetectedStope), *GetNameSafe(InStope));
-    }
-
+   
     const bool bNear = CursorWidget->bPlayerIsNear;
 
     // 캐릭터와 광물이 오버랩되지 않았거나, 
@@ -417,6 +374,36 @@ void ALYJController::SetPlayerNearStope(bool bNear)
     if (CursorWidget)
     {
         CursorWidget->SetPlayerNear(bNear);
+    }
+}
+
+AActor* ALYJController::FindOverlappingStope()
+{
+    // 캐릭터와 오버랩된 Actor들을 저장할 배열
+    TArray<AActor*> OverlappingActors;
+
+    APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+    if (!PlayerCharacter)
+    {
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::foundstope(): PlayerCharacter가 nullptr입니다!"));
+
+        return nullptr;
+    }
+    // 캐릭터와 오버랩된 ResourceTile들을 찾아 OverlappingActors에 저장
+    PlayerCharacter->GetOverlappingActors(OverlappingActors, AResourceTile::StaticClass());
+
+    if (OverlappingActors.IsEmpty())
+    {
+        return nullptr;
+    }
+    // 오버랩된 ResourceTile들 중 첫 번째 요소를 반환
+    else if (OverlappingActors[0])
+    {
+        return OverlappingActors[0];
+    }
+    else
+    {
+        return nullptr;
     }
 }
 

@@ -20,6 +20,8 @@ class UHorizontalBox;
 class UMBFSlot;
 class UCraftSelectSlot;
 
+// @TODO 인벤토리 정보와 연결지어 DrillCount, FurnaceCount 변수에 저장해야 함.
+
 UCLASS()
 class MBFACTORIO_API UGameHUD : public UUserWidget
 {

@@ -1,7 +1,7 @@
 #include "ResourceTile.h"
 #include "Components/BoxComponent.h"
 #include "Character/PlayerCharacter.h"
-#include "Tools/WJMController.h"
+//#include "Tools/WJMController.h"
 
 #include "Tools/LYJController.h"
 
@@ -40,7 +40,7 @@ void AResourceTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
     {
         if (AController* Controller = Player->GetController())
         {
-            if (AWJMController* PC = Cast<AWJMController>(Controller))
+            if (ALYJController* PC = Cast<ALYJController>(Controller))
             {
                 // 광물 입장에서 봤을 때, 플레이어와 오버랩됨
                 bIsPlayerNear = true;
@@ -64,7 +64,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
     {
         if (AController* Controller = Player->GetController())
         {
-            if (AWJMController* PC = Cast<AWJMController>(Controller))
+            if (ALYJController* PC = Cast<ALYJController>(Controller))
             {
                 // 광물 입장에서 봤을 때, 플레이어와 오버랩 해제됨
                 bIsPlayerNear = false;

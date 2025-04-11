@@ -37,8 +37,6 @@ public:
     // 최근에 플레이어가 감지한 광물을 반환합니다.
     AResourceTile* GetDetectedStope() const { return DetectedStope; }
 
-    //void UpdateCursorVisibility(); // MBFStope 감지 시
-
     void UpdateCursorVisibility(AResourceTile* InStope);
     void GameHUD();
     void ToggleGameMenu();
@@ -52,6 +50,9 @@ public:
     // 캐릭터가 감지한 광물을 저장합니다.
     void SetDetectedStope(AResourceTile* InStope);
     void SetPlayerNearStope(bool bNear);
+
+    // 캐릭터와 오버랩된 AResourceTile들 중 첫 번째 요소를 반환하는 함수입니다.
+    AActor* FindOverlappingStope();
 
 private:
     // 캐릭터의 채굴 동작을 멈춥니다.
