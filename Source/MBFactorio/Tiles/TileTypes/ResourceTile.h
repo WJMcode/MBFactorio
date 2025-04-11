@@ -5,9 +5,6 @@
 #include "Tiles/TileBase/TileStructs.h"
 #include "ResourceTile.generated.h"
 
-//이슈:
-//		OverlapBox의 크기가 너무 작음
-
 /**
  * 리소스 타일 클래스입니다.
  * 
@@ -36,10 +33,12 @@ protected:
 	void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+public:
 	// 현재 리소스 타입 가져오기
 	EResourceType GetResourceType() const { return ResourceType; }
 
 private:
+	// 리소스 타입을 설정합니다.
 	void SetResourceType(EResourceType InType);
 
 private:

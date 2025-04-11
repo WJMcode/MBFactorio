@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Tiles/TileTypes/ResourceTile.h"
+#include "UI/MiningInterationWidget.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -55,6 +56,16 @@ void APlayerCharacter::BeginPlay()
 		/* 현재 재생 중인 몽타주의 재생이 끝나면 
 		OnMiningMontageEnded 함수를 호출하도록델리게이트 바인딩 */
 		AnimInstance->OnMontageEnded.AddDynamic(this, &APlayerCharacter::OnMiningMontageEnded);
+	}
+
+	if (MiningInterationWidgetClass) // UPROPERTY로 에디터에서 지정
+	{
+		MiningInterationWidget = CreateWidget<UMiningInterationWidget>(GetWorld(), MiningInterationWidgetClass);
+		if (MiningInterationWidget)
+		{
+			MiningInterationWidget->AddToViewport();
+			MiningInterationWidget->SetVisibility(ESlateVisibility::Hidden); // 시작은 숨김 처리 (선택)
+		}
 	}
 }
 
@@ -132,8 +143,12 @@ void APlayerCharacter::TryStartMining()
 	// 즉 채굴 모션 시작 시간입니다. (광클 모션 방지)
 	if (MiningHoldTime >= MinHoldTimeToPlayAnim)
 	{
-		// CurrentTargetTile이 있는 방향으로 캐릭터를 회전
-		RotateToMiningTarget();
+		// 캐릭터가 채굴 중이 아닐 때에만 타겟(오버랩된) 광물로 회전
+		if(!GetIsMining())
+		{
+			// CurrentTargetTile이 있는 방향으로 캐릭터를 회전
+			RotateToMiningTarget();
+		}
 
 		StartMining();
 	}
@@ -141,32 +156,72 @@ void APlayerCharacter::TryStartMining()
 
 void APlayerCharacter::StartMining()
 {
-	SetIsMining(true);
+	// 플레이어가 채굴 중이 아니라면
+	if (!GetIsMining())
+	{
+		SetIsMining(true);
+
+		ShowPickaxe(true);
+	}
+	
+	// 채굴 시작
+	{
+		if (MiningInterationWidget)
+		{
+			MiningInterationWidget->SetVisibility(ESlateVisibility::Visible);
+			MiningInterationWidget->MiningCompleteText->SetVisibility(ESlateVisibility::Hidden);
+		}
+
+		// 채굴 진행바 업데이트
+		MiningInterationWidget->SetMiningProgress(MiningProgressValue / MiningTimeToComplete);
+
+		// 채굴 진행바를 채우기 위한 변수의 값을 점점 올림
+		MiningProgressValue += GetWorld()->GetDeltaSeconds();
+		
+		// 채굴 완료, 인벤토리에 채굴한 아이템 삽입
+		if (MiningProgressValue >= MiningTimeToComplete)
+		{
+			MiningProgressValue = 0.f;
+			MiningInterationWidget->MiningCompleteText->SetVisibility(ESlateVisibility::Visible);
+			MiningInterationWidget->ShowMiningCompleteMessage(CurrentTargetTile->GetResourceType());
+			// add(CurrentTargetTile->GetResourceType());
+		}
+	}
 
 	// 채굴 몽타주가 재생되고 있지 않다면, 채굴 몽타주 재생
 	if(!bIsMiningAnimationPlaying)
 	{
-		ShowPickaxe(true);
-
 		PlayMiningAnimation();
 	}
 }
 
 void APlayerCharacter::StopMining()
 {
-	SetIsMining(false);
-	
-	// 채굴 진행바와 우클릭 누적 시간을 0으로
-	MiningProgress = 0.0f;
+	// 플레이어가 채굴 중이라면
+	if (GetIsMining())
+	{
+		SetIsMining(false);
 
-	MiningHoldTime = 0.0f;
+		ShowPickaxe(false);
+	}
+
+	// 채굴 정지
+	{
+		if (MiningInterationWidget)
+		{
+			MiningInterationWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+
+		// 채굴 진행바와 우클릭 누적 시간을 0으로
+		MiningProgressValue = 0.0f;
+
+		MiningHoldTime = 0.0f;
+	}
 
 	// 채굴 몽타주가 재생되고 있다면 몽타주를 멈춤.
 	if (bIsMiningAnimationPlaying)
 	{
 		StopMiningAnimation();
-
-		ShowPickaxe(false);
 	}
 }
 
@@ -179,7 +234,6 @@ void APlayerCharacter::SetIsMining(bool IsMining)
 {
 	bIsMining = IsMining;
 }
-
 
 void APlayerCharacter::SetCurrentTargetTile(AResourceTile* InResourceTile)
 {

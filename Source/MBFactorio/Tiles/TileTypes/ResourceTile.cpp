@@ -25,7 +25,7 @@ void AResourceTile::BeginPlay()
 {
     Super::BeginPlay();
 
-    // 충돌을 위한 OverlapBox의 크기를 Mesh 크기와 같게 설정
+    // 오버랩을 위한 OverlapBox의 크기를 Mesh 크기와 같게 설정
     FVector MeshBoxExtent = TileMesh->Bounds.BoxExtent;
     MeshBoxExtent.Z = 10.f; // 높이는 적당히
     OverlapBox->SetBoxExtent(MeshBoxExtent);
@@ -45,12 +45,8 @@ void AResourceTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
                 // 광물 입장에서 봤을 때, 플레이어와 오버랩됨
                 bIsPlayerNear = true;
 
-                /* 플레이어와 오버랩된 광물이 없을 때에만
-                   DetectedStope값을 세팅          */
-                if(!PC->GetDetectedStope())
-                {
-                    PC->SetDetectedStope(this);
-                }
+                // 플레이어의 컨트롤러에 감지된 광물을 세팅
+                PC->SetDetectedStope(this);
 
                 // 플레이어 입장에서 봤을 때에도 광물과 오버랩되었으므로 true를 넘김
                 PC->SetPlayerNearStope(true);

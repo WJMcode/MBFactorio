@@ -13,6 +13,19 @@ enum class EResourceType : uint8
 	Unknown UMETA(Hidden)
 };
 
+// EResourceType 값을 FString으로 변환하여 반환하는 함수입니다.
+static FORCEINLINE FString ResourceTypeToString(EResourceType Type)
+{
+	switch (Type)
+	{
+	case EResourceType::Copper: return TEXT("Copper");
+	case EResourceType::Iron: return TEXT("Iron");
+	//case EResourceType::Coal: return TEXT("석탄");
+	case EResourceType::Stone: return TEXT("Stone");
+	default: return TEXT("알 수 없음");
+	}
+}
+
 // 리소스 머티리얼 세트
 // 광물 타일은 타입마다 머티리얼을 여러 개 설정합니다.
 // ex) Copper 타입 : Copper_머티리얼1, Copper_머티리얼2...

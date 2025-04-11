@@ -6,16 +6,17 @@
 #include "PlayerCharacter.generated.h"
 
 //@TODO: 
-//		 채굴 진행바 표시
 //		 채굴 완료 시 아이템 습득 텍스트 출력
 //		 채굴한 광물 인벤토리에 추가
-//		 채굴 기능 컴포넌트로 분리
+//		 채굴 기능 컴포넌트로 분리 + testHUD 만들어서 HUD에서 위젯 처리하기
 
 // 이슈:
-// 채굴 모션 자체가 움직이는 모션이라 루트를 잠금 -> 방향에 따라 모션이 달라지는 문제 발생
+//		채굴 모션 자체가 움직이는 모션이라 루트를 잠금 -> 방향에 따라 모션이 달라지는 문제 발생
+//		게임 시작하자마자 밟은 광물은 인식이 안됨
 
 class UInputComponent;
 class AResourceTile;
+class UMiningInterationWidget;
 
 /*
  * 플레이어가 조종하는 캐릭터입니다. 
@@ -58,7 +59,8 @@ public:
 	void SetIsMining(bool IsMining);
 
 public:
-	const bool GetIsMining() const { return bIsMining; }
+	//@TODO: GetIsMining에서 IsMining으로 이름 바꾸기
+	FORCEINLINE const bool GetIsMining() const { return bIsMining; }
 
 private:
 	// 채굴 대상이 있는 방향으로 캐릭터를 회전시킵니다.
@@ -112,6 +114,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickaxe")
 	UStaticMeshComponent* PickaxeMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UMiningInterationWidget> MiningInterationWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	UMiningInterationWidget* MiningInterationWidget;
+
 	// 캐릭터와 오버랩된 타일을 저장합니다.
 	AResourceTile* CurrentTargetTile = nullptr;
 
@@ -131,7 +139,7 @@ protected:
 	const float MinHoldTimeToPlayAnim = 0.2f;
 
 	// 채굴 진행바를 표현할 변수입니다.
-	float MiningProgress = 0.0f;
+	float MiningProgressValue = 0.0f;
 
 	// 채굴 완료까지 걸리는 시간입니다.
 	UPROPERTY(EditAnywhere)
