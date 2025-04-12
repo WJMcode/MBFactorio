@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Tools/MBFController.h"
@@ -43,6 +43,7 @@ void AMBFController::BeginPlay()
 			CraftComponent->SetInventoryComponent(MBFInventoryComponent);
 		}
 	}
+	
 
 }
 
@@ -71,12 +72,7 @@ void AMBFController::Tick(float DeltaSeconds)
 
 
 
-int32 AMBFController::GetInventoryItemCount(FName ItemID)
-{
-	return MBFInventoryComponent->GetInventoryItemCount(ItemID);
-}
 
-// On/Off Inventory
 void AMBFController::InventoryTogle()
 {
 	MBFInventoryComponent->InventoryTogle();

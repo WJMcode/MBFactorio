@@ -93,9 +93,9 @@ void UMBFSlot::Changed(int32 InSlot)
 
 
 
-    FInventoryItem Item = PC->GetInventoryItem(InSlot);
+    FInventoryItem* Item = PC->GetInventoryComponent()->GetInventoryItem(InSlot);
 
-    const FItemData* itemdata = Instance->GetItemData(Item.ItemID);
+    const FItemData* itemdata = Instance->GetItemData(Item->ItemID);
 
     
     if (itemdata == nullptr) {
@@ -106,8 +106,8 @@ void UMBFSlot::Changed(int32 InSlot)
     else {
         Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
         Image->SetBrushFromTexture(itemdata->Image, false);
-        Count->SetText(FText::AsNumber(Item.MCount));
-        SetItemID(Item.ItemID);
+        Count->SetText(FText::AsNumber(Item->MCount));
+        SetItemID(Item->ItemID);
     }
 
     //TextBlock Count ����

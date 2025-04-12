@@ -14,9 +14,6 @@ class MBFACTORIO_API UMBFInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-
-	TArray<FInventoryItem> InventoryItems;
-
 	// 다른 컴포넌트에서 봣을 때 가독성이 좋은 이름
 	TArray<FInventoryItem> Inventory;
 
@@ -50,7 +47,7 @@ public:
 
 	int32 FindInventoryItem(FName ItemID);												//인벤토리에 해당 아이템이 있는지 검사
 	int32 GetInventoryItemCount(FName ItemID);
-	FInventoryItem GetInventoryItem(int32 b) { return InventoryItems[b]; }
+	FInventoryItem* GetInventoryItem(int32 b) { return &Inventory[b]; }
 		
 	void InventoryTogle();
 

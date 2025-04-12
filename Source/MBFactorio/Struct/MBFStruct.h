@@ -112,7 +112,9 @@ public:
     bool bCook;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
     EItemType ItemType;
-    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+    FName BakedItem;
+
     // 기본 생성자
     FItemData()
         : ItemID(FName("0")), MaxCount(0), Image(nullptr)

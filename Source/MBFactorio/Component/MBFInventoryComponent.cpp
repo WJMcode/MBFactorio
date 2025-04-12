@@ -15,9 +15,9 @@ UMBFInventoryComponent::UMBFInventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	InventoryItems.SetNum(80);	
-	InventoryItems[0] = FInventoryItem(FName("5"), 100, 100, EItemType::Smeltable);
-	InventoryItems[1] = FInventoryItem(FName("8"), 100, 5, EItemType::Smeltable);
+	Inventory.SetNum(80);
+	Inventory[0] = FInventoryItem(FName("5"), 100, 100, EItemType::Smeltable);
+	Inventory[1] = FInventoryItem(FName("8"), 100, 5, EItemType::Smeltable);
 	// ...
 }
 
@@ -63,12 +63,12 @@ void UMBFInventoryComponent::SortInventory()
 			{
 				if (MaxCount <= ItemCount)
 				{
-					InventoryItems[Islot] = FInventoryItem(FName(FString::FromInt(i)), MaxCount, MaxCount, ItemType);
+					Inventory[Islot] = FInventoryItem(FName(FString::FromInt(i)), MaxCount, MaxCount, ItemType);
 					ItemCount -= MaxCount;
 				}
 				else
 				{
-					InventoryItems[Islot] = FInventoryItem(FName(FString::FromInt(i)), MaxCount, ItemCount, ItemType);
+					Inventory[Islot] = FInventoryItem(FName(FString::FromInt(i)), MaxCount, ItemCount, ItemType);
 					ItemCount = 0;
 				}
 				Islot += 1;
@@ -78,7 +78,7 @@ void UMBFInventoryComponent::SortInventory()
 	}
 	for (int i = Islot; i < 80; i++)
 	{
-		InventoryItems[i] = FInventoryItem();
+		Inventory[i] = FInventoryItem();
 	}
 }
 
@@ -110,9 +110,9 @@ int32 UMBFInventoryComponent::FindInventoryItem(FName ItemID)
 {
 	for (int i = 0; i < 80; i++)
 	{
-		if (InventoryItems[i].ItemID == FName("0"))
+		if (Inventory[i].ItemID == FName("0"))
 			continue;
-		if (InventoryItems[i].ItemID == ItemID)
+		if (Inventory[i].ItemID == ItemID)
 		{
 			return i;
 		}
@@ -123,7 +123,7 @@ int32 UMBFInventoryComponent::FindInventoryItem(FName ItemID)
 int32 UMBFInventoryComponent::GetInventoryItemCount(FName ItemID)
 {
 	int32 Total = 0;
-	for (auto& Item : InventoryItems)
+	for (auto& Item : Inventory)
 	{
 		if (Item.ItemID == ItemID)
 		{

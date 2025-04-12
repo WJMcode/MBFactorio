@@ -1,9 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Struct/MBFStruct.h"
 #include "BakeComponent.generated.h"
 
 class UMBFInventoryComponent;
@@ -24,8 +25,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-
 
 
 public:
@@ -34,19 +33,26 @@ public:
 
 private:
 
+
+
 	UPROPERTY()
 	UMBFInventoryComponent* InventoryComponent;
+
+	void Bake();
 
 	// 화로 에너지
 	UPROPERTY()
 	float Energy;
 	UPROPERTY()
 	float MaxEnergy;
+	const float EnergyPSec = 90000.f;
 	UPROPERTY()
 	float EnergyEfficiency;
 	UPROPERTY()
 	float bakeTime;
 	UPROPERTY()
 	float bakeMTime;
+	
+	FItemData* BakeItem;
 
 };

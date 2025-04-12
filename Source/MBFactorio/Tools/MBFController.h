@@ -28,8 +28,6 @@ class MBFACTORIO_API AMBFController : public APlayerController
 	AMBFController();
 	
 public:
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	FInventoryItem GetInventoryItem(int32 b) { return MBFInventoryComponent->GetInventoryItem(b); }
 	UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; }
 	UCraftComponent* GetCraftComponent() { return CraftComponent; }
 
@@ -41,11 +39,8 @@ protected:
 private:
 
 	bool bOpenInventory;
-
-
-	int32 GetInventoryItemCount(FName ItemID);											//인벤토리에 해당 아이템이 몇개 있는지 검사
-
 	void InventoryTogle();
+
 
 private:
 	UMBFInventoryComponent* MBFInventoryComponent;
