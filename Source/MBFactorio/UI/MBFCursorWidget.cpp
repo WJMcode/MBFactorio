@@ -14,8 +14,8 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
-    //ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
+    //AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
+    ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
     if (!PC || !FrameCursor) { return; }
 
     APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn());

@@ -83,6 +83,18 @@ void ALYJController::Tick(float DeltaTime)
         }
     }
 
+    if (CursorWidget && CursorWidget->IsVisible())
+    {
+        if (HitStope)
+        {
+            FString ItemID = ResourceTypeToString(HitStope->GetResourceType());
+
+            if (GameHUDWidget)
+            {
+                GameHUDWidget->ShowResourceInfoByID(ItemID);
+            }
+        }
+    }
 }
 
 void ALYJController::SetupInputComponent()
@@ -274,56 +286,7 @@ void ALYJController::ToggleGameMenu()
     else
     {
         OpenGameMenu();
-    }
-
-    //if (!bIsGameMenuOpen)
-    //{
-    //    GameMenuWidget = CreateWidget<UGameMenuWidget>(this, GameMenuWidgetClass);
-    //    if (GameMenuWidget)
-    //    {
-    //        GameMenuWidget->AddToViewport();
-
-    //        SetShowMouseCursor(true);
-    //        FInputModeGameAndUI InputMode;
-    //        InputMode.SetWidgetToFocus(nullptr); // UI에 포커스 안 줌
-    //        InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-    //        SetInputMode(InputMode);
-
-    //        if (CursorWidget)
-    //        {
-    //            CursorWidget->SetVisibility(ESlateVisibility::Hidden); // ❌ RemoveFromParent() 하지 않기
-    //        }
-
-    //        // 게임 정지
-    //        UGameplayStatics::SetGamePaused(GetWorld(), true);
-    //        bIsGameMenuOpen = true;
-    //    }
-    //}
-    //else
-    //{
-    //    if (GameMenuWidget)
-    //    {
-    //        GameMenuWidget->RemoveFromParent();
-    //        GameMenuWidget = nullptr;
-    //    }
-
-    //    SetInputMode(FInputModeGameOnly());
-    //    SetShowMouseCursor(false);
-
-    //    // 커서 UI 다시 생성
-    //    if (CursorWidgetClass && !CursorWidget)
-    //    {
-    //        CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
-    //        if (CursorWidget)
-    //        {
-    //            CursorWidget->AddToViewport(10);
-    //        }
-    //    }
-
-    //    // 게임 재개
-    //    UGameplayStatics::SetGamePaused(GetWorld(), false);
-    //    bIsGameMenuOpen = false;
-    //}
+    }   
 }
 
 void ALYJController::OpenGameMenu()

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Tools/LYJGameMode.h"
 #include "Tools/LYJController.h"
 #include "UI/MBFStartWidget.h"
