@@ -41,38 +41,23 @@ void ALYJController::BeginPlay()
     }
 
     // 커서 UI 생성
-    if (CursorWidgetClass)
-    {
-        CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
-
-        if (CursorWidget)
-        {
-            CursorWidget->AddToViewport(10);
-
-            // 마우스 커서 숨김
-            SetShowMouseCursor(false);
-
-            // 입력 모드: 게임 + UI
-            FInputModeGameAndUI InputMode;
-            SetInputMode(InputMode);
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("CursorWidget이 null입니다"));
-        }        
-    }
+    CreateAndAddCursorWidget();
+    SetGameAndUIInput();
 }
 
 void ALYJController::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if (!CursorWidget) { return; }
+    CheckVelocity(); // 가장 먼저 움직임 감지
+
+    // 커서가 비활성화 상태일 땐 커서 UI 위치 업데이트도 생략
+    if (!bCursorActive || !CursorWidget) return;
 
     // 마우스 위치에서 HitTest (Visibility 채널 사용)
     FHitResult HitResult;
     CursorWidget->bHit = GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, HitResult); // Visibility
-    
+
     // 마우스가 감지한 광물(타일)
     AResourceTile* HitStope = Cast<AResourceTile>(HitResult.GetActor());
     if (HitStope)
@@ -86,19 +71,9 @@ void ALYJController::Tick(float DeltaTime)
 
     UpdateCursorVisibility(HitStope);
 
-    // MBFStope 감지 시
-    /*if (AMBFStope* Stope = Cast<AMBFStope>(HitResult.GetActor()))
-    {
-        bIsCursorOverStope = CursorWidget->bHit;
-    }
-    else
-    {
-        bIsCursorOverStope = false;
-    }
+    // 커서 UI를 마우스 위치에 따라 이동
+    if (!CursorWidget) { return; }
 
-    UpdateCursorVisibility();*/
-
-    // 마우스 따라 UI 위치 이동
     if (CursorWidget)
     {
         float PosX, PosY;
@@ -107,6 +82,7 @@ void ALYJController::Tick(float DeltaTime)
             CursorWidget->SetPositionInViewport(FVector2D(PosX, PosY));
         }
     }
+
 }
 
 void ALYJController::SetupInputComponent()
@@ -157,7 +133,57 @@ void ALYJController::RecreateCursorWidget()
         CursorWidget = nullptr;
     }
 
-    if (CursorWidgetClass)
+    CreateAndAddCursorWidget();
+}
+
+void ALYJController::CheckVelocity()
+{
+    APlayerCharacter* ControlledPlayer = Cast<APlayerCharacter>(GetPawn());
+    if (ControlledPlayer)
+    {
+        FVector Velocity = ControlledPlayer->GetVelocity();
+        bool bIsMoving = !Velocity.IsNearlyZero();
+
+        if (bIsMoving && bCursorActive)
+        {
+            FreezeCursorAndHideUI();
+        }
+        else if (!bIsMoving && !bCursorActive)
+        {
+            UnfreezeCursorAndShowUI();
+        }
+    }
+}
+
+void ALYJController::FreezeCursorAndHideUI()
+{
+    bCursorActive = false;
+
+    SetShowMouseCursor(true); 
+    SetInputMode(FInputModeGameOnly()); // 마우스 이동 제한
+
+    if (CursorWidget)
+    {
+        CursorWidget->SetVisibility(ESlateVisibility::Hidden); // UI 숨김
+    }
+}
+
+void ALYJController::UnfreezeCursorAndShowUI()
+{
+    bCursorActive = true;
+
+    SetGameAndUIInput(); // 커서 표시
+
+    CreateAndAddCursorWidget();
+    if (CursorWidget)
+    {
+        CursorWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+}
+
+void ALYJController::CreateAndAddCursorWidget()
+{
+    if (CursorWidgetClass && !CursorWidget)
     {
         CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
         if (CursorWidget)
@@ -165,6 +191,21 @@ void ALYJController::RecreateCursorWidget()
             CursorWidget->AddToViewport(10);
         }
     }
+}
+
+void ALYJController::SetGameOnlyInput()
+{
+    SetInputMode(FInputModeGameOnly());
+    SetShowMouseCursor(false);
+}
+
+void ALYJController::SetGameAndUIInput()
+{
+    SetShowMouseCursor(true);
+    FInputModeGameAndUI InputMode;
+    InputMode.SetWidgetToFocus(nullptr);
+    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+    SetInputMode(InputMode);
 }
 
 void ALYJController::UpdateCursorVisibility(AResourceTile* InStope)
@@ -295,11 +336,7 @@ void ALYJController::OpenGameMenu()
     GameMenuWidget->AddToViewport();
 
     // 커서 설정
-    SetShowMouseCursor(true);
-    FInputModeGameAndUI InputMode;
-    InputMode.SetWidgetToFocus(nullptr); // 포커스 안 줌
-    InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-    SetInputMode(InputMode);
+    SetGameAndUIInput();
 
     // 커서 UI 제거
     if (CursorWidget)
@@ -320,19 +357,12 @@ void ALYJController::CloseGameMenu()
         GameMenuWidget = nullptr;
     }
 
-    SetInputMode(FInputModeGameOnly());
-    SetShowMouseCursor(false);
+    SetGameOnlyInput();
 
     // 커서 UI 복원 (있으면 활성화, 없으면 생성)
-    if (!CursorWidget && CursorWidgetClass)
-    {
-        CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
-        if (CursorWidget)
-        {
-            CursorWidget->AddToViewport(10);
-        }
-    }
-    else if (CursorWidget)
+    CreateAndAddCursorWidget();
+
+    if (CursorWidget)
     {
         CursorWidget->SetVisibility(ESlateVisibility::Visible);
     }
@@ -350,12 +380,7 @@ void ALYJController::OpenReplayMenu()
         {
             ReplayMenuWidget->AddToViewport();
 
-            FInputModeGameAndUI InputMode;
-            InputMode.SetWidgetToFocus(nullptr);
-            InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-            SetInputMode(InputMode);
-
-            SetShowMouseCursor(true);
+            SetGameAndUIInput();
         }
     }
     else

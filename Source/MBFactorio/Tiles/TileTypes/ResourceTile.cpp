@@ -1,7 +1,11 @@
+// 2025 04 13 : ALYJController로 캐스팅 및 주석처리 (UResourceTile::OnBoxBeginOverlap, OnBoxEndOverlap) (이윤정)
+// 2025 04 13 : 헤더 파일 Include (이윤정)
+
 #include "ResourceTile.h"
 #include "Components/BoxComponent.h"
 #include "Character/PlayerCharacter.h"
 #include "Tools/WJMController.h"
+//#include "Tools/LYJController.h"
 #include "Component/Mining/MiningComponent.h"
 
 AResourceTile::AResourceTile()
@@ -38,7 +42,8 @@ void AResourceTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
     if (APlayerCharacter* Player = Cast<APlayerCharacter>(OtherActor))
     {
         if (AController* Controller = Player->GetController())
-        {
+        {            
+            //if (ALYJController* PC = Cast<ALYJController>(Controller))
             if (AWJMController* PC = Cast<AWJMController>(Controller))
             {
                 // 광물 입장에서 봤을 때, 플레이어와 오버랩됨
@@ -63,6 +68,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
     {
         if (AController* Controller = Player->GetController())
         {
+            //if (ALYJController* PC = Cast<ALYJController>(Controller))
             if (AWJMController* PC = Cast<AWJMController>(Controller))
             {
                 // 광물 입장에서 봤을 때, 플레이어와 오버랩 해제됨

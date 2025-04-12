@@ -23,57 +23,58 @@ class AResourceTile;
 UCLASS()
 class MBFACTORIO_API ALYJController : public APlayerController
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
     ALYJController();
 
 protected:
-	virtual void BeginPlay() override;
-    virtual void Tick(float DeltaTime) override;
-    virtual void SetupInputComponent() override;
+    virtual void BeginPlay() override;                      // 게임 시작 시 초기화
+    virtual void Tick(float DeltaTime) override;           // 매 프레임 호출
+    virtual void SetupInputComponent() override;           // 입력 바인딩 설정
 
 public:
-    // 최근에 플레이어가 감지한 광물을 반환합니다.
-    AResourceTile* GetDetectedStope() const { return DetectedStope; }
+    AResourceTile* GetDetectedStope() const { return DetectedStope; } // 현재 감지된 광물 반환
 
-    void UpdateCursorVisibility(AResourceTile* InStope);
-    void GameHUD();
-    void ToggleGameMenu();
-    void OpenGameMenu();
-    void CloseGameMenu();
-    void OpenReplayMenu();
-    void OnGameMenuPressed();
-    void RecreateCursorWidget();
+    void CreateAndAddCursorWidget();                       // CursorWidget 생성 및 Viewport 등록
+    void SetGameOnlyInput();                               // 입력 모드 - 게임 전용
+    void SetGameAndUIInput();                              // 입력 모드 - 게임 + UI
 
-public:
-    // 캐릭터가 감지한 광물을 저장합니다.
-    void SetDetectedStope(AResourceTile* InStope);
-    void SetPlayerNearStope(bool bNear);
+    void UpdateCursorVisibility(AResourceTile* InStope);   // 커서 색상 및 표시 상태 업데이트
+    void GameHUD();                                        // GameHUD 위젯 생성 및 추가
+    void ToggleGameMenu();                                 // 게임 메뉴 UI 표시/숨기기 토글
+    void OpenGameMenu();                                   // 게임 메뉴 UI 열기
+    void CloseGameMenu();                                  // 게임 메뉴 UI 닫기
+    void OpenReplayMenu();                                 // 리플레이 메뉴 UI 열기
+    void OnGameMenuPressed();                              // 메뉴 단축키(Tab) 입력 시 호출
+    void RecreateCursorWidget();                           // 커서 위젯 재생성
+    
+    void CheckVelocity();                                  // 캐릭터의 속도를 체크
+    void FreezeCursorAndHideUI();                          // 커서 고정 및 UI 숨김
+    void UnfreezeCursorAndShowUI();                        // 커서 복원 및 UI 표시
 
-    // 캐릭터와 오버랩된 AResourceTile들 중 첫 번째 요소를 반환하는 함수입니다.
-    AActor* FindOverlappingStope();
+    void SetDetectedStope(AResourceTile* InStope);         // 감지된 광물 설정
+    void SetPlayerNearStope(bool bNear);                   // 플레이어 근접 여부 설정
+    AActor* FindOverlappingStope();                        // 플레이어 주변 ResourceTile 찾기
 
 private:
-    // 캐릭터의 채굴 동작을 멈춥니다.
-    void StopCharacterAction();
+    void StopCharacterAction();                            // 캐릭터 채굴 중단
 
-public:    
-    /** GameHUD 위젯 클래스 */
+public:
+    // -------------------- UI 관련 --------------------
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
     TSubclassOf<UGameHUD> GameHUDClass;
 
-    /** Cursor UI 위젯 클래스 (BP에서 할당) */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
     TSubclassOf<UMBFCursorWidget> CursorWidgetClass;
 
-    /** GameMenu UI 위젯 클래스 */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
     TSubclassOf<UGameMenuWidget> GameMenuWidgetClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
     TSubclassOf<UReplayMenuWidget> ReplayMenuWidgetClass;
 
+    // -------------------- 인풋 관련 --------------------
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputMappingContext* IMC_Menu;
 
@@ -81,7 +82,6 @@ public:
     UInputAction* GameMenuAction;
 
 protected:
-    /** 생성된 커서 위젯 */
     UPROPERTY()
     UGameHUD* GameHUDWidget;
 
@@ -94,12 +94,13 @@ protected:
     UPROPERTY()
     UReplayMenuWidget* ReplayMenuWidget;
 
-public:       
-    bool bIsGameMenuOpen = false;
-    bool bIsCursorOverStope = false;
+public:
+    bool bIsGameMenuOpen = false;       // 게임 메뉴 열림 여부
+    bool bIsCursorOverStope = false;    // 커서가 광물 위에 있는지 여부
+    bool bCursorActive = true;         // 현재 커서 활성 여부
 
 private:
-    // 캐릭터가 최근 감지한 광물
     UPROPERTY()
-    AResourceTile* DetectedStope = nullptr;
+    AResourceTile* DetectedStope = nullptr; // 감지된 광물 캐시
 };
+
