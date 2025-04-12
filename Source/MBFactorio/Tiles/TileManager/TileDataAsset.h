@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Tiles/TileBase/TileStructs.h"
 #include "TileDataAsset.generated.h"
+
+class ATile;
 
 // 타일의 기본 정보를 담는 구조체입니다.
 USTRUCT(BlueprintType)
@@ -13,7 +16,7 @@ struct FTileInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<class ATile> TileClass;
+	TSubclassOf<ATile> TileClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TileSize = 100.f;
@@ -51,5 +54,14 @@ public:
 
 	// 여러 개의 타입과 각각 그에 대응하는 머티리얼 세트를 저장합니다.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource")
-	TArray<struct FResourceMaterialSet> ResourceTileMaterialSets;
+	TArray<FResourceTypeAndMaterials> ResourceTileTypeAndMaterialSet;
+
+/* 구조물 타일 관련 */
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Structures")
+	FTileInfo StructuresTileInfo;
+
+	// 구조물 타일은 하나의 머티리얼을 사용합니다.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Structures")
+	FStructuresTypeAndMaterial StructuresTypeAndMaterial;
 };

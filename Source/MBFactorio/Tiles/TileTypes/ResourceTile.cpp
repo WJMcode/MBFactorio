@@ -10,7 +10,7 @@
 
 AResourceTile::AResourceTile()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
     
     OverlapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapBox"));
     OverlapBox->SetupAttachment(RootComponent);

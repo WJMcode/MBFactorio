@@ -24,8 +24,10 @@ protected:
 private:
 	// 땅 타일을 생성하는 함수
 	void SpawnGroundTiles();
-	// 광물 등 다른 리소스 타일을 생성하는 함수
+	// 리소스(광물) 타일을 생성하는 함수
 	void SpawnResourceTiles();
+	// 구조물 타일을 생성하는 함수
+	void SpawnStructuresTile();
 
 	/**
 	 * @param TileClass			 생성할 타일 명시 (땅, 광물 등)

@@ -59,6 +59,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInput->BindAction(MiningAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnMiningTriggered);
 		EnhancedInput->BindAction(MiningAction, ETriggerEvent::Completed, this, &APlayerCharacter::OnMiningReleased);
 
+		// 아이템 드랍 관련 액션
+		EnhancedInput->BindAction(DropItemAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnDropItemTriggered);
+		EnhancedInput->BindAction(DropItemAction, ETriggerEvent::Started, this, &APlayerCharacter::OnDropItemStarted);
+		EnhancedInput->BindAction(DropItemAction, ETriggerEvent::Completed, this, &APlayerCharacter::OnDropItemReleased);
+
 		// 캐릭터 움직임 관련 액션
 		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::MoveCharacter);
 	}
@@ -138,4 +143,22 @@ void APlayerCharacter::OnMiningMontageEnded(UAnimMontage* Montage, bool bInterru
 {
 	// 채굴 몽타주가 끝났음 (재생 완료)
 	MiningComponent->SetMiningAnimationPlaying(false);
+}
+
+void APlayerCharacter::OnDropItemTriggered()
+{
+	UE_LOG(LogTemp, Warning, TEXT("APlayerCharacter::OnDropItemTriggered()"));
+
+}
+
+void APlayerCharacter::OnDropItemStarted()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AStructuresTile::OnDropItemStarted"));
+
+}
+
+void APlayerCharacter::OnDropItemReleased()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AStructuresTile::OnDropItemReleased"));
+
 }

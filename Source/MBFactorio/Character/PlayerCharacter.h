@@ -65,6 +65,15 @@ private:
 	UFUNCTION()
 	void OnMiningMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
+/* 아이템 드랍 관련 함수 */
+private:
+	// Z를 유지하여 연속으로 아이템 드랍 
+	void OnDropItemTriggered();
+	// Z를 눌러 아이템 드랍
+	void OnDropItemStarted();
+	// Z를 떼면 아이템 드랍을 멈춤
+	void OnDropItemReleased();
+
 /* 플레이어 움직임 관련 변수 */
 protected:
 	// IMC
@@ -96,4 +105,13 @@ protected:
 	// 채굴 관련 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UMiningComponent* MiningComponent;
+	
+/* 아이템 드랍 관련 변수 */
+protected:
+	// IMC
+	// DropItemAction은 WorkMappingContext에서 매핑합니다.
+
+	// IA
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* DropItemAction;
 };

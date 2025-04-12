@@ -17,18 +17,17 @@ class MBFACTORIO_API AResourceTile : public ATile
 {
 	GENERATED_BODY()
 	
-	friend class ATileGridManager;
-
 public:
 	AResourceTile();
 
 protected:
 	virtual void BeginPlay() override;
 
+	// 오버랩 발생
 	UFUNCTION()
 	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
+	// 오버랩 해제
 	UFUNCTION()
 	void OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
@@ -37,7 +36,7 @@ public:
 	// 현재 리소스 타입 가져오기
 	EResourceType GetResourceType() const { return ResourceType; }
 
-private:
+public:
 	// 리소스 타입을 설정합니다.
 	void SetResourceType(EResourceType InType);
 

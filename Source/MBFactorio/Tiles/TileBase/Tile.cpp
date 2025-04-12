@@ -28,7 +28,12 @@ void ATile::SetTileScale(float TileSize)
 	SetActorScale3D(FVector(Scale, Scale, 1.f)); // 타일은 평면이기 때문에 Z 스케일은 그대로 두기
 }
 
-void ATile::SetRandomMaterial(const TArray<UMaterialInterface*>& Materials)
+void ATile::SetTileMaterial(UMaterialInterface* Material)
+{
+	TileMesh->SetMaterial(0, Material);
+}
+
+void ATile::SetRandomTileMaterial(const TArray<UMaterialInterface*>& Materials)
 {
 	if (Materials.Num() > 0)
 	{
