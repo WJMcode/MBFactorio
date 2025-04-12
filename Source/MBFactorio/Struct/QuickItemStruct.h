@@ -9,24 +9,28 @@ struct FQuickItemData
 {
     GENERATED_BODY()
 
+    // 식별용 문자열 ID
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UTexture2D* Icon;
+    FString ItemID;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<AActor> ItemActor;
+    UTexture2D* ItemIcon = nullptr;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int32 Count;
+    TSubclassOf<AActor> ItemActor = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 ItemCount = 0;
 
     FQuickItemData()
-        : Icon(nullptr), ItemActor(nullptr), Count(0)
+        : ItemIcon(nullptr), ItemActor(nullptr), ItemCount(0)
     {
     }
 
     // QuickItemStruct.h
     FORCEINLINE bool IsValid() const
     {
-        return Icon != nullptr && ItemActor != nullptr && Count > 0;
+        return !ItemID.IsEmpty() && ItemIcon != nullptr && ItemActor != nullptr && ItemCount > 0;
     }
 
 };

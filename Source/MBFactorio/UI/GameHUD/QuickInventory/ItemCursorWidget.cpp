@@ -1,5 +1,6 @@
 #include "ItemCursorWidget.h"
 #include "Components/Image.h"
+#include "Engine/Texture2D.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 
 void UItemCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -8,41 +9,38 @@ void UItemCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 
     if (HasItem())
     {
-        FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
+        FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
         SetPositionInViewport(MousePos, true);
     }
 }
 
-void UItemCursorWidget::SetItem(const FQuickItemData& NewItem)
+void UItemCursorWidget::SetItem(const FQuickItemData& InItem)
 {
-    CursorItem = NewItem;
+    CursorItem = InItem;
+
     UpdateUI();
 }
 
 void UItemCursorWidget::ClearItem()
 {
-    CursorItem = FQuickItemData();
-    UpdateUI();
-}
+    CursorItem = FQuickItemData{};
 
-bool UItemCursorWidget::HasItem() const
-{
-    return CursorItem.IsValid();
+    UpdateUI();
 }
 
 void UItemCursorWidget::UpdateUI()
 {
-    if (ItemIcon)
+    if (CursorIcon)
     {
         if (CursorItem.IsValid())
         {
-            ItemIcon->SetBrushFromTexture(CursorItem.Icon);
-            ItemIcon->SetVisibility(ESlateVisibility::Visible);
+            CursorIcon->SetBrushFromTexture(CursorItem.ItemIcon);
+            CursorIcon->SetVisibility(ESlateVisibility::Visible);
         }
         else
         {
-            ItemIcon->SetBrushFromTexture(nullptr);
-            ItemIcon->SetVisibility(ESlateVisibility::Collapsed);
+            CursorIcon->SetBrushFromTexture(nullptr);
+            CursorIcon->SetVisibility(ESlateVisibility::Hidden);
         }
     }
 }

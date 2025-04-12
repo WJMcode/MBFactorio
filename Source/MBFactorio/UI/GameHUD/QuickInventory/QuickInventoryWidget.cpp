@@ -6,27 +6,44 @@ void UQuickInventoryWidget::NativeConstruct()
 {
     Super::NativeConstruct();
     InitSlots(); // 슬롯 초기화
+
 }
 
 void UQuickInventoryWidget::InitSlots()
 {
-    if (!SlotContainer || !SlotWidgetClass) return;
+    UE_LOG(LogTemp, Warning, TEXT("InitSlots called. SlotCount = %d"), SlotCount);
 
-    Slots.Empty(); // 이전 슬롯 제거
+    // 유효성 검사
+    if (!SlotContainer || !SlotWidgetClass)
+    {
+        UE_LOG(LogTemp, Error, TEXT("SlotContainer or SlotWidgetClass is NULL!"));
+        return;
+    }
 
+    // 기존 슬롯 제거
+    SlotContainer->ClearChildren();
+    Slots.Empty();
+
+    // 슬롯 개수만큼 생성
     for (int32 i = 0; i < SlotCount; ++i)
     {
-        // 슬롯 위젯 생성
         UQuickInventorySlotWidget* NewSlot = CreateWidget<UQuickInventorySlotWidget>(this, SlotWidgetClass);
         if (NewSlot)
         {
-            // 슬롯 컨테이너에 추가
-            SlotContainer->AddChildToHorizontalBox(NewSlot);
-            // 내부 배열에 저장
+            UHorizontalBoxSlot* NewBoxSlot = SlotContainer->AddChildToHorizontalBox(NewSlot);
+            if (NewBoxSlot)
+            {
+                NewBoxSlot->SetSize(ESlateSizeRule::Fill);
+                NewBoxSlot->SetPadding(FMargin(2.0f));
+            }
+
             Slots.Add(NewSlot);
         }
     }
+
+    UE_LOG(LogTemp, Warning, TEXT("Slots.Num() = %d"), Slots.Num());
 }
+
 
 void UQuickInventoryWidget::SetSlotItem(int32 Index, const FQuickItemData& Item)
 {
@@ -51,5 +68,5 @@ FQuickItemData UQuickInventoryWidget::GetSlotItem(int32 Index) const
         return Slots[Index]->GetItem();
     }
 
-    return FQuickItemData();
+    return FQuickItemData{};
 }

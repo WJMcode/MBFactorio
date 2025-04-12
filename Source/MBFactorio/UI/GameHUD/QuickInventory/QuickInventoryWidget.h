@@ -30,6 +30,9 @@ public:
     /** 지정 인덱스 슬롯에 담긴 아이템 데이터 반환 */
     FQuickItemData GetSlotItem(int32 Index) const;
 
+    /** 슬롯을 동적으로 생성하고 컨테이너에 추가 */
+    void InitSlots();
+
 protected:
     /** 슬롯들을 담는 컨테이너 (UMG에서 바인딩됨) */
     UPROPERTY(meta = (BindWidget))
@@ -43,10 +46,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Quick Inventory")
     int32 SlotCount = 5;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Quick Inventory")
+    UDataTable* ItemMetaDataTable = nullptr;
+
 private:
     /** 동적으로 생성된 슬롯 위젯들 */
     TArray<UQuickInventorySlotWidget*> Slots;
 
-    /** 슬롯을 동적으로 생성하고 컨테이너에 추가 */
-    void InitSlots();
 };

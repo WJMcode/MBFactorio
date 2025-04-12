@@ -25,13 +25,13 @@ void UQuickInventorySlotWidget::SetItem(const FQuickItemData& InItem)
     {
         if (ItemIcon)
         {
-            ItemIcon->SetBrushFromTexture(SlotItem.Icon);
+            ItemIcon->SetBrushFromTexture(SlotItem.ItemIcon);
             ItemIcon->SetVisibility(ESlateVisibility::Visible);
         }
         if (ItemCount)
         {
-            ItemCount->SetText(FText::AsNumber(SlotItem.Count));
-            ItemCount->SetVisibility(ESlateVisibility::Visible);
+            ItemCount->SetText(FText::AsNumber(SlotItem.ItemCount));
+            ItemCount->SetVisibility(SlotItem.ItemCount > 1 ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
         }
     }
     else
@@ -39,6 +39,7 @@ void UQuickInventorySlotWidget::SetItem(const FQuickItemData& InItem)
         ClearItem(); // 유효하지 않은 경우 바로 클리어
     }
 
+    SetVisibility(ESlateVisibility::Visible); // 슬롯 전체도 보이게
 }
 
 void UQuickInventorySlotWidget::ClearItem()
@@ -70,37 +71,27 @@ bool UQuickInventorySlotWidget::HasItem() const
 
 void UQuickInventorySlotWidget::HandleClick()
 {
-    // 플레이어 컨트롤러 확인
-    ALYJController* PC = Cast<ALYJController>(UGameplayStatics::GetPlayerController(this, 0));
-    if (!PC) return;
-
-    // 커서 위젯 가져오기
-    TArray<UUserWidget*> Widgets;
-    UWidgetBlueprintLibrary::GetAllWidgetsOfClass(GetWorld(), Widgets, UItemCursorWidget::StaticClass(), false);
-
-    if (Widgets.Num() == 0) return;
-
-    UItemCursorWidget* CursorWidget = Cast<UItemCursorWidget>(Widgets[0]);
-    if (!CursorWidget) return;
-
-    const bool bCursorHasItem = CursorWidget->HasItem();
-    const bool bSlotHasItem = HasItem();
-
-    // 상태별 처리
-    if (bCursorHasItem && !bSlotHasItem)
+    if (!SlotItem.IsValid())
     {
-        SetItem(CursorWidget->GetItem());
-        CursorWidget->ClearItem();
-        UE_LOG(LogTemp, Log, TEXT("[퀵슬롯] 커서 → 슬롯 이동"));
+        return;
     }
-    else if (!bCursorHasItem && bSlotHasItem)
-    {
-        CursorWidget->SetItem(SlotItem);
-        ClearItem();
-        UE_LOG(LogTemp, Log, TEXT("[퀵슬롯] 슬롯 → 커서 이동"));
-    }
-    else if (bCursorHasItem && bSlotHasItem)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("[퀵슬롯] 양쪽에 아이템 있음 - 무시"));
-    }
+
+    //// 플레이어 컨트롤러 가져오기
+    //if (APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0))
+    //{
+    //    if (ALYJController* LYJPC = Cast<ALYJController>(PC))
+    //    {
+    //        if (LYJPC->ItemCursorWidget)
+    //        {
+    //            // 커서 위젯에 아이템 설정 및 표시
+    //            LYJPC->ItemCursorWidget->SetItem(SlotItem);
+    //            LYJPC->ItemCursorWidget->SetVisibility(ESlateVisibility::Visible);
+
+    //            UE_LOG(LogTemp, Warning, TEXT("커서에 아이템 부착: %s"), *SlotItem.ItemID);
+    //        }
+    //    }
+    //}
+
+    // 슬롯 초기화 (아이템 제거)
+    ClearItem();
 }
