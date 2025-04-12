@@ -11,7 +11,7 @@
 
 #include "Character/PlayerCharacter.h"
 #include "Tiles/TileTypes/ResourceTile.h"
-
+#include "Component/Mining/MiningComponent.h"
 // WJMController.h의 코드를 복사한 상태입니다.
 // ResourceTile에서 플레이어 감지하게 하려면 LYJController로 바꿔서 사용할 것
 
@@ -412,11 +412,11 @@ void ALYJController::StopCharacterAction()
     APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
     if (!PlayerCharacter) { return; }
     // 캐릭터를 채굴할 수 없는 상태로 설정
-    PlayerCharacter->SetCanMine(false);
+    PlayerCharacter->GetMiningComponent()->SetCanMine(false);
 
     // 채굴 중이었다면 채굴을 멈춤
-    if (PlayerCharacter->GetIsMining())
+    if (PlayerCharacter->GetMiningComponent()->IsMining())
     {
-        PlayerCharacter->StopMining();
+        PlayerCharacter->GetMiningComponent()->StopMining();
     }
 }

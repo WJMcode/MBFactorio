@@ -1,10 +1,11 @@
-// 2025 04 10 : UMBFCursorWidget::NativeTick 수정, 헤더 파일 Include (원재민)
+// 2025 04 12 : UMBFCursorWidget::NativeTick 수정, 헤더 파일 Include (원재민)
 
 #include "UI/MBFCursorWidget.h"
 #include "Struct/MBFStope.h"
 #include "Components/Image.h"
 
 #include "Character/PlayerCharacter.h"
+#include "Component/Mining/MiningComponent.h"
 #include "Tools/WJMController.h"
 #include "Tools/LYJController.h"
 #include "Tiles/TileTypes/ResourceTile.h"
@@ -35,13 +36,13 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
             {
                 SetCursorTint(FLinearColor::Yellow);
                 // 캐릭터를 채굴 가능한 상태로 설정합니다.
-                Player->SetCanMine(true);
+                Player->GetMiningComponent()->SetCanMine(true);
                 return;
             }
 
             SetCursorTint(FLinearColor::Red);
             // 캐릭터를 채굴 불가능한 상태로 설정합니다.
-            Player->SetCanMine(false);
+            Player->GetMiningComponent()->SetCanMine(false);
         }
     }
 }

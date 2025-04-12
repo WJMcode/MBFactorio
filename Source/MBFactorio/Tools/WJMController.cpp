@@ -6,8 +6,8 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "InputTriggers.h"
-
 #include "Character/PlayerCharacter.h"
+#include "Component/Mining/MiningComponent.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 
 // LYJController.h의 코드를 복사, 수정한 상태입니다.
@@ -138,7 +138,7 @@ AActor* AWJMController::FindOverlappingStope()
     APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
     if (!PlayerCharacter) 
     {
-        UE_LOG(LogTemp, Error, TEXT("AWJMController::foundstope(): PlayerCharacter가 nullptr입니다!"));
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::FindOverlappingStope(): PlayerCharacter가 nullptr입니다!"));
 
         return nullptr; 
     }
@@ -163,14 +163,26 @@ AActor* AWJMController::FindOverlappingStope()
 void AWJMController::StopCharacterAction()
 {
     APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-    if (!PlayerCharacter) { return; }
+    if (!PlayerCharacter) 
+    { 
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::StopCharacterAction(): PlayerCharacter가 nullptr입니다!"));
+        return; 
+    }
+
+    UMiningComponent* CharacterMiningComponent =  PlayerCharacter->GetMiningComponent();
+    if (!CharacterMiningComponent) 
+    { 
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::StopCharacterAction(): CharacterMiningComponent가 nullptr입니다!"));
+        return; 
+    }
+
     // 캐릭터를 채굴할 수 없는 상태로 설정
-    PlayerCharacter->SetCanMine(false);
+    CharacterMiningComponent->SetCanMine(false);
 
     // 채굴 중이었다면 채굴을 멈춤
-    if (PlayerCharacter->GetIsMining())
+    if (CharacterMiningComponent->IsMining())
     {
-        PlayerCharacter->StopMining();
+        CharacterMiningComponent->StopMining();
     }
 }
 

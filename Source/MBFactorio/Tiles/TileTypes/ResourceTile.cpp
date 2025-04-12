@@ -1,9 +1,8 @@
 #include "ResourceTile.h"
 #include "Components/BoxComponent.h"
 #include "Character/PlayerCharacter.h"
-//#include "Tools/WJMController.h"
-
-#include "Tools/LYJController.h"
+#include "Tools/WJMController.h"
+#include "Component/Mining/MiningComponent.h"
 
 AResourceTile::AResourceTile()
 {
@@ -40,7 +39,7 @@ void AResourceTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
     {
         if (AController* Controller = Player->GetController())
         {
-            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            if (AWJMController* PC = Cast<AWJMController>(Controller))
             {
                 // 광물 입장에서 봤을 때, 플레이어와 오버랩됨
                 bIsPlayerNear = true;
@@ -52,7 +51,7 @@ void AResourceTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
                 PC->SetPlayerNearStope(true);
 
                 // 오버랩된 플레이어에게 자신(광물)을 넘김
-                Player->SetCurrentTargetTile(this); 
+                Player->GetMiningComponent()->SetCurrentTargetTile(this);
             }
         }
     }
@@ -64,7 +63,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
     {
         if (AController* Controller = Player->GetController())
         {
-            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            if (AWJMController* PC = Cast<AWJMController>(Controller))
             {
                 // 광물 입장에서 봤을 때, 플레이어와 오버랩 해제됨
                 bIsPlayerNear = false;
@@ -82,7 +81,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
                     PC->SetPlayerNearStope(true);
                     
                     // 감지된 다른 광물을 플레이어에게 넘김  
-                    Player->SetCurrentTargetTile(FoundStope);
+                    Player->GetMiningComponent()->SetCurrentTargetTile(FoundStope);
                 }
                 /*  광물과 플레이어 사이의 오버랩이 해제된 상태에서 
                      다른 중복 오버랩된 광물이 없다면 DetectedStope을 nullptr로 세팅   */
@@ -93,7 +92,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
                     PC->SetPlayerNearStope(false);
 
                     // 아무 광물도 감지되지 않았으므로 nullptr을 플레이어에게 넘김
-                    Player->SetCurrentTargetTile(nullptr);
+                    Player->GetMiningComponent()->SetCurrentTargetTile(nullptr);
                 }
             }
         }
