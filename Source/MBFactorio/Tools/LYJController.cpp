@@ -86,6 +86,15 @@ void ALYJController::Tick(float DeltaTime)
         }
     }
 
+    if (ItemCursorWidget)
+    {
+        float PosX, PosY;
+        if (GetMousePosition(PosX, PosY))
+        {
+            ItemCursorWidget->SetPositionInViewport(FVector2D(PosX, PosY));
+        }
+    }
+
     if (CursorWidget && CursorWidget->IsVisible())
     {
         if (HitStope)
@@ -124,6 +133,16 @@ void ALYJController::SetupInputComponent()
     IMC_ClickInventory = NewObject<UInputMappingContext>();
     IMC_ClickInventory->MapKey(ClickAction, EKeys::LeftMouseButton);
 
+    // 인벤토리 생성
+    OpenInventory = NewObject<UInputAction>(this);
+    OpenInventory->ValueType = EInputActionValueType::Boolean;
+
+    UInputTriggerPressed* PressE = NewObject<UInputTriggerPressed>(OpenInventory);
+    OpenInventory->Triggers.Add(PressE);
+
+    IMC_Inventory = NewObject<UInputMappingContext>();
+    IMC_Inventory->MapKey(OpenInventory, EKeys::E);
+
     // UI 키 등록
     if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
     {
@@ -132,7 +151,8 @@ void ALYJController::SetupInputComponent()
         {
             Subsystem->AddMappingContext(IMC_Menu, 1); // 게임 메뉴
             Subsystem->AddMappingContext(IMC_ClickInventory, 2); // 인벤토리 슬롯 클릭
-            UE_LOG(LogTemp, Warning, TEXT("Controller: IMC_Menu, IMC_ClickInventory 등록"));
+            Subsystem->AddMappingContext(IMC_Inventory, 3); // 인벤토리 창
+            UE_LOG(LogTemp, Warning, TEXT("Controller: IMC_Menu, IMC_ClickInventory, IMC_Inventory 등록"));
         }
     }
 
@@ -143,7 +163,9 @@ void ALYJController::SetupInputComponent()
             Input->BindAction(GameMenuAction, ETriggerEvent::Triggered, this, &ALYJController::OnGameMenuPressed);
             UE_LOG(LogTemp, Warning, TEXT("SetupInputComponent: GameMenuAction 바인딩 성공"));
             Input->BindAction(ClickAction, ETriggerEvent::Triggered, this, &ALYJController::OnClickInventory);
-            UE_LOG(LogTemp, Warning, TEXT("SetupInputComponent: GameMenuAction 바인딩 성공"));
+            UE_LOG(LogTemp, Warning, TEXT("SetupInputComponent: OnClickInventory 바인딩 성공"));
+            Input->BindAction(ClickAction, ETriggerEvent::Triggered, this, &ALYJController::InventoryTogle);
+            UE_LOG(LogTemp, Warning, TEXT("SetupInputComponent: InventoryTogle 바인딩 성공"));
         }
     }
 }
@@ -241,6 +263,17 @@ void ALYJController::UpdateCursorVisibility(AResourceTile* InStope)
 {
     if (!CursorWidget) return;
    
+    // 커서에 아이템이 있는 경우 CursorWidget 숨김
+    if (ItemCursorWidget && ItemCursorWidget->HasValidItem())
+    {
+        CursorWidget->SetVisibility(ESlateVisibility::Hidden);
+        return; // 커서에 아이템이 있으면 나머지 조건 무시
+    }
+    else if (ItemCursorWidget && !ItemCursorWidget->HasValidItem())
+    {
+        CursorWidget->SetVisibility(ESlateVisibility::Visible);
+    }
+
     const bool bNear = CursorWidget->bPlayerIsNear;
 
     // 캐릭터와 광물이 오버랩되지 않았거나, 
@@ -431,27 +464,21 @@ void ALYJController::OnClickInventory()
     }
 }
 
+void ALYJController::InventoryTogle()
+{
+    // MBFInventoryComponent->InventoryTogle(); 
+}
+
 UItemCursorWidget* ALYJController::GetItemCursorWidget()
 {
-    if (!ItemCursorWidget)
+    if (!ItemCursorWidget && ItemCursorWidgetClass)
     {
-        if (!ItemCursorWidgetClass) { return nullptr; }
-
         ItemCursorWidget = CreateWidget<UItemCursorWidget>(this, ItemCursorWidgetClass);
         if (ItemCursorWidget)
         {
-            ItemCursorWidget->AddToViewport(99); // 항상 위로
+            ItemCursorWidget->AddToViewport(20);
+            ItemCursorWidget->SetVisibility(ESlateVisibility::Hidden);
         }
-    }
-
-    //// 커서 설정
-    //SetGameAndUIInput();
-
-    // 커서 UI 제거
-    if (CursorWidget)
-    {
-        CursorWidget->RemoveFromParent();
-        CursorWidget = nullptr; // 꼭 nullptr로 만들어줘야 이후 재생성됨
     }
 
     return ItemCursorWidget;

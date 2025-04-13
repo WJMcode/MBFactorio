@@ -8,68 +8,56 @@ void UItemCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
+    /*ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
     if (!PC) { return; }
 
     FVector2D MousePosition;
     if (PC->GetMousePosition(MousePosition.X, MousePosition.Y))
     {
-        SetPositionInViewport(MousePosition, true);
-
-        if (CursorIcon)
-        {
-            SetPositionInViewport(MousePosition, false);
-        }
-    }    
+        SetPositionInViewport(MousePosition, false);
+    }*/
 }
 
 void UItemCursorWidget::SetItem(const FItemData& InItem)
 {
     ItemData = InItem;
 
-    if (CursorIcon && ItemData.Image)
-    {
-        CursorIcon->SetBrushFromTexture(ItemData.Image);
-        SetVisibility(ESlateVisibility::Visible);
-    }
+    UpdateUI();
 }
 
 void UItemCursorWidget::ClearItem()
 {
     ItemData = FItemData();
 
-    if (CursorIcon)
-    {
-        CursorIcon->SetBrushFromTexture(nullptr);
-        SetVisibility(ESlateVisibility::Hidden);
-    }
+    UpdateUI();
 }
 
 void UItemCursorWidget::UpdateUI()
 {
     if (!CursorIcon) return;
 
-    if (ItemData.IsValid())
+    if (ItemData.IsValid() && CursorIcon)
     {
-        // 더 이상 FSlateBrush 안 씀!
-        CursorIcon->SetBrushFromTexture(ItemData.Image, true);
-        CursorIcon->SetVisibility(ESlateVisibility::Visible);
-    }
-    else
-    {
-        CursorIcon->SetBrushFromTexture(nullptr);
-        CursorIcon->SetVisibility(ESlateVisibility::Hidden);
+        if (ItemData.Image)
+        {
+            CursorIcon->SetBrushFromTexture(ItemData.Image);
+            CursorIcon->SetVisibility(ESlateVisibility::Visible);
+
+            // 크기 명시적으로 설정
+            CursorIcon->SetBrushSize(FVector2D(8.f, 8.f));
+
+            UE_LOG(LogTemp, Warning, TEXT("CursorIcon이 Visible입니다"));
+        }
+        else
+        {
+            CursorIcon->SetBrushFromTexture(nullptr);
+            CursorIcon->SetVisibility(ESlateVisibility::Hidden);
+            UE_LOG(LogTemp, Warning, TEXT("CursorIcon이 Hidden입니다"));
+        }
     }
 }
 
-FReply UItemCursorWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+bool UItemCursorWidget::HasValidItem() const
 {
-    // 우클릭으로 취소 처리
-    if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
-    {
-        ClearItem();
-        return FReply::Handled();
-    }
-
-    return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+    return !ItemData.ItemID.IsNone() && ItemData.Image != nullptr;
 }

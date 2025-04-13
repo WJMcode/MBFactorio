@@ -7,20 +7,6 @@ void UQuickInventoryWidget::NativeConstruct()
     Super::NativeConstruct();
     InitSlots(); // 슬롯 초기화
 
-    // 첫 슬롯에만 아이템 추가
-    if (Slots.IsValidIndex(0))
-    {
-        FItemData TestItem;
-        TestItem.ItemID = TEXT("TestStone");
-        TestItem.CreateCount = 10;
-        TestItem.Image = LoadObject<UTexture2D>(nullptr, TEXT("/Game/Texture/Stone.Stone")); // 경로는 실제 에셋으로 수정
-
-        if (TestItem.Image)
-        {
-            Slots[0]->SetItem(TestItem);
-            UE_LOG(LogTemp, Warning, TEXT("테스트 아이템 슬롯 0에 삽입 완료"));
-        }
-    }
 }
 
 void UQuickInventoryWidget::InitSlots()

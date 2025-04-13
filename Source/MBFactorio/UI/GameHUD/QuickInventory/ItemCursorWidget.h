@@ -16,6 +16,7 @@ protected:
 
 public:
     /** 현재 커서에 아이템을 설정 */
+    UFUNCTION(BlueprintCallable)
     void SetItem(const FItemData& InItem);
 
     /** 현재 커서에 설정된 아이템 반환 */
@@ -27,10 +28,11 @@ public:
     /** 커서에 아이템이 있는지 확인 */
     bool HasItem() const { return ItemData.IsValid(); }
 
-    /** 우클릭 시 아이템 해제 처리 */
-    virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-
     void UpdateUI();
+
+    /** 커서에 설정된 아이템이 유효한지 확인 */
+    UFUNCTION(BlueprintCallable, Category = "Cursor")
+    bool HasValidItem() const;
 
 protected:
     UPROPERTY(meta = (BindWidget))

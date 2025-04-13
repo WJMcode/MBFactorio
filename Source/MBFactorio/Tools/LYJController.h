@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
-#include "Struct/MBFStope.h"
+#include "Component/MBFInventoryComponent.h"
 #include "LYJController.generated.h"
 
 // WJMController.h의 코드를 복사한 상태입니다.
+// MBFController.h의 코드를 복사한 상태입니다.
 
 class UInputAction;
 class UInputMappingContext;
@@ -36,6 +37,7 @@ protected:
 
 public:
     AResourceTile* GetDetectedStope() const { return DetectedStope; } // 현재 감지된 광물 반환
+    UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; } // MBFController에서 복사
 
     void CreateAndAddCursorWidget();                       // CursorWidget 생성 및 Viewport 등록
     void SetGameOnlyInput();                               // 입력 모드 - 게임 전용
@@ -59,6 +61,8 @@ public:
     AActor* FindOverlappingStope();                        // 플레이어 주변 ResourceTile 찾기
 
     void OnClickInventory();                               // 인벤토리 슬롯 클릭 시 커서 처리 함수
+
+    void InventoryTogle(); // MBFController에서 복사
 
 public:
     UFUNCTION(BlueprintCallable)
@@ -97,6 +101,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* ClickAction;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    UInputMappingContext* IMC_Inventory;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    UInputAction* OpenInventory;
+
 protected:
     UPROPERTY()
     UGameHUD* GameHUDWidget;
@@ -121,5 +131,7 @@ public:
 private:
     UPROPERTY()
     AResourceTile* DetectedStope = nullptr; // 감지된 광물 캐시
+
+    UMBFInventoryComponent* MBFInventoryComponent; // MBFController에서 복사
 };
 

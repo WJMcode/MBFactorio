@@ -17,7 +17,7 @@ void UQuickInventorySlotWidget::NativeConstruct()
     }
 }
 
-void UQuickInventorySlotWidget::SetItem(FItemData& InItem)
+void UQuickInventorySlotWidget::SetItem(FItemData InItem)
 {
     SlotItem = InItem;
 
@@ -64,28 +64,33 @@ bool UQuickInventorySlotWidget::HasItem() const
 
 void UQuickInventorySlotWidget::HandleClick()
 {
-    if (!SlotItem.IsValid()) { return; }
-
-    UItemCursorWidget* CursorWidgetInstance = GetItemCursorWidget();
-
-    // 슬롯 → 커서
-    if (CursorWidgetInstance && !CursorWidgetInstance->HasItem() && HasItem())
+    // 컨트롤러에서 커서 위젯 가져오기
+    APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+    if (ALYJController* LYJPC = Cast<ALYJController>(PC))
     {
-        CursorWidgetInstance->SetItem(SlotItem);
-        ClearItem();
-        return;
-    }
+        UItemCursorWidget* GetCursor = LYJPC->GetItemCursorWidget();
+        if (!GetCursor) { return; }
 
-    // 커서 → 슬롯
-    if (CursorWidgetInstance && CursorWidgetInstance->HasItem() && !HasItem())
-    {
-        SetItem(CursorWidgetInstance->GetItem());
-        CursorWidgetInstance->ClearItem();
-        return;
-    }
+        // 1. 슬롯에 아이템이 있고 커서는 비어있으면 → 커서에 등록
+        if (SlotItem.IsValid() /*&& !GetCursor->HasValidItem()*/)
+        {
+            GetCursor->SetItem(SlotItem);
+            ClearItem();
+            return;
+        }
 
-    // 충돌 시 슬롯 비우기
-    ClearItem();
+        // 2. 슬롯이 비어 있고 커서에 아이템이 있다면 → 슬롯에 아이템 등록
+        if (!SlotItem.IsValid() && GetCursor->HasValidItem())
+        {
+            SetItem(GetCursor->GetItem());
+            GetCursor->ClearItem();
+            UE_LOG(LogTemp, Log, TEXT("빈 슬롯에 커서 아이템 등록"));
+            return;
+        }
+
+        // 3. 기타 경우
+        UE_LOG(LogTemp, Log, TEXT("클릭 시 아무 동작 없음"));
+    }
 }
 
 UItemCursorWidget* UQuickInventorySlotWidget::GetItemCursorWidget() const
