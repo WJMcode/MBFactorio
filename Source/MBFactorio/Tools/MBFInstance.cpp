@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Tools/MBFInstance.h"
@@ -24,4 +24,7 @@ void UMBFInstance::Init()
 	Super::Init();
 	static const FString TablePath = TEXT("/ Script / Engine.DataTable'/Game/ItemTable.ItemTable'");
 	ItemDataTable = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *TablePath));
+	
+	InventoryManager = NewObject<UInventoryManager>(this, UInventoryManager::StaticClass());
+
 }

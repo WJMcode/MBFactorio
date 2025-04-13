@@ -1,23 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Tools/Widget/MBFInventory.h"
+#include "UI/Inventory/AutoCraftWidget.h"
 #include "Tools/MBFController.h"
-#include "Struct/MBFStruct.h"
-#include "Styling/SlateBrush.h"
-#include "Styling/SlateColor.h"
-#include "Tools/MBFInstance.h"
-#include "Math/Color.h"
 
-void UMBFInventory::OnInitialized()
+void UAutoCraftWidget::NativeConstruct()
 {
-
-}
-
-void UMBFInventory::NativeConstruct()
-{
-    Super::NativeConstruct();
-
     OwnerInventory = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetInventoryComponent();
 
     for (int32 i = 0; i < 80; ++i)
@@ -33,9 +21,9 @@ void UMBFInventory::NativeConstruct()
             UMBFSlot* SlotWidget = Cast<UMBFSlot>(FoundWidget);
             if (SlotWidget)
             {
-                ItemSlot[i] = SlotWidget;
-                ItemSlot[i]->SetIndex(i);
-                ItemSlot[i]->SetOwnerInventory(OwnerInventory);
+                CharactorSlot[i] = SlotWidget;
+                CharactorSlot[i]->SetIndex(i);
+                CharactorSlot[i]->SetOwnerInventory(OwnerInventory);
             }
             else
             {
@@ -47,59 +35,70 @@ void UMBFInventory::NativeConstruct()
             UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
         }
     }
-    for (int32 i = 0; i < 4; ++i)
-    {
-        FString SlotName = FString::Printf(TEXT("CraftSelectSlot_%d"), i);
-        FName WidgetName(*SlotName);
 
-        // �̸����� ���� ã��
-        UWidget* FoundWidget = GetWidgetFromName(WidgetName);
-        if (FoundWidget)
-        {
-            UCraftSelectSlot* SlotWidget = Cast<UCraftSelectSlot>(FoundWidget);
-            if (SlotWidget)
-            {
-                SlotWidget->SetNum(i);
-                SelectedSlot[i] = SlotWidget;
-                if(!SelectedSlot[i]->OnSlotClicked.IsAlreadyBound(this, &ThisClass::SelectedSlotChange))
-                    SelectedSlot[i]->OnSlotClicked.AddDynamic(this, &ThisClass::SelectedSlotChange);
-            }
-            else
-            {
-                UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
-            }
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-        }
-    }
-    if (SelectedSlot[0])
-    {
-
-        SelectedSlot[0]->Selected();
-    }
-    OnChanged();
-    
-    for (int32 i = 0; i < 70; ++i)
+    for (int32 i = 0; i < 5; ++i)
     {
         // �̸� ����: "ItemSlot_0", "ItemSlot_1", ...
-        FString SlotName = FString::Printf(TEXT("BPCraftSlot_%d"), i);
+        FString SlotName = FString::Printf(TEXT("RequiredItemSlot_%d"), i);
         FName WidgetName(*SlotName);
 
         // �̸����� ���� ã��
         UWidget* FoundWidget = GetWidgetFromName(WidgetName);
         if (FoundWidget)
         {
-            UCraftSlot* SlotWidget = Cast<UCraftSlot>(FoundWidget);
+            UMBFSlot* SlotWidget = Cast<UMBFSlot>(FoundWidget);
             if (SlotWidget)
             {
-                CraftSlot[i] = SlotWidget;
-                if (i != 0)
-                {
-                    CraftSlot[i]->SetItemID(FName(FString::FromInt(i)));
-                    CraftSlot[i]->CraftChange();
-                }
+                RequiredItemSlot[i] = SlotWidget;
+                RequiredItemSlot[i]->SetIndex(i);
+                RequiredItemSlot[i]->SetOwnerInventory(MachineInventory);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
+        }
+    }
+    {
+        FString SlotName = FString::Printf(TEXT("BuildResetWidget"));
+        FName WidgetName(*SlotName);
+
+        // �̸����� ���� ã��
+        UWidget* FoundWidget = GetWidgetFromName(WidgetName);
+        if (FoundWidget)
+        {
+            UBuildReSetWidget* SlotWidget = Cast<UBuildReSetWidget>(FoundWidget);
+            if (SlotWidget)
+            {
+                BuildResetWidget = SlotWidget;
+                BuildResetWidget->SetOwnerActor(OwnerActor);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
+        }
+    }
+    {
+        FString SlotName = FString::Printf(TEXT("ProgressBar"));
+        FName WidgetName(*SlotName);
+
+        // �̸����� ���� ã��
+        UWidget* FoundWidget = GetWidgetFromName(WidgetName);
+        if (FoundWidget)
+        {
+            UProgressBar* SlotWidget = Cast<UProgressBar>(FoundWidget);
+            if (SlotWidget)
+            {
+                ProgressBar = SlotWidget;
                 
             }
             else
@@ -112,38 +111,23 @@ void UMBFInventory::NativeConstruct()
             UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
         }
     }
-    SetIsEnabled(true);
-    SetVisibility(ESlateVisibility::Visible);
+    OwnerActor->SetInventory();
+    OnChanged();
 }
 
-void UMBFInventory::OnChanged()
+void UAutoCraftWidget::CraftMachineChanged()
 {
-    for (int i = 0; i < 80; i++)
+    for (int i = 0; i < 5; i++)
+    {
+        RequiredItemSlot[i]->Changed(i);
+    }
+}
+
+void UAutoCraftWidget::OnChanged()
+{
+    for (int i = 0; i < 80;i++)
     {
         SlotChanged(i);
     }
+    CraftMachineChanged();
 }
-
-
-
-void UMBFInventory::BindingSelectedAction(UCraftSelectSlot* InSlot)
-{
-    InSlot->OnSlotClicked.AddDynamic(this, &ThisClass::SelectedSlotChange);
-}
-
-void UMBFInventory::SelectedSlotChange(int32 SlotID)
-{
-    if (SelectedSlotNum == SlotID)
-    {
-        return;
-    }
-    else
-    {
-        SelectedSlot[SelectedSlotNum]->UnSelected();
-        SelectedSlotNum = SlotID;
-    }
-}
-
-
-
-

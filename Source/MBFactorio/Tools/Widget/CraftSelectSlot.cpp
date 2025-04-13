@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Tools/Widget/CraftSelectSlot.h"
@@ -34,7 +34,8 @@ void UCraftSelectSlot::NativeConstruct()
 			}
 			if (MyButton)
 			{
-				MyButton->OnClicked.AddDynamic(this, &ThisClass::Selected);
+				if (!MyButton->OnClicked.IsAlreadyBound(this, &ThisClass::Selected))
+					MyButton->OnClicked.AddDynamic(this, &ThisClass::Selected);
 			}
 		}
 	}

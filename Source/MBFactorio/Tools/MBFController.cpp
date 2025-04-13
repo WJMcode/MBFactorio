@@ -15,6 +15,8 @@ AMBFController::AMBFController()
 	IMC_Default = Asset.Object;
 
 	bOpenInventory = false;
+	bEnableClickEvents = true;
+	bShowMouseCursor = true;
 }
 
 void AMBFController::BeginPlay()
@@ -32,6 +34,10 @@ void AMBFController::BeginPlay()
 		{
 			MBFInventoryComponent->RegisterComponent();
 		}
+		MBFInventoryComponent->AddItem(FName(FString::FromInt(5)), 50);
+		MBFInventoryComponent->AddItem(FName(FString::FromInt(4)), 50);
+		MBFInventoryComponent->SetSortOption(true);
+		MBFInventoryComponent->SortInventory();
 	}
 	if (!CraftComponent)
 	{
@@ -75,6 +81,28 @@ void AMBFController::Tick(float DeltaSeconds)
 
 void AMBFController::InventoryTogle()
 {
-	MBFInventoryComponent->InventoryTogle();
 
+	AMBFHUD* MBFHUD = Cast<AMBFHUD>(GetHUD());
+	if (!MBFHUD) return;
+
+	if (FurnaceUIOwnerActor)
+	{
+		FurnaceUIOwnerActor->CloseFurnace();
+		FurnaceUIOwnerActor = nullptr;
+	}
+	else if (CraftMachineUIOwnerActor)
+	{
+		CraftMachineUIOwnerActor->CloseCraftMachine();
+		CraftMachineUIOwnerActor = nullptr;
+	}
+	else if (bOpenInventory)
+	{
+		MBFHUD->CloseInventory();
+		bOpenInventory = false;
+	}
+	else
+	{
+		MBFHUD->OpenInventory();
+		bOpenInventory = true;
+	}
 }

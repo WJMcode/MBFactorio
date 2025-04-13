@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "Tools/Widget/MBFInventory.h"
 #include "Tools/Widget/CraftList.h"
+#include "Tools/Widget/FurnaceInventory.h"
 #include "MBFHUD.generated.h"
 
 /**
@@ -19,11 +20,20 @@ class MBFACTORIO_API AMBFHUD : public AHUD
 	UUserWidget* Inventory;
 	UCraftList* CraftingUI;
 
+
+
+
 	AMBFHUD();
 	virtual void BeginPlay() override;
+
 public:
+
 	void OpenInventory();
 	void CloseInventory();
+
 	void OnChanged() { if(Inventory != nullptr)Cast<UMBFInventory>(Inventory)->OnChanged(); }
+	void SlotChanged(int32 InSlot);
+
+
 	UCraftList* GetCraftListUI();
 };
