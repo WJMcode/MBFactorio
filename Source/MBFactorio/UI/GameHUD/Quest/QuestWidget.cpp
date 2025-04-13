@@ -1,5 +1,6 @@
 #include "QuestWidget.h"
 #include "Components/TextBlock.h"
+#include "Component/MBFInventoryComponent.h"
 
 void UQuestWidget::NativeConstruct()
 {

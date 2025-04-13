@@ -17,6 +17,7 @@ class UGameHUD;
 class UGameMenuWidget;
 class UMBFCursorWidget;
 class UReplayMenuWidget;
+class UItemCursorWidget;
 
 class AResourceTile;
 
@@ -57,6 +58,12 @@ public:
     void SetPlayerNearStope(bool bNear);                   // 플레이어 근접 여부 설정
     AActor* FindOverlappingStope();                        // 플레이어 주변 ResourceTile 찾기
 
+    void OnClickInventory();                               // 인벤토리 슬롯 클릭 시 커서 처리 함수
+
+public:
+    UFUNCTION(BlueprintCallable)
+    UItemCursorWidget* GetItemCursorWidget();
+
 private:
     void StopCharacterAction();                            // 캐릭터 채굴 중단
 
@@ -74,12 +81,21 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
     TSubclassOf<UReplayMenuWidget> ReplayMenuWidgetClass;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+    TSubclassOf<UItemCursorWidget> ItemCursorWidgetClass;
+
     // -------------------- 인풋 관련 --------------------
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputMappingContext* IMC_Menu;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     UInputAction* GameMenuAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    UInputMappingContext* IMC_ClickInventory;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    UInputAction* ClickAction;
 
 protected:
     UPROPERTY()
@@ -94,10 +110,13 @@ protected:
     UPROPERTY()
     UReplayMenuWidget* ReplayMenuWidget;
 
+    UPROPERTY()
+    UItemCursorWidget* ItemCursorWidget;
+
 public:
     bool bIsGameMenuOpen = false;       // 게임 메뉴 열림 여부
     bool bIsCursorOverStope = false;    // 커서가 광물 위에 있는지 여부
-    bool bCursorActive = true;         // 현재 커서 활성 여부
+    bool bCursorActive = true;          // 현재 커서 활성 여부
 
 private:
     UPROPERTY()

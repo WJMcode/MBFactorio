@@ -120,4 +120,10 @@ public:
         : ItemID(FName("0")), MaxCount(0), Image(nullptr)
     {
     }
+
+    // 2025.04.13 유효성 검사 함수 (이윤정)
+    bool IsValid() const
+    {
+        return !ItemID.IsNone() && !ItemName.IsEmpty() && MaxCount > 0 && Image != nullptr;
+    }
 };

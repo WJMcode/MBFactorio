@@ -3,6 +3,8 @@
 #include "UI/MBFCursorWidget.h"
 #include "UI/GameMenuWidget.h"
 #include "UI/ReplayMenuWidget.h"
+#include "UI/GameHUD/QuickInventory/ItemCursorWidget.h"
+#include "UI/GameHUD/QuickInventory/QuickInventorySlotWidget.h"
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -12,6 +14,7 @@
 #include "Character/PlayerCharacter.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 #include "Component/Mining/MiningComponent.h"
+
 // WJMController.h의 코드를 복사한 상태입니다.
 // ResourceTile에서 플레이어 감지하게 하려면 LYJController로 바꿔서 사용할 것
 
@@ -101,6 +104,7 @@ void ALYJController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
+    // 게임 메뉴 입력
     GameMenuAction = NewObject<UInputAction>(this);
     GameMenuAction->ValueType = EInputActionValueType::Boolean;
 
@@ -110,14 +114,25 @@ void ALYJController::SetupInputComponent()
     IMC_Menu = NewObject<UInputMappingContext>();
     IMC_Menu->MapKey(GameMenuAction, EKeys::Tab);  // Tab 키에 매핑
 
-    // 게임메뉴 UI 키 등록
+    // 인벤토리 슬롯 클릭
+    ClickAction = NewObject<UInputAction>(this);
+    ClickAction->ValueType = EInputActionValueType::Boolean;
+
+    UInputTriggerPressed* ClickTrigger = NewObject<UInputTriggerPressed>(ClickAction);
+    ClickAction->Triggers.Add(ClickTrigger);
+
+    IMC_ClickInventory = NewObject<UInputMappingContext>();
+    IMC_ClickInventory->MapKey(ClickAction, EKeys::LeftMouseButton);
+
+    // UI 키 등록
     if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
     {
         if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
             ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
         {
-            Subsystem->AddMappingContext(IMC_Menu, 1);
-            UE_LOG(LogTemp, Warning, TEXT("Controller: IMC_Menu 등록"));
+            Subsystem->AddMappingContext(IMC_Menu, 1); // 게임 메뉴
+            Subsystem->AddMappingContext(IMC_ClickInventory, 2); // 인벤토리 슬롯 클릭
+            UE_LOG(LogTemp, Warning, TEXT("Controller: IMC_Menu, IMC_ClickInventory 등록"));
         }
     }
 
@@ -126,6 +141,8 @@ void ALYJController::SetupInputComponent()
         if (GameMenuAction)
         {
             Input->BindAction(GameMenuAction, ETriggerEvent::Triggered, this, &ALYJController::OnGameMenuPressed);
+            UE_LOG(LogTemp, Warning, TEXT("SetupInputComponent: GameMenuAction 바인딩 성공"));
+            Input->BindAction(ClickAction, ETriggerEvent::Triggered, this, &ALYJController::OnClickInventory);
             UE_LOG(LogTemp, Warning, TEXT("SetupInputComponent: GameMenuAction 바인딩 성공"));
         }
     }
@@ -274,7 +291,7 @@ void ALYJController::GameHUD()
         {
             UE_LOG(LogTemp, Warning, TEXT("GameHUDWidget이 null입니다"));
         }
-    }
+    }       
 }
 
 void ALYJController::ToggleGameMenu()
@@ -393,6 +410,51 @@ AActor* ALYJController::FindOverlappingStope()
     {
         return nullptr;
     }
+}
+
+void ALYJController::OnClickInventory()
+{
+    FHitResult Hit;
+    GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+    if (Hit.bBlockingHit && Hit.GetActor())
+    {
+        // 슬롯 위젯 클릭했는지 확인
+        if (UQuickInventorySlotWidget* ClickedSlot = Cast<UQuickInventorySlotWidget>(Hit.GetActor()))
+        {
+            ClickedSlot->HandleClick();
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("슬롯이 아님: %s"), *Hit.GetActor()->GetName());
+        }
+    }
+}
+
+UItemCursorWidget* ALYJController::GetItemCursorWidget()
+{
+    if (!ItemCursorWidget)
+    {
+        if (!ItemCursorWidgetClass) { return nullptr; }
+
+        ItemCursorWidget = CreateWidget<UItemCursorWidget>(this, ItemCursorWidgetClass);
+        if (ItemCursorWidget)
+        {
+            ItemCursorWidget->AddToViewport(99); // 항상 위로
+        }
+    }
+
+    //// 커서 설정
+    //SetGameAndUIInput();
+
+    // 커서 UI 제거
+    if (CursorWidget)
+    {
+        CursorWidget->RemoveFromParent();
+        CursorWidget = nullptr; // 꼭 nullptr로 만들어줘야 이후 재생성됨
+    }
+
+    return ItemCursorWidget;
 }
 
 void ALYJController::StopCharacterAction()

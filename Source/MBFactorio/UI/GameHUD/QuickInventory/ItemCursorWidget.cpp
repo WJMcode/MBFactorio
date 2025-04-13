@@ -2,46 +2,63 @@
 #include "Components/Image.h"
 #include "Engine/Texture2D.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Tools/LYJController.h"
 
 void UItemCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    if (HasItem())
+    ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
+    if (!PC) { return; }
+
+    FVector2D MousePosition;
+    if (PC->GetMousePosition(MousePosition.X, MousePosition.Y))
     {
-        FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
-        SetPositionInViewport(MousePos, true);
-    }
+        SetPositionInViewport(MousePosition, true);
+
+        if (CursorIcon)
+        {
+            SetPositionInViewport(MousePosition, false);
+        }
+    }    
 }
 
-void UItemCursorWidget::SetItem(const FQuickItemData& InItem)
+void UItemCursorWidget::SetItem(const FItemData& InItem)
 {
-    CursorItem = InItem;
+    ItemData = InItem;
 
-    UpdateUI();
+    if (CursorIcon && ItemData.Image)
+    {
+        CursorIcon->SetBrushFromTexture(ItemData.Image);
+        SetVisibility(ESlateVisibility::Visible);
+    }
 }
 
 void UItemCursorWidget::ClearItem()
 {
-    CursorItem = FQuickItemData{};
+    ItemData = FItemData();
 
-    UpdateUI();
+    if (CursorIcon)
+    {
+        CursorIcon->SetBrushFromTexture(nullptr);
+        SetVisibility(ESlateVisibility::Hidden);
+    }
 }
 
 void UItemCursorWidget::UpdateUI()
 {
-    if (CursorIcon)
+    if (!CursorIcon) return;
+
+    if (ItemData.IsValid())
     {
-        if (CursorItem.IsValid())
-        {
-            CursorIcon->SetBrushFromTexture(CursorItem.ItemIcon);
-            CursorIcon->SetVisibility(ESlateVisibility::Visible);
-        }
-        else
-        {
-            CursorIcon->SetBrushFromTexture(nullptr);
-            CursorIcon->SetVisibility(ESlateVisibility::Hidden);
-        }
+        // 더 이상 FSlateBrush 안 씀!
+        CursorIcon->SetBrushFromTexture(ItemData.Image, true);
+        CursorIcon->SetVisibility(ESlateVisibility::Visible);
+    }
+    else
+    {
+        CursorIcon->SetBrushFromTexture(nullptr);
+        CursorIcon->SetVisibility(ESlateVisibility::Hidden);
     }
 }
 

@@ -17,26 +17,19 @@ void UQuickInventorySlotWidget::NativeConstruct()
     }
 }
 
-void UQuickInventorySlotWidget::SetItem(const FQuickItemData& InItem)
+void UQuickInventorySlotWidget::SetItem(FItemData& InItem)
 {
     SlotItem = InItem;
 
-    if (SlotItem.IsValid())
+    if (ItemIcon)
     {
-        if (ItemIcon)
-        {
-            ItemIcon->SetBrushFromTexture(SlotItem.ItemIcon);
-            ItemIcon->SetVisibility(ESlateVisibility::Visible);
-        }
-        if (ItemCount)
-        {
-            ItemCount->SetText(FText::AsNumber(SlotItem.ItemCount));
-            ItemCount->SetVisibility(SlotItem.ItemCount > 1 ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-        }
+        ItemIcon->SetBrushFromTexture(SlotItem.Image);
+        ItemIcon->SetVisibility(ESlateVisibility::Visible);
     }
-    else
+    if (ItemCount)
     {
-        ClearItem(); // 유효하지 않은 경우 바로 클리어
+        ItemCount->SetText(FText::AsNumber(SlotItem.CreateCount));
+        ItemCount->SetVisibility(SlotItem.CreateCount > 1 ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
     }
 
     SetVisibility(ESlateVisibility::Visible); // 슬롯 전체도 보이게
@@ -44,7 +37,7 @@ void UQuickInventorySlotWidget::SetItem(const FQuickItemData& InItem)
 
 void UQuickInventorySlotWidget::ClearItem()
 {
-    SlotItem = FQuickItemData();
+    SlotItem = FItemData();
 
     if (ItemIcon)
     {
@@ -58,7 +51,7 @@ void UQuickInventorySlotWidget::ClearItem()
     }
 }
 
-const FQuickItemData& UQuickInventorySlotWidget::GetItem() const
+const FItemData& UQuickInventorySlotWidget::GetItem() const
 {
     return SlotItem;
 }
@@ -71,27 +64,37 @@ bool UQuickInventorySlotWidget::HasItem() const
 
 void UQuickInventorySlotWidget::HandleClick()
 {
-    if (!SlotItem.IsValid())
+    if (!SlotItem.IsValid()) { return; }
+
+    UItemCursorWidget* CursorWidgetInstance = GetItemCursorWidget();
+
+    // 슬롯 → 커서
+    if (CursorWidgetInstance && !CursorWidgetInstance->HasItem() && HasItem())
     {
+        CursorWidgetInstance->SetItem(SlotItem);
+        ClearItem();
         return;
     }
 
-    //// 플레이어 컨트롤러 가져오기
-    //if (APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0))
-    //{
-    //    if (ALYJController* LYJPC = Cast<ALYJController>(PC))
-    //    {
-    //        if (LYJPC->ItemCursorWidget)
-    //        {
-    //            // 커서 위젯에 아이템 설정 및 표시
-    //            LYJPC->ItemCursorWidget->SetItem(SlotItem);
-    //            LYJPC->ItemCursorWidget->SetVisibility(ESlateVisibility::Visible);
+    // 커서 → 슬롯
+    if (CursorWidgetInstance && CursorWidgetInstance->HasItem() && !HasItem())
+    {
+        SetItem(CursorWidgetInstance->GetItem());
+        CursorWidgetInstance->ClearItem();
+        return;
+    }
 
-    //            UE_LOG(LogTemp, Warning, TEXT("커서에 아이템 부착: %s"), *SlotItem.ItemID);
-    //        }
-    //    }
-    //}
-
-    // 슬롯 초기화 (아이템 제거)
+    // 충돌 시 슬롯 비우기
     ClearItem();
+}
+
+UItemCursorWidget* UQuickInventorySlotWidget::GetItemCursorWidget() const
+{
+    ALYJController* LYJPC = Cast<ALYJController>(UGameplayStatics::GetPlayerController(this, 0));
+    if (LYJPC)
+    {
+        return LYJPC->GetItemCursorWidget(); // 커서 위젯을 가져오는 함수가 있어야 함
+    }
+
+    return nullptr;
 }
