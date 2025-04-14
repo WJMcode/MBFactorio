@@ -17,7 +17,8 @@ class MBFACTORIO_API AMBFHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-	UUserWidget* Inventory;
+	UPROPERTY()
+	UMBFInventory* Inventory;
 	UCraftList* CraftingUI;
 
 

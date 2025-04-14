@@ -79,48 +79,7 @@ void UFurnaceInventory::NativeConstruct()
             UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
         }
     }
-    FString SlotName = FString::Printf(TEXT("ProgressBar"));
-    FName WidgetName(*SlotName);
-
-    UWidget* FoundWidget = GetWidgetFromName(WidgetName);
-    if (FoundWidget)
-    {
-        UProgressBar* SlotWidget = Cast<UProgressBar>(FoundWidget);
-        if (SlotWidget)
-        {
-            ProgressBar = SlotWidget;
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-    }
     
-
-    SlotName = FString::Printf(TEXT("FuelBar"));
-    WidgetName = FName(*SlotName);
-
-    FoundWidget = GetWidgetFromName(WidgetName);
-    if (FoundWidget)
-    {
-        UProgressBar* SlotWidget = Cast<UProgressBar>(FoundWidget);
-        if (SlotWidget)
-        {
-            FuelBar = SlotWidget;
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("'%s' �� FuelBar�� �ƴմϴ�."), *SlotName);
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-    }
     OnChanged();
     SetIsEnabled(true);
     SetVisibility(ESlateVisibility::Visible);

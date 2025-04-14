@@ -3,6 +3,7 @@
 
 #include "Tools/MBFHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "Tools/Widget/MBFInventory.h"
 #include "GameFramework/PlayerController.h"
 
 
@@ -19,9 +20,9 @@ void AMBFHUD::BeginPlay()
 
 	UWorld* World = GetWorld();
 
-	TSubclassOf<UUserWidget> WidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Gamemode/InGame/MBFInventory.MBFInventory_C'"));
+	TSubclassOf<UUserWidget> WidgetClass = LoadClass<UMBFInventory>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Gamemode/InGame/MBFInventory.MBFInventory_C'"));
 
-	Inventory = CreateWidget<UUserWidget>(World, WidgetClass);
+	Inventory = CreateWidget<UMBFInventory>(World, WidgetClass);
 
 	
 	

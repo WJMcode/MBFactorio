@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -15,7 +15,7 @@ struct FSelectedSlotData
     UPROPERTY()
     UMBFInventoryComponent* SourceInventory = nullptr;
 
-    UPROPERTY()
+    
     int32 SlotIndex = -1;
 
     UPROPERTY()

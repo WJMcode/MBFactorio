@@ -14,8 +14,6 @@ protected:
     /** 아이템 아이콘이 커서를 따라 움직이게 처리 */
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
-    virtual void NativeConstruct() override;
-
 public:
     /** 현재 커서에 아이템을 설정 */
     UFUNCTION(BlueprintCallable)
@@ -30,7 +28,7 @@ public:
     /** 커서에 아이템이 있는지 확인 */
     bool HasItem() const { return ItemData.IsValid(); }
 
-    void UpdateUI(FItemData& InItemData);
+    void UpdateUI();
 
     /** 커서에 설정된 아이템이 유효한지 확인 */
     UFUNCTION(BlueprintCallable, Category = "Cursor")

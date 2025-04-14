@@ -43,12 +43,15 @@ public:
 
 private:
 
-
+	UPROPERTY()
 	UMBFInventoryComponent* InventoryComponent;
+	UPROPERTY()
 	UAutoCraftComponent* AutoCraftComponent;
+	UPROPERTY()
 	UAutoCraftWidget* AutoCraftUI;
+	UPROPERTY()
 	UBuildItemSelectWidget* BuildItemSelectUI;
 	FItemData* BuildItem;
-
+	UPROPERTY()
 	UBoxComponent* BoxComponent;
 };

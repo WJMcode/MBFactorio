@@ -19,6 +19,7 @@ class MBFACTORIO_API UMBFInstance : public UGameInstance
 
 	UMBFInstance();
 	~UMBFInstance();
+	UPROPERTY()
 	UInventoryManager* InventoryManager;
 
 public:

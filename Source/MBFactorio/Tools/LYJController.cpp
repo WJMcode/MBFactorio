@@ -84,7 +84,16 @@ void ALYJController::Tick(float DeltaTime)
         {
             CursorWidget->SetPositionInViewport(FVector2D(PosX, PosY));
         }
-    }       
+    }
+
+    if (ItemCursorWidget)
+    {
+        float PosX, PosY;
+        if (GetMousePosition(PosX, PosY))
+        {
+            ItemCursorWidget->SetPositionInViewport(FVector2D(PosX, PosY));
+        }
+    }
 
     if (CursorWidget && CursorWidget->IsVisible())
     {
@@ -464,9 +473,12 @@ UItemCursorWidget* ALYJController::GetItemCursorWidget()
 {
     if (!ItemCursorWidget && ItemCursorWidgetClass)
     {
-        ItemCursorWidget = CreateWidget<UItemCursorWidget>(this, ItemCursorWidgetClass);           
-        ItemCursorWidget->AddToViewport(20);           
-        ItemCursorWidget->SetVisibility(ESlateVisibility::Visible);       
+        ItemCursorWidget = CreateWidget<UItemCursorWidget>(this, ItemCursorWidgetClass);
+        if (ItemCursorWidget)
+        {
+            ItemCursorWidget->AddToViewport(20);
+            ItemCursorWidget->SetVisibility(ESlateVisibility::Hidden);
+        }
     }
 
     return ItemCursorWidget;

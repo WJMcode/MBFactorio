@@ -15,16 +15,7 @@ void UResourceInfoWidget::SetResourceInfo(const FQuickItemData& Info)
 
     if (ObjectImage)
     {
-        if (Info.ItemIcon)
-        {
-            ObjectImage->SetBrushFromTexture(Info.ItemIcon);
-            ObjectImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f)); // 보여주기
-        }
-        else
-        {
-            ObjectImage->SetBrushFromTexture(nullptr);
-            ObjectImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f)); // 숨기기
-        }
+        ObjectImage->SetBrushFromTexture(Info.ItemIcon);
     }
 
     if (ObjectType)
@@ -42,11 +33,11 @@ void UResourceInfoWidget::SetResourceInfo(const FQuickItemData& Info)
         case EResourceType::Copper:
             TypeName = TEXT("구리");
             break;
-        case EResourceType::Coal:
+        /*case EResourceType::Coal:
             TypeName = TEXT("석탄");
-            break;
+            break;*/
         default:
-            TypeName = TEXT("");
+            TypeName = TEXT("알 수 없음");
             break;
         }
 
@@ -71,7 +62,6 @@ void UResourceInfoWidget::HideInfo()
     if (ObjectImage)
     {
         ObjectImage->SetBrushFromTexture(nullptr);
-        ObjectImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
     }
 
     if (ObjectType)

@@ -34,7 +34,7 @@ class MBFACTORIO_API UCraftMachineSlot : public UMBFSlot
 private:
 
 
-
+	UPROPERTY()
 	ACraftMachine* OwnerActor;
 
 
