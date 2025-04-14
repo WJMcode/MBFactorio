@@ -8,49 +8,58 @@ void UItemCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    /*ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
+    ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
     if (!PC) { return; }
 
-    FVector2D MousePosition;
-    if (PC->GetMousePosition(MousePosition.X, MousePosition.Y))
+    if (GetWorld() && PC)
     {
-        SetPositionInViewport(MousePosition, false);
-    }*/
+        float PosX, PosY;
+        if (PC->GetMousePosition(PosX, PosY))
+        {
+            SetPositionInViewport(FVector2D(PosX, PosY));
+        }
+    }
+}
+
+void UItemCursorWidget::NativeConstruct()
+{
+    Super::NativeConstruct();
+
+    
 }
 
 void UItemCursorWidget::SetItem(const FItemData& InItem)
 {
     ItemData = InItem;
 
-    UpdateUI();
+    UpdateUI(ItemData);
 }
 
 void UItemCursorWidget::ClearItem()
 {
     ItemData = FItemData();
 
-    UpdateUI();
+    UpdateUI(ItemData);
 }
 
-void UItemCursorWidget::UpdateUI()
+void UItemCursorWidget::UpdateUI(FItemData& InItemData)
 {
     if (!CursorIcon) return;
 
-    if (ItemData.IsValid() && CursorIcon)
+    if (InItemData.IsValid() && CursorIcon)
     {
-        if (ItemData.Image)
+        if (InItemData.Image)
         {
-            CursorIcon->SetBrushFromTexture(ItemData.Image);
+            CursorIcon->SetBrushFromTexture(InItemData.Image, true);
+            CursorIcon->SetColorAndOpacity(FLinearColor::White);  // 완전 불투명
             CursorIcon->SetVisibility(ESlateVisibility::Visible);
-
-            // 크기 명시적으로 설정
-            CursorIcon->SetBrushSize(FVector2D(8.f, 8.f));
 
             UE_LOG(LogTemp, Warning, TEXT("CursorIcon이 Visible입니다"));
         }
         else
         {
             CursorIcon->SetBrushFromTexture(nullptr);
+            CursorIcon->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 0.f));
             CursorIcon->SetVisibility(ESlateVisibility::Hidden);
             UE_LOG(LogTemp, Warning, TEXT("CursorIcon이 Hidden입니다"));
         }

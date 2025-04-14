@@ -6,6 +6,7 @@
 #include "ItemCursorWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Tools/MBFController.h"
+#include "Tools/MBFInstance.h"
 
 void UQuickInventorySlotWidget::NativeConstruct()
 {
@@ -68,15 +69,22 @@ void UQuickInventorySlotWidget::HandleClick()
     APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
     if (AMBFController* PlayerController = Cast<AMBFController>(PC))
     {
-        UItemCursorWidget* GetCursor = PlayerController->GetItemCursorWidget();
+        UItemCursorWidget* GetCursor = GetItemCursorWidget();
+
         if (!GetCursor) { return; }
 
+        auto Instance = Cast<UMBFInstance>(UGameplayStatics::GetGameInstance(this));
+
         // 1. 슬롯에 아이템이 있고 커서는 비어있으면 → 커서에 등록
-        if (SlotItem.IsValid() /*&& !GetCursor->HasValidItem()*/)
+        if (Instance && SlotItem.IsValid() && !GetCursor->HasValidItem())
         {
-            GetCursor->SetItem(SlotItem);
-            ClearItem();
-            return;
+            FItemData* Data = Instance->GetItemData(SlotItem.ItemID);
+            if (Data)
+            {
+                GetCursor->SetItem(*Data);
+                ClearItem();
+                return;
+            }
         }
 
         // 2. 슬롯이 비어 있고 커서에 아이템이 있다면 → 슬롯에 아이템 등록
