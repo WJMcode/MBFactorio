@@ -41,12 +41,6 @@ FReply UMBFSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPoi
 void UMBFSlot::Changed(int32 InSlot)
 {
     const UMBFInstance* Instance = Cast<UMBFInstance>(GetGameInstance());
-	AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
-
-    /*AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(PC->GetPawn());
-
-    FInventoryItem* Item = PlayerCharacter->GetInventoryComponent()->GetInventoryItem(InSlot);*/
 
     FInventoryItem& Item = OwnerInventory->GetInventoryItem(InSlot);
 

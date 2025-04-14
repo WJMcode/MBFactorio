@@ -1,4 +1,4 @@
-#include "Tools/WJMController.h"
+﻿#include "Tools/WJMController.h"
 #include "UI/MBFCursorWidget.h"
 #include "UI/GameMenuWidget.h"
 #include "UI/ReplayMenuWidget.h"
@@ -6,6 +6,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "InputTriggers.h"
+#include "Tools/Widget/MBFInventory.h"
 #include "Character/PlayerCharacter.h"
 #include "Component/Mining/MiningComponent.h"
 #include "Tiles/TileTypes/ResourceTile.h"
@@ -215,6 +216,8 @@ void AWJMController::OpenInventory()
     if (InventoryWidget->GetVisibility() == ESlateVisibility::Hidden)
     {
         InventoryWidget->SetVisibility(ESlateVisibility::Visible);  //  인벤토리 보이기
+        
+
         bOpenInventory = true;
     }
 }

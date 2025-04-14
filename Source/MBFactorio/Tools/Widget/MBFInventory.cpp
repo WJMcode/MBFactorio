@@ -7,6 +7,7 @@
 #include "Styling/SlateBrush.h"
 #include "Styling/SlateColor.h"
 #include "Tools/MBFInstance.h"
+#include "Character/PlayerCharacter.h"
 #include "Math/Color.h"
 
 void UMBFInventory::OnInitialized()
@@ -17,9 +18,15 @@ void UMBFInventory::OnInitialized()
 void UMBFInventory::NativeConstruct()
 {
     Super::NativeConstruct();
-
-    OwnerInventory = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetInventoryComponent();
-
+    AMBFController* MBFController = Cast<AMBFController>(GetWorld()->GetFirstPlayerController());
+    APlayerCharacter* Character = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+    if (MBFController) {
+        OwnerInventory = MBFController->GetInventoryComponent();
+    }
+    else if (Character)
+    {
+        OwnerInventory = Character->GetInventoryComponent();
+    }
     for (int32 i = 0; i < 80; ++i)
     {
         // �̸� ����: "ItemSlot_0", "ItemSlot_1", ...
@@ -79,6 +86,8 @@ void UMBFInventory::NativeConstruct()
 
         SelectedSlot[0]->Selected();
     }
+    
+
     OnChanged();
     
     for (int32 i = 0; i < 70; ++i)

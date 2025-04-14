@@ -1,10 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Component/Mining/MiningComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "UI/WJMTestHUD/WJMTestHUD.h"
+#include "Tools/MBFHUD.h"
 #include "Character/PlayerCharacter.h"
 #include "Component/MBFInventoryComponent.h"
 #include "Tiles/TileTypes/ResourceTile.h"

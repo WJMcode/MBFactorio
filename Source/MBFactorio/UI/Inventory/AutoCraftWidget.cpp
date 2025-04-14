@@ -6,6 +6,7 @@
 
 void UAutoCraftWidget::NativeConstruct()
 {
+
     OwnerInventory = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetInventoryComponent();
 
     for (int32 i = 0; i < 80; ++i)
