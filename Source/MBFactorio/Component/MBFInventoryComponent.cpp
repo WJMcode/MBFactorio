@@ -134,12 +134,12 @@ void UMBFInventoryComponent::AddItem(FName ItemID, int32 Count)
 	SortInventory();
 
 	// 인벤토리 슬롯 UI 갱신
-	AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
-	if (PC->GetInventoryWidget())
-	{
-		UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
-		InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
-	}
+	//AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
+	//if (PC->GetInventoryWidget())
+	//{
+	//	UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
+	//	InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
+	//}
 }
 void UMBFInventoryComponent::RemoveItem(FName ItemID, int32 Count)
 {
@@ -148,12 +148,12 @@ void UMBFInventoryComponent::RemoveItem(FName ItemID, int32 Count)
 	SortInventory();
 
 	// 인벤토리 슬롯 UI 갱신
-	AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
-	if (PC->GetInventoryWidget())
-	{
-		UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
-		InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
-	}
+	//AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
+	//if (PC->GetInventoryWidget())
+	//{
+	//	UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
+	//	InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
+	//}
 }
 // 2025.04.06 21:56 shs
 
