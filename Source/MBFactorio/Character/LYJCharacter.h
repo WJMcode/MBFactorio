@@ -12,7 +12,7 @@
 //{
 //	GENERATED_BODY()
 //
-//	friend class ALYJController;
+//	friend class AMBFController;
 //
 //public:
 //	// Sets default values for this character's properties

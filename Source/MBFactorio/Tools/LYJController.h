@@ -5,7 +5,7 @@
 //#include "CoreMinimal.h"
 //#include "GameFramework/PlayerController.h"
 //#include "Component/MBFInventoryComponent.h"
-//#include "LYJController.generated.h"
+//#include "MBFController.generated.h"
 //
 //// WJMController.h의 코드를 복사한 상태입니다.
 //// MBFController.h의 코드를 복사한 상태입니다.
@@ -17,12 +17,12 @@
 //
 //
 //UCLASS()
-//class MBFACTORIO_API ALYJController : public APlayerController
+//class MBFACTORIO_API AMBFController : public APlayerController
 //{
 //    GENERATED_BODY()
 //
 //public:
-//    ALYJController();
+//    AMBFController();
 //
 //protected:
 //    virtual void BeginPlay() override;                      // 게임 시작 시 초기화

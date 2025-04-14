@@ -66,7 +66,7 @@ void AMBFStope::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* O
 
         if (AController* Controller = Player->GetController())
         {
-            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            if (AMBFController* PC = Cast<AMBFController>(Controller))
             {
                 PC->SetPlayerNearStope(true);
             }
@@ -96,7 +96,7 @@ void AMBFStope::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
 
         if (AController* Controller = Player->GetController())
         {
-            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            if (AMBFController* PC = Cast<AMBFController>(Controller))
             {
                 PC->SetPlayerNearStope(false);
             }

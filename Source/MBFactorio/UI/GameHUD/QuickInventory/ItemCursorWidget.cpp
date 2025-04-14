@@ -2,13 +2,13 @@
 #include "Components/Image.h"
 #include "Engine/Texture2D.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
-#include "Tools/LYJController.h"
+#include "Tools/MBFController.h"
 
 void UItemCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
+    AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
     if (!PC) { return; }
 
     if (GetWorld() && PC)

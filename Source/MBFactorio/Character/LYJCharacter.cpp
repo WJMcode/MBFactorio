@@ -2,7 +2,7 @@
 //
 //
 //#include "Character/LYJCharacter.h"
-//#include "Tools/LYJController.h"
+//#include "Tools/MBFController.h"
 //#include "EnhancedInputSubsystems.h"
 //#include "EnhancedInputComponent.h"
 //
@@ -23,7 +23,7 @@
 //{
 //	Super::BeginPlay();
 //		
-//	if (ALYJController* PC = Cast<ALYJController>(GetController()))
+//	if (AMBFController* PC = Cast<AMBFController>(GetController()))
 //	{
 //		if (ULocalPlayer* LocalPlayer = PC->GetLocalPlayer())
 //		{
