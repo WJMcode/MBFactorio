@@ -1,8 +1,9 @@
 ﻿#include "Tools/MBFController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
-#include "Tools/MBFInstance.h"
 #include "Struct/MBFStruct.h"
+#include "Tools/MBFInstance.h"
+#include "Tools/Widget/FurnaceInventory.h"
 #include "UI/GameHUD/GameHUD.h"
 #include "UI/GameHUD/QuickInventory/ItemCursorWidget.h"
 #include "UI/GameHUD/QuickInventory/QuickInventorySlotWidget.h"
@@ -10,17 +11,16 @@
 #include "UI/ReplayMenuWidget.h"
 #include "UI/MBFCursorWidget.h"
 #include "Tiles/TileTypes/ResourceTile.h"
-#include "Character/PlayerCharacter.h"
 #include "Component/Mining/MiningComponent.h"
 
 AMBFController::AMBFController()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<UInputMappingContext> Asset
+	/*ConstructorHelpers::FObjectFinder<UInputMappingContext> Asset
 	{ TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Gamemode/InGame/InGameIMC.InGameIMC'") };
 	check(Asset.Object);
-	IMC_Default = Asset.Object;
+	IMC_Default = Asset.Object;*/
 
 	bOpenInventory = false;
 	bEnableClickEvents = true;
@@ -57,7 +57,7 @@ void AMBFController::BeginPlay()
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(IMC_Default, 0);
+			//Subsystem->AddMappingContext(IMC_Default, 0);
 
 			Subsystem->AddMappingContext(IMC_Menu, 1); // 게임 메뉴
 			Subsystem->AddMappingContext(IMC_ClickInventory, 2); // 인벤토리 슬롯 클릭
@@ -65,7 +65,7 @@ void AMBFController::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("Controller: IMC_Menu, IMC_ClickInventory, IMC_Inventory 등록"));
 
 			Subsystem->AddMappingContext(WorkMappingContext, 0);
-			Subsystem->AddMappingContext(StructureInteractionMappingContext, 0);
+			Subsystem->AddMappingContext(InteractionUIMappingContext, 0);
 		}
 	}
 
@@ -120,15 +120,15 @@ void AMBFController::SetupInputComponent()
 	IMC_ClickInventory = NewObject<UInputMappingContext>();
 	IMC_ClickInventory->MapKey(ClickAction, EKeys::LeftMouseButton);
 
-	// 인벤토리 생성
-	OpenInventory = NewObject<UInputAction>(this);
-	OpenInventory->ValueType = EInputActionValueType::Boolean;
+	//// 인벤토리 생성
+	//OpenInventory = NewObject<UInputAction>(this);
+	//OpenInventory->ValueType = EInputActionValueType::Boolean;
 
-	UInputTriggerPressed* PressE = NewObject<UInputTriggerPressed>(OpenInventory);
-	OpenInventory->Triggers.Add(PressE);
+	//UInputTriggerPressed* PressE = NewObject<UInputTriggerPressed>(OpenInventory);
+	//OpenInventory->Triggers.Add(PressE);
 
-	IMC_Inventory = NewObject<UInputMappingContext>();
-	IMC_Inventory->MapKey(OpenInventory, EKeys::E);
+	//IMC_Inventory = NewObject<UInputMappingContext>();
+	//IMC_Inventory->MapKey(OpenInventory, EKeys::E);
 	
 
 	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent);
@@ -143,7 +143,9 @@ void AMBFController::SetupInputComponent()
 
 	// 구조물 관련 액션
 	EnhancedInput->BindAction(OpenStructureUIAction, ETriggerEvent::Started, this, &AMBFController::OpenStructuresUI);
-	EnhancedInput->BindAction(CloseStructureUIAction, ETriggerEvent::Started, this, &AMBFController::OnEKeyPressed);
+	
+	// 구조물 UI 닫기, 인벤토리 관련 액션
+	EnhancedInput->BindAction(InteractOrToggleUIAction, ETriggerEvent::Started, this, &AMBFController::OnEKeyPressed);
 
 	if (GameMenuAction)
 	{
@@ -155,15 +157,15 @@ void AMBFController::SetupInputComponent()
 		//UE_LOG(LogTemp, Warning, TEXT("SetupInputComponent: InventoryTogle 바인딩 성공"));
 	}
 
-	const TArray<FEnhancedActionKeyMapping>& Mappings = IMC_Default->GetMappings();
-	for (auto& It : Mappings)
-	{
-		if (It.Action->GetFName() == TEXT("PressE"))
-		{
-			const UInputAction* InputAction = It.Action.Get();
-			EnhancedInput->BindAction(InputAction, ETriggerEvent::Started, this, &ThisClass::InventoryTogle);
-		}
-	}
+	//const TArray<FEnhancedActionKeyMapping>& Mappings = IMC_Default->GetMappings();
+	//for (auto& It : Mappings)
+	//{
+	//	if (It.Action->GetFName() == TEXT("PressE"))
+	//	{
+	//		const UInputAction* InputAction = It.Action.Get();
+	//		EnhancedInput->BindAction(InputAction, ETriggerEvent::Started, this, &ThisClass::InventoryTogle);
+	//	}
+	//}
 }
 
 void AMBFController::Tick(float DeltaSeconds)
@@ -297,29 +299,29 @@ void AMBFController::UpdateCursorVisibility(AResourceTile* InStope)
 	// 마우스 커서와 광물이 오버랩되지 않았거나,
 	// 캐릭터와 오버랩된 광물과 마우스 커서와 오버랩된 광물이 서로 다른 경우,
 	// 캐릭터의 채굴 동작을 멈춥니다.
-	if (!bNear || !bIsCursorOverStope || DetectedStope != InStope)
+	if (!bNear || !bIsCursorOverObject || DetectedStope != InStope)
 	{
 		StopCharacterAction();
 	}
 
-	if (!bNear && !bIsCursorOverStope)
+	if (!bNear && !bIsCursorOverObject)
 	{
 		bShowMouseCursor = true;
 		CursorWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
-	else if (!bNear && bIsCursorOverStope)
+	else if (!bNear && bIsCursorOverObject)
 	{
 		bShowMouseCursor = false;
 		CursorWidget->SetVisibility(ESlateVisibility::Visible);
 		CursorWidget->SetCursorTint(FLinearColor::Red);
 	}
-	else if (bNear && bIsCursorOverStope)
+	else if (bNear && bIsCursorOverObject)
 	{
 		bShowMouseCursor = false;
 		CursorWidget->SetVisibility(ESlateVisibility::Visible);
 		CursorWidget->SetCursorTint(FLinearColor::Yellow);
 	}
-	else if (bNear && !bIsCursorOverStope)
+	else if (bNear && !bIsCursorOverObject)
 	{
 		bShowMouseCursor = true;
 		CursorWidget->SetVisibility(ESlateVisibility::Hidden);
@@ -589,15 +591,11 @@ void AMBFController::CreateStructuresWidget()
 	//  구조물 UI 생성하고 숨겨놓기
 	if (StructureInteractionWidgetClass)
 	{
-		StructureInteractionWidget = CreateWidget<UUserWidget>(this, StructureInteractionWidgetClass);
-		if (StructureInteractionWidget)
+		if (!StructureInteractionWidget)
 		{
+			StructureInteractionWidget = CreateWidget<UFurnaceInventory>(this, StructureInteractionWidgetClass);
 			StructureInteractionWidget->AddToViewport();
 			StructureInteractionWidget->SetVisibility(ESlateVisibility::Hidden);  // 처음엔 UI를 숨깁니다.
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("StructureInteractionWidget이 nullptr입니다 !"));
 		}
 	}
 	else
@@ -640,17 +638,8 @@ void AMBFController::CloseStructuresUI()
 
 void AMBFController::OnEKeyPressed()
 {
-	// 구조물 UI가 열려있다면 해당 UI부터 닫습니다.
-	if (bOpenStructureUI)
-	{
-		// 구조물 UI 닫기
-		CloseStructuresUI();
-	}
-	else
-	{
-		// 인벤토리 토글
-		InventoryTogle();
-	}
+	// 구조물 또는 인벤토리 토글
+	InventoryTogle();
 }
 
 

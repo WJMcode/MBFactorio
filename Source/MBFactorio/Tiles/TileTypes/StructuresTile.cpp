@@ -1,7 +1,7 @@
 #include "Tiles/TileTypes/StructuresTile.h"
 #include "Components/BoxComponent.h"
 #include "Character/PlayerCharacter.h"
-#include "Tools/WJMController.h"
+#include "Tools/MBFController.h"
 
 AStructuresTile::AStructuresTile()
 {
@@ -53,7 +53,7 @@ void AStructuresTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AAc
 	{
 		if (AController* Controller = Player->GetController())
 		{
-			if (AWJMController* PC = Cast<AWJMController>(Controller))
+			if (AMBFController* PC = Cast<AMBFController>(Controller))
 			{
 				// 구조물 입장에서 봤을 때, 플레이어와 오버랩됨
 				bIsPlayerNear = true;
@@ -80,7 +80,7 @@ void AStructuresTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActo
 	{
 		if (AController* Controller = Player->GetController())
 		{
-			if (AWJMController* PC = Cast<AWJMController>(Controller))
+			if (AMBFController* PC = Cast<AMBFController>(Controller))
 			{
 				// 구조물 입장에서 봤을 때, 플레이어와 오버랩 해제됨
 				bIsPlayerNear = false;

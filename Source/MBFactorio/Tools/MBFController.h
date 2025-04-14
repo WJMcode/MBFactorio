@@ -11,6 +11,8 @@
 #include "InputMappingContext.h"
 #include "Tools/MBFHUD.h"
 #include "Misc/Misc.h"
+#include "Tiles/TileTypes/StructuresTile.h"
+#include "Character/PlayerCharacter.h"
 #include "Component/MBFInventoryComponent.h"
 #include "Test/TestActor.h"
 #include "Test/CraftMachine.h"
@@ -21,9 +23,9 @@ class UMBFCursorWidget;
 class UGameMenuWidget;
 class UReplayMenuWidget;
 class UItemCursorWidget;
+class UFurnaceInventory;
 
 class AResourceTile;
-class AStructuresTile;
 
 /**
  *
@@ -57,6 +59,7 @@ protected:
 public:
 	void GameHUD();                                        // GameHUD 위젯 생성 및 추가
 	void CreateAndAddCursorWidget();                       // CursorWidget 생성 및 Viewport 등록
+	void RecreateCursorWidget();                           // 커서 위젯 재생성
 	void SetGameAndUIInput();                              // 입력 모드 - 게임 + UI
 	void SetGameOnlyInput();                               // 입력 모드 - 게임 전용
 
@@ -71,16 +74,17 @@ public:
 public:
 	void CheckVelocity();                                  // 캐릭터의 속도를 체크
 
+public:
+	void OpenReplayMenu();                                 // 리플레이 메뉴 UI 열기
+	void ToggleGameMenu();                                 // 게임 메뉴 UI 표시/숨기기 토글
+
 private:
 	void OnGameMenuPressed();                              // 메뉴 단축키(Tab) 입력 시 호출
 	void OnClickInventory();                               // 인벤토리 슬롯 클릭 시 커서 처리 함수
 
-	void ToggleGameMenu();                                 // 게임 메뉴 UI 표시/숨기기 토글
 	void OpenGameMenu();                                   // 게임 메뉴 UI 열기
 	void CloseGameMenu();                                  // 게임 메뉴 UI 닫기
-	void OpenReplayMenu();                                 // 리플레이 메뉴 UI 열기
-	void RecreateCursorWidget();                           // 커서 위젯 재생성
-
+	
 	void InventoryTogle();
 	
 public:
@@ -130,10 +134,6 @@ private:
 	void OnMiningTriggered();
 	// 우클릭 떼어 채굴을 멈춥니다.
 	void OnMiningReleased();
-
-private:
-	void SetDetectedStope(AResourceTile* InStope);         // 감지된 광물 설정
-	AResourceTile* GetDetectedStope() const { return DetectedStope; } // 현재 감지된 광물 반환
 	
 private:
 	void StopCharacterAction();                            // 캐릭터 채굴 중단
@@ -181,8 +181,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* IMC_Inventory;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	UInputAction* OpenInventory;
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	//UInputAction* OpenInventory;
 
 protected:
 	// -------------------- 인풋 관련 (아이템 드랍) --------------------
@@ -254,21 +254,20 @@ private:
 // ============ 구조물 관련 변수 ============
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> StructureInteractionWidgetClass;
+	TSubclassOf<UFurnaceInventory> StructureInteractionWidgetClass;
 
 	// 구조물 Widget을 저장하는 변수
 	UPROPERTY()
-	UUserWidget* StructureInteractionWidget;
-
+	UFurnaceInventory* StructureInteractionWidget;
+	
 	/*** IMC ***/
+	// UI 상호작용 IMC입니다.
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputMappingContext* StructureInteractionMappingContext;
-
+	UInputMappingContext* InteractionUIMappingContext;
+	
 	/*** IA ***/
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* OpenStructureUIAction;
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputAction* CloseStructureUIAction;
 
 private:
 	// 구조물 UI 오픈 가능 상태를 나타내는 변수입니다.
@@ -280,4 +279,14 @@ private:
 	// 캐릭터가 최근 감지한 구조물
 	UPROPERTY()
 	AStructuresTile* DetectedStructures = nullptr;
+
+// ============ 기타 관련 변수 ============
+protected:
+	// IMC
+	// InteractOrToggleUIAction은 InteractionUIMappingContext에서 매핑합니다.
+
+	/*** IA ***/
+	// 구조물 UI를 끄거나 인벤토리를 열고 닫습니다.
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* InteractOrToggleUIAction;
 };

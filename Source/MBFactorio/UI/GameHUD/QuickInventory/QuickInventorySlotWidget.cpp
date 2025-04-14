@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "ItemCursorWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
-#include "Tools/LYJController.h"
+#include "Tools/MBFController.h"
 
 void UQuickInventorySlotWidget::NativeConstruct()
 {
@@ -66,9 +66,9 @@ void UQuickInventorySlotWidget::HandleClick()
 {
     // 컨트롤러에서 커서 위젯 가져오기
     APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
-    if (ALYJController* LYJPC = Cast<ALYJController>(PC))
+    if (AMBFController* PlayerController = Cast<AMBFController>(PC))
     {
-        UItemCursorWidget* GetCursor = LYJPC->GetItemCursorWidget();
+        UItemCursorWidget* GetCursor = PlayerController->GetItemCursorWidget();
         if (!GetCursor) { return; }
 
         // 1. 슬롯에 아이템이 있고 커서는 비어있으면 → 커서에 등록
@@ -95,10 +95,10 @@ void UQuickInventorySlotWidget::HandleClick()
 
 UItemCursorWidget* UQuickInventorySlotWidget::GetItemCursorWidget() const
 {
-    ALYJController* LYJPC = Cast<ALYJController>(UGameplayStatics::GetPlayerController(this, 0));
-    if (LYJPC)
+    AMBFController* PlayerController = Cast<AMBFController>(UGameplayStatics::GetPlayerController(this, 0));
+    if (PlayerController)
     {
-        return LYJPC->GetItemCursorWidget(); // 커서 위젯을 가져오는 함수가 있어야 함
+        return PlayerController->GetItemCursorWidget(); // 커서 위젯을 가져오는 함수가 있어야 함
     }
 
     return nullptr;

@@ -2,7 +2,7 @@
 
 
 #include "UI/GameMenuWidget.h"
-#include "Tools/LYJController.h"
+#include "Tools/MBFController.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/ReplayMenuWidget.h"
@@ -44,9 +44,9 @@ void UGameMenuWidget::OnClickContinue()
     }
 
     // 커서 UI 재생성
-    if (ALYJController* LYJ = Cast<ALYJController>(UGameplayStatics::GetPlayerController(this, 0)))
+    if (AMBFController* PlayerController = Cast<AMBFController>(UGameplayStatics::GetPlayerController(this, 0)))
     {
-        LYJ->RecreateCursorWidget(); 
+        PlayerController->RecreateCursorWidget();
     }
 }
 
@@ -58,9 +58,9 @@ void UGameMenuWidget::OnClickReplay()
     // 컨트롤러에 위임
     if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
     {
-        if (ALYJController* LYJController = Cast<ALYJController>(PC))
+        if (AMBFController* PlayerController = Cast<AMBFController>(PC))
         {
-            LYJController->OpenReplayMenu(); 
+            PlayerController->OpenReplayMenu(); 
         }
     }       
 }

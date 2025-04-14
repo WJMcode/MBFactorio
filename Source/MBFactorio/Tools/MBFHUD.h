@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// 2025 04 15 : Inventory 반환하는 Get 함수 추가 (원재민)
 
 #pragma once
 
@@ -42,6 +42,7 @@ private:
 
 
 public:
+	const UMBFInventory* GetInventory() const { return Inventory; }
 
 	void OpenInventory();
 	void CloseInventory();

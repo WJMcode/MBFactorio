@@ -2,7 +2,7 @@
 
 
 #include "UI/ReplayMenuWidget.h"
-#include "Tools/LYJController.h"
+#include "Tools/MBFController.h"
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -41,10 +41,10 @@ void UReplayMenuWidget::OnClickNo()
 
     if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
     {
-        if (ALYJController* LYJController = Cast<ALYJController>(PC))
+        if (AMBFController* PlayerController = Cast<AMBFController>(PC))
         {
-            LYJController->bIsGameMenuOpen = false;
-            LYJController->ToggleGameMenu();
+            PlayerController->bIsGameMenuOpen = false;
+            PlayerController->ToggleGameMenu();
         }
     }
 }

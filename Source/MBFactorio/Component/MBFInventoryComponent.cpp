@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "Component/MBFInventoryComponent.h"
+﻿#include "Component/MBFInventoryComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Tools/MBFInstance.h"
 #include "Tools/Widget/CraftList.h"
@@ -51,7 +48,7 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	
+
 	// ...
 }
 
@@ -133,13 +130,6 @@ void UMBFInventoryComponent::AddItem(FName ItemID, int32 Count)
 	BringItems.FindOrAdd(ItemID) += Count;
 	SortInventory();
 
-	// 인벤토리 슬롯 UI 갱신
-	//AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
-	//if (PC->GetInventoryWidget())
-	//{
-	//	UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
-	//	InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
-	//}
 }
 void UMBFInventoryComponent::RemoveItem(FName ItemID, int32 Count)
 {
@@ -147,13 +137,6 @@ void UMBFInventoryComponent::RemoveItem(FName ItemID, int32 Count)
 	BringItems.FindOrAdd(ItemID) -= Count;
 	SortInventory();
 
-	// 인벤토리 슬롯 UI 갱신
-	//AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
-	//if (PC->GetInventoryWidget())
-	//{
-	//	UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
-	//	InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
-	//}
 }
 // 2025.04.06 21:56 shs
 

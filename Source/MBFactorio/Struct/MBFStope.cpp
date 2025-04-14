@@ -3,7 +3,7 @@
 #include "Components/StaticMeshComponent.h"
 //#include "Character/LYJCharacter.h"
 #include "Character/PlayerCharacter.h"
-#include "Tools/LYJController.h" 
+#include "Tools/MBFController.h" 
 
 // 2025.04.10 GameHUD 테스트 위해 PlayerCharacter 활용 중
 
@@ -53,9 +53,9 @@ void AMBFStope::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* O
 
         if (AController* Controller = Player->GetController())
         {
-            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            if (AMBFController* PC = Cast<AMBFController>(Controller))
             {
-                PC->SetPlayerNearStope(true);
+                PC->SetPlayerNearObject(true);
             }
         }
     }
@@ -83,9 +83,9 @@ void AMBFStope::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
 
         if (AController* Controller = Player->GetController())
         {
-            if (ALYJController* PC = Cast<ALYJController>(Controller))
+            if (AMBFController* PC = Cast<AMBFController>(Controller))
             {
-                PC->SetPlayerNearStope(false);
+                PC->SetPlayerNearObject(false);
             }
         }
     }

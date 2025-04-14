@@ -6,8 +6,7 @@
 
 #include "Character/PlayerCharacter.h"
 #include "Component/Mining/MiningComponent.h"
-#include "Tools/WJMController.h"
-#include "Tools/LYJController.h"
+#include "Tools/MBFController.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 #include "Tiles/TileTypes/StructuresTile.h"
 
@@ -15,8 +14,8 @@ void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
-    //ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
+    AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
+    
     if (!PC || !FrameCursor) { return; }
 
     APlayerCharacter* Player = Cast<APlayerCharacter>(PC->GetPawn());
