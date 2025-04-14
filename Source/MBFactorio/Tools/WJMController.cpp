@@ -7,7 +7,6 @@
 #include "InputMappingContext.h"
 #include "InputTriggers.h"
 #include "Character/PlayerCharacter.h"
-#include "Component/WJMTest/WJMTestInventoryComponent.h"
 #include "Component/Mining/MiningComponent.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 #include "Tiles/TileTypes/StructuresTile.h"
