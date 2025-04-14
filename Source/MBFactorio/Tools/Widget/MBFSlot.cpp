@@ -13,7 +13,7 @@ void UMBFSlot::NativeConstruct()
 	{
 		FString SlotName = FString::Printf(TEXT("DownBorder"));
 		FName WidgetName(*SlotName);
-
+		InventoryManager = Cast<UMBFInstance>(GetWorld()->GetGameInstance())->GetInventoryManager();
 		// �̸����� ���� ã��
 		{
 			UWidget* FoundWidget = GetWidgetFromName(WidgetName);
@@ -89,19 +89,41 @@ void UMBFSlot::NativeConstruct()
 	}
 }
 
+
+
+
+
+FReply UMBFSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	{
+		if (InventoryManager)
+		{
+			
+
+			InventoryManager->OnSlotClicked(OwnerInventory, Index, OwnerInventory->GetInventoryItem(Index));
+		}
+
+		return FReply::Handled();
+	}
+
+	return FReply::Unhandled();
+}
+
 void UMBFSlot::Changed(int32 InSlot)
 {
     const UMBFInstance* Instance = Cast<UMBFInstance>(GetGameInstance());
-    //AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
-    AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
-	APlayerCharacter* p = Cast<APlayerCharacter>(PC->GetPawn());
+	AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
 
-	UMBFInventoryComponent* d = p->GetInventoryComponent();
+    /*AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(PC->GetPawn());
 
-    FInventoryItem* Item = p->GetInventoryComponent()->GetInventoryItem(InSlot);
+    FInventoryItem* Item = PlayerCharacter->GetInventoryComponent()->GetInventoryItem(InSlot);*/
 
-    const FItemData* itemdata = Instance->GetItemData(Item->ItemID);
+    FInventoryItem& Item = OwnerInventory->GetInventoryItem(InSlot);
 
+    FItemData* itemdata = Instance->GetItemData(Item.ItemID);
     
     if (itemdata == nullptr) {
         Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.0f));
@@ -109,10 +131,13 @@ void UMBFSlot::Changed(int32 InSlot)
         SetItemID(FName(FString(TEXT(""))));
     }
     else {
-        Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+		if (Item.MCount == 0)
+			Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 0.5f));
+		else
+			Image->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
         Image->SetBrushFromTexture(itemdata->Image, false);
-        Count->SetText(FText::AsNumber(Item->MCount));
-        SetItemID(Item->ItemID);
+        Count->SetText(FText::AsNumber(Item.MCount));
+        SetItemID(Item.ItemID);
     }
 
     //TextBlock Count ����

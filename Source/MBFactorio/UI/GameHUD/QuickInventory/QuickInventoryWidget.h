@@ -22,16 +22,22 @@ public:
     virtual void NativeConstruct() override;
 
     /** 지정 인덱스 슬롯에 아이템 데이터를 설정 */
-    void SetSlotItem(int32 Index, const FQuickItemData& Item);
+    void SetSlotItem(int32 Index, FItemData& Item);
 
     /** 지정 인덱스 슬롯의 아이템 제거 */
     void ClearSlot(int32 Index);
 
     /** 지정 인덱스 슬롯에 담긴 아이템 데이터 반환 */
-    FQuickItemData GetSlotItem(int32 Index) const;
+    FItemData GetSlotItem(int32 Index) const;
 
     /** 슬롯을 동적으로 생성하고 컨테이너에 추가 */
     void InitSlots();
+
+    /** 아이템을 자동 배치하거나, 커서에서 슬롯으로 드래그 시 사용 */
+    int32 FindFirstEmptySlot() const;
+
+    /** 커서에 있는 아이템을 비어 있는 슬롯에 자동 배치 */
+    bool SetFirstEmptySlotItem(FItemData& Item);
 
 protected:
     /** 슬롯들을 담는 컨테이너 (UMG에서 바인딩됨) */

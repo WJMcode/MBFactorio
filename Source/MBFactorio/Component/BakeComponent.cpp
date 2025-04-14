@@ -3,6 +3,10 @@
 
 #include "Component/BakeComponent.h"
 #include "Component/MBFInventoryComponent.h"
+#include "Tools/MBFHUD.h"
+#include "Tools/Widget/FurnaceInventory.h"
+#include "Test/TestActor.h"
+#include "Tools/MBFController.h"
 #include "Tools/MBFInstance.h"
 
 // Sets default values for this component's properties
@@ -44,10 +48,10 @@ void UBakeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 
 	
 	// 아이템이 제련될 수 있는 상태인지 체크
-	FInventoryItem* SmeltableSlot = InventoryComponent->GetInventoryItem(1);
+	FInventoryItem* SmeltableSlot = &(InventoryComponent->GetInventoryItem(1));
 
 	// 구워질 아이템이 없으면 리턴
-	if (!SmeltableSlot)
+	if (*SmeltableSlot == FInventoryItem())
 	{
 		return;
 	}
@@ -66,14 +70,14 @@ void UBakeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	{
 		BakeItem = SmeltedItemData;
 		bakeMTime = 0.f;
-		bakeTime = SmeltableItemData->BuildTime;
+		bakeTime = SmeltedItemData->BuildTime;
 	}
 
 
-	FInventoryItem* SmeltedSlot = InventoryComponent->GetInventoryItem(2);
+	FInventoryItem* SmeltedSlot = &(InventoryComponent->GetInventoryItem(2));
 
 	//3번째 슬롯데이터가 있을때 로직( BakeItem과 데이터가 다르면 리턴 (제련불가능))
-	if (SmeltedSlot)
+	if (!(*SmeltedSlot == FInventoryItem()))
 	{
 		if (SmeltedSlot->ItemID != BakeItem->ItemID)
 		{
@@ -89,14 +93,14 @@ void UBakeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	//제련가능
 
 	// (열) 에너지 관리
-
+	ATestActor* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
 	if (Energy <= 0)
 	{
 		// 0번째 슬롯이 연료슬롯
-		FInventoryItem* FuelSlot = InventoryComponent->GetInventoryItem(0);
+		FInventoryItem* FuelSlot = &(InventoryComponent->GetInventoryItem(0));
 		
 		//에너지 보급 불가능
-		if (!FuelSlot)
+		if (*FuelSlot == FInventoryItem())
 		{
 			return;
 		}
@@ -104,19 +108,52 @@ void UBakeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 		
 		Energy = FuelItemData->Energy;
 		MaxEnergy = Energy;
+		FuelSlot->MCount -= 1;
+		if (FuelSlot->MCount == 0)
+		{
+			FuelSlot->empty();
+		}
+		if (FurnaceOwner)
+		{
+			FurnaceOwner->GetFurnaceUI()->FurNaceChagned();
+		}
 	}
-
+	
 	// 틱 작용(에너지 소비, 시간 경과)
 	Energy -= EnergyPSec * DeltaTime;
 	bakeMTime += EnergyEfficiency * DeltaTime;
 
+	
 	if (bakeTime <= bakeMTime)
 	{
-		SmeltedSlot->MCount += BakeItem->CreateCount;
+		if ((*SmeltedSlot) == FInventoryItem())
+		{
+			SmeltedSlot->ItemID = BakeItem->ItemID;
+			SmeltedSlot->MCount = BakeItem->CreateCount;
+			SmeltedSlot->MaxCount = BakeItem->MaxCount;
+			SmeltedSlot->ItemType = BakeItem->ItemType;
+		}
+		else
+		{
+			SmeltedSlot->MCount += BakeItem->CreateCount;
+			
+		}
 		SmeltableSlot->MCount -= BakeItem->RequiredItems[0].RequiredCount;
+		if (SmeltableSlot->MCount == 0)
+		{
+			SmeltableSlot->empty();
+		}
 		bakeMTime -= bakeTime;
+		
+		if (FurnaceOwner)
+		{
+			FurnaceOwner->GetFurnaceUI()->FurNaceChagned();
+		}
 	}
-	
+	if (FurnaceOwner) 
+	{
+		FurnaceOwner->GetFurnaceUI()->SetPercent(bakeMTime / bakeTime, Energy / MaxEnergy);
+	}
 
 	// ...
 }

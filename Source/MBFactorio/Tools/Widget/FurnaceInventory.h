@@ -8,41 +8,50 @@
 #include "Struct/MBFStruct.h"
 #include "Tools/Widget/CraftSelectSlot.h"
 #include "Tools/Widget/CraftSlot.h"
-#include "MBFInventory.generated.h"
+#include "Components/ProgressBar.h"
+#include "FurnaceInventory.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
-class MBFACTORIO_API UMBFInventory : public UUserWidget
+class MBFACTORIO_API UFurnaceInventory : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 
 	UPROPERTY(EditAnywhere
 	)
 
 	UMBFSlot* ItemSlot[80];
-	UCraftSlot* CraftSlot[70];
-	UCraftSelectSlot* SelectedSlot[4];
-	int32 SelectedSlotNum;
+	UMBFSlot* FurnaceSlot[3];
+	UProgressBar* ProgressBar;
+	UProgressBar* FuelBar;
+
+
 	UMBFInventoryComponent* OwnerInventory;
-public:
-	void UpdateInventoryUI();
+	UMBFInventoryComponent* FurnaceInventory;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UMBFSlot* GetItemSlot(int32 b) { return ItemSlot[b]; }
+
+	void SlotChanged(int32 InSlot) { ItemSlot[InSlot]->Changed(InSlot); }
+	void FurNaceChagned( ); 
+	void SetPercent(float Progresspercent, float Fuelpercent);
+
+	void SetOwnerInventory(UMBFInventoryComponent* InFurnaceInventory);
+
+
 	void OnChanged();
-	void SlotChanged(int32 InSlot) {ItemSlot[InSlot]->Changed(InSlot);}
-	
-	void BindingSelectedAction(UCraftSelectSlot* InSlot);
+
+
 protected:
-	UFUNCTION()
-	void SelectedSlotChange(int32 SlotID);
+
 
 
 	void OnInitialized();
 	void NativeConstruct() override;
-	
 };
+
+

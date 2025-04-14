@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Tools/Widget/CraftSlot.h"
@@ -11,8 +11,6 @@
 void UCraftSlot::NativeConstruct() {
 	Super::NativeConstruct();
 
-	UMBFInstance* Instance = Cast<UMBFInstance>(GetOwningPlayer()->GetGameInstance());
-	const FItemData* ItemData = Instance->GetItemData(ItemID);
 
 	
 	CraftChange();
@@ -36,7 +34,7 @@ FReply UCraftSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FP
 		IVC->CraftItem(ItemID, 5);
 	}
 
-	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	return FReply::Handled();
 }
 
 void UCraftSlot::CraftChange()

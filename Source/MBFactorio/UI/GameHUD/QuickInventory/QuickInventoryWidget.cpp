@@ -44,12 +44,39 @@ void UQuickInventoryWidget::InitSlots()
     UE_LOG(LogTemp, Warning, TEXT("Slots.Num() = %d"), Slots.Num());
 }
 
+int32 UQuickInventoryWidget::FindFirstEmptySlot() const
+{
+    for (int32 i = 0; i < Slots.Num(); ++i)
+    {
+        if (!Slots[i]->GetItem().IsValid())
+        {
+            return i;
+        }
+    }
+    return -1;
+}
 
-void UQuickInventoryWidget::SetSlotItem(int32 Index, const FQuickItemData& Item)
+bool UQuickInventoryWidget::SetFirstEmptySlotItem(FItemData& Item)
+{
+    int32 EmptyIndex = FindFirstEmptySlot();
+    if (EmptyIndex != -1)
+    {
+        SetSlotItem(EmptyIndex, Item);
+        return true;
+    }
+    return false;
+}
+
+
+void UQuickInventoryWidget::SetSlotItem(int32 Index, FItemData& Item)
 {
     if (Slots.IsValidIndex(Index))
     {
         Slots[Index]->SetItem(Item);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("SetSlotItem: Invalid index %d"), Index);
     }
 }
 
@@ -59,14 +86,18 @@ void UQuickInventoryWidget::ClearSlot(int32 Index)
     {
         Slots[Index]->ClearItem();
     }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("ClearSlot: Invalid index %d"), Index);
+    }
 }
 
-FQuickItemData UQuickInventoryWidget::GetSlotItem(int32 Index) const
+FItemData UQuickInventoryWidget::GetSlotItem(int32 Index) const
 {
     if (Slots.IsValidIndex(Index))
     {
         return Slots[Index]->GetItem();
     }
 
-    return FQuickItemData{};
+    return FItemData{};
 }

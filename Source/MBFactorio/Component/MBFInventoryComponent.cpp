@@ -7,6 +7,7 @@
 #include "Tools/Widget/CraftList.h"
 //#include "Struct/MBFStruct.h"
 #include "Tools/MBFHUD.h"
+#include "Tools/Widget/FurnaceInventory.h"
 #include "Math/UnrealMathUtility.h"
 #include "Tools/MBFController.h"
 
@@ -20,8 +21,12 @@ UMBFInventoryComponent::UMBFInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	Inventory.SetNum(80);
-	// Inventory[0] = FInventoryItem(FName("5"), 100, 100, EItemType::Smeltable);
-	// Inventory[1] = FInventoryItem(FName("8"), 100, 5, EItemType::Smeltable);
+
+	for (int i = 0; i < 80; i++)
+	{
+		Inventory[i] = FInventoryItem();
+	}
+
 	// ...
 }
 
@@ -33,6 +38,7 @@ void UMBFInventoryComponent::BeginPlay()
 
 	for (int i = 1; i < 17; i++)
 	{
+
 		BringItems.FindOrAdd(FName(FString::FromInt(i))) += GetInventoryItemCount(FName(FString::FromInt(i)));
 	}
 	// ...
@@ -49,10 +55,35 @@ void UMBFInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+void UMBFInventoryComponent::SetBringItems()
+{
+	BringItems.Empty();
+
+	for (int i = 1; i < 17; i++)
+	{
+
+		BringItems.FindOrAdd(FName(FString::FromInt(i))) += GetInventoryItemCount(FName(FString::FromInt(i)));
+	}
+}
+
+void UMBFInventoryComponent::SetInventoryIndex(int32 InIndex, FName InItemID)
+{
+	if (Inventory[InIndex].ItemID == FName("0"))
+	{
+		FItemData* ItemData = Cast<UMBFInstance>(GetWorld()->GetFirstPlayerController()->GetGameInstance())->GetItemData(InItemID);
+		if (ItemData) {
+			Inventory[InIndex] = FInventoryItem(InItemID, ItemData->MaxCount, 0, ItemData->ItemType);
+		}
+	}
+}
+
 void UMBFInventoryComponent::SortInventory()
 {
 	int32 Islot = 0;
 	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
+	
+
+	
 
 	for (int i = 1; i < 17; i++)
 	{
@@ -82,6 +113,7 @@ void UMBFInventoryComponent::SortInventory()
 	}
 	for (int i = Islot; i < 80; i++)
 	{
+
 		Inventory[i] = FInventoryItem();
 	}
 }
@@ -189,31 +221,7 @@ int32 UMBFInventoryComponent::GetInventoryItemCount(FName ItemID)
 }
 
 // On/Off Inventory
-void UMBFInventoryComponent::InventoryTogle()
-{
-	if (!GetOwner()) return;
 
-	UWorld* World = GetOwner()->GetWorld();
-	if (!World) return;
-
-	APlayerController* PC = World->GetFirstPlayerController();
-	if (!PC) return;
-
-	AHUD* HUD = PC->GetHUD();
-	AMBFHUD* MBFHUD = Cast<AMBFHUD>(HUD);
-	if (!MBFHUD) return;
-
-	if (bOpenInventory)
-	{
-		MBFHUD->CloseInventory();
-		bOpenInventory = false;
-	}
-	else
-	{
-		MBFHUD->OpenInventory();
-		bOpenInventory = true;
-	}
-}
 
 bool UMBFInventoryComponent::IsValidSlot(int32 SlotIndex) const
 {
@@ -221,59 +229,138 @@ bool UMBFInventoryComponent::IsValidSlot(int32 SlotIndex) const
 }
 
 void UMBFInventoryComponent::TrySwapOrMoveItems(
-	int32 FromIndex, int32 ToIndex, UMBFInventoryComponent* FromInventory , FInventoryItem* InventoryItem)
+	int32 FromIndex, int32 ToIndex, UMBFInventoryComponent* FromInventory, FInventoryItem* InventoryItem)
 {
 	if (!IsValidSlot(ToIndex)) return;
 
 	if (FromInventory == this)
 	{
-		// 같은 인벤토리 내에서 이동
-		if (InventoryType == EInventoryType::Furnace)
-		{
-			return;
-		}
-		Swap(Inventory[FromIndex], Inventory[ToIndex]);
+		return;
 	}
-	// 화로의경우 실패사유
-	if (InventoryType == EInventoryType::Furnace)
+
+	// ✅ CraftMachine 용 스택 처리
+	if (InventoryType == EInventoryType::CraftMachine &&
+		!Inventory[ToIndex].IsEmpty() &&
+		Inventory[ToIndex].ItemID == FromInventory->Inventory[FromIndex].ItemID)
 	{
-		if (ToIndex == 1)
+		int32 MaxCount = Inventory[ToIndex].MaxCount;
+		int32 CurrentCount = Inventory[ToIndex].MCount;
+		int32 FromCount = FromInventory->Inventory[FromIndex].MCount;
+		int32 AvailableSpace = MaxCount - CurrentCount;
+
+		if (AvailableSpace > 0)
 		{
-			if (InventoryItem->ItemType != EItemType::Fuel)
+			int32 MoveCount = FMath::Min(FromCount, AvailableSpace);
+
+			Inventory[ToIndex].MCount += MoveCount;
+			FromInventory->Inventory[FromIndex].MCount -= MoveCount;
+
+			if (FromInventory->Inventory[FromIndex].MCount <= 0)
 			{
-				return;
+				FromInventory->Inventory[FromIndex] = FInventoryItem();
 			}
+			FromInventory->SetBringItems();
+
+			if (InventoryType == EInventoryType::Charactor)
+				SortInventory();
+			else if (FromInventory->InventoryType == EInventoryType::Charactor)
+				FromInventory->SortInventory();
+			ACraftMachine* CraftMachineOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftMachineOwner();
+			CraftMachineOwner->GetAutoCraftUI()->OnChanged();
+			FromInventory->SortInventory();
+			return; // ✅ 여기서 끝
 		}
-		else if (ToIndex == 0)
+	}
+
+	// ✅ 기본 아이템 이동/교환 로직
+	if (Inventory[ToIndex].IsEmpty())
+	{
+		if (CanMoveItem(FromIndex, ToIndex, FromInventory, InventoryItem))
 		{
-			if (!(InventoryItem->ItemType == EItemType::Smeltable || InventoryItem->ItemType == EItemType::SmeltableAndSmelted))
+			Inventory[ToIndex] = FromInventory->Inventory[FromIndex];
+			FromInventory->Inventory[FromIndex] = FInventoryItem();
+
+			SetBringItems();
+			FromInventory->SetBringItems();
+
+			if (InventoryType == EInventoryType::Charactor)
+				SortInventory();
+			else if (FromInventory->InventoryType == EInventoryType::Charactor)
+				FromInventory->SortInventory();
+
+			// ✅ Furnace 조건 처리
+			if (InventoryType == EInventoryType::Furnace || FromInventory->InventoryType == EInventoryType::Furnace)
 			{
-				return;
+				ATestActor* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
+				if (FurnaceOwner)
+				{
+					FurnaceOwner->GetFurnaceUI()->FurNaceChagned();
+					FurnaceOwner->GetFurnaceUI()->OnChanged();
+				}
 			}
 		}
 	}
 	else
 	{
-		// 다른 인벤토리 간 이동
-		if (Inventory[ToIndex].IsEmpty())
+		if (CanMoveItem(FromIndex, ToIndex, FromInventory, InventoryItem))
 		{
-			
-			// 그냥 옮기기
-			Inventory[ToIndex] = FromInventory->Inventory[FromIndex];
-			FromInventory->Inventory[FromIndex] = FInventoryItem();
+			Swap(Inventory[ToIndex], FromInventory->Inventory[FromIndex]);
+
+			SetBringItems();
+			FromInventory->SetBringItems();
+
+			if (InventoryType == EInventoryType::Charactor)
+				SortInventory();
+			else if (FromInventory->InventoryType == EInventoryType::Charactor)
+				FromInventory->SortInventory();
+
+			// ✅ Furnace 조건 처리
+			if (InventoryType == EInventoryType::Furnace || FromInventory->InventoryType == EInventoryType::Furnace)
+			{
+				ATestActor* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
+				if (FurnaceOwner)
+				{
+					FurnaceOwner->GetFurnaceUI()->FurNaceChagned();
+					FurnaceOwner->GetFurnaceUI()->OnChanged();
+				}
+			}
+		}
+	}
+}
+bool UMBFInventoryComponent::CanMoveItem(int32 FromIndex, int32 ToIndex, UMBFInventoryComponent* FromInventory, FInventoryItem* InventoryItem)
+{
+	// 이전에 클릭된 인벤토리 슬롯이 화로면
+	if (FromInventory->InventoryType == EInventoryType::Furnace)
+	{
+		
+		if (FromIndex == 0 && InventoryItem->ItemType == EItemType::Fuel)
+		{
+			return true;
+		}
+		else if (FromIndex == 1 && InventoryItem->ItemType == EItemType::Smeltable)
+		{
+			return true;
 		}
 		else
 		{
-			// 교환
-			Swap(Inventory[ToIndex], FromInventory->Inventory[FromIndex]);
+			return false;
 		}
 	}
-	if (SortOption)
+	else if (InventoryType == EInventoryType::Furnace)
 	{
-		SortInventory();
+		if (ToIndex == 0 && FromInventory->Inventory[FromIndex].ItemType == EItemType::Fuel)
+		{
+			return true;
+		}
+		else if (ToIndex == 1 && FromInventory->Inventory[FromIndex].ItemType == EItemType::Smeltable)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
-	if (FromInventory->SortOption)
-	{
-		FromInventory->SortInventory();
-	}
+	
+	return false;
 }

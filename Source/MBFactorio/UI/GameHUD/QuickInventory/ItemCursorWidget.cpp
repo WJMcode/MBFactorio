@@ -2,57 +2,62 @@
 #include "Components/Image.h"
 #include "Engine/Texture2D.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Tools/LYJController.h"
 
 void UItemCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
 
-    if (HasItem())
+    /*ALYJController* PC = Cast<ALYJController>(GetOwningPlayer());
+    if (!PC) { return; }
+
+    FVector2D MousePosition;
+    if (PC->GetMousePosition(MousePosition.X, MousePosition.Y))
     {
-        FVector2D MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
-        SetPositionInViewport(MousePos, true);
-    }
+        SetPositionInViewport(MousePosition, false);
+    }*/
 }
 
-void UItemCursorWidget::SetItem(const FQuickItemData& InItem)
+void UItemCursorWidget::SetItem(const FItemData& InItem)
 {
-    CursorItem = InItem;
+    ItemData = InItem;
 
     UpdateUI();
 }
 
 void UItemCursorWidget::ClearItem()
 {
-    CursorItem = FQuickItemData{};
+    ItemData = FItemData();
 
     UpdateUI();
 }
 
 void UItemCursorWidget::UpdateUI()
 {
-    if (CursorIcon)
+    if (!CursorIcon) return;
+
+    if (ItemData.IsValid() && CursorIcon)
     {
-        if (CursorItem.IsValid())
+        if (ItemData.Image)
         {
-            CursorIcon->SetBrushFromTexture(CursorItem.ItemIcon);
+            CursorIcon->SetBrushFromTexture(ItemData.Image);
             CursorIcon->SetVisibility(ESlateVisibility::Visible);
+
+            // 크기 명시적으로 설정
+            CursorIcon->SetBrushSize(FVector2D(8.f, 8.f));
+
+            UE_LOG(LogTemp, Warning, TEXT("CursorIcon이 Visible입니다"));
         }
         else
         {
             CursorIcon->SetBrushFromTexture(nullptr);
             CursorIcon->SetVisibility(ESlateVisibility::Hidden);
+            UE_LOG(LogTemp, Warning, TEXT("CursorIcon이 Hidden입니다"));
         }
     }
 }
 
-FReply UItemCursorWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+bool UItemCursorWidget::HasValidItem() const
 {
-    // 우클릭으로 취소 처리
-    if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
-    {
-        ClearItem();
-        return FReply::Handled();
-    }
-
-    return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+    return !ItemData.ItemID.IsNone() && ItemData.Image != nullptr;
 }

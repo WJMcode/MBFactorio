@@ -12,6 +12,8 @@
 #include "Tools/MBFHUD.h"
 #include "Misc/Misc.h"
 #include "Component/MBFInventoryComponent.h"
+#include "Test/TestActor.h"
+#include "Test/CraftMachine.h"
 #include "MBFController.generated.h"
 
 /**
@@ -25,11 +27,26 @@ class MBFACTORIO_API AMBFController : public APlayerController
 
 	UInputMappingContext* IMC_Default;
 
+
 	AMBFController();
 	
 public:
 	UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; }
 	UCraftComponent* GetCraftComponent() { return CraftComponent; }
+
+
+	void SetFurnaceOwner(ATestActor* InActor) { FurnaceUIOwnerActor = InActor; }
+	ATestActor* GetFurnaceOwner() { return FurnaceUIOwnerActor; }
+
+
+
+	void SetCraftMachineOwner(ACraftMachine* InActor) { CraftMachineUIOwnerActor = InActor; }
+	ACraftMachine* GetCraftMachineOwner() { return CraftMachineUIOwnerActor; }
+
+
+	bool bOpenInventory;
+
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -38,13 +55,15 @@ protected:
 
 private:
 
-	bool bOpenInventory;
+	
 	void InventoryTogle();
 
 
 private:
 	UMBFInventoryComponent* MBFInventoryComponent;
 	UCraftComponent* CraftComponent;
+	ATestActor* FurnaceUIOwnerActor;
+	ACraftMachine* CraftMachineUIOwnerActor;
 
 
 };

@@ -13,23 +13,25 @@ void UGameHUD::NativeConstruct()
     UpdateQuestStatus(0, 0);
     ClearResourceInfo();
 
-    // 빈 정보로 초기화 (디자인은 보이되 내용 없음)
-    FQuickItemData EmptyData;
-    if (UI_ResourceInfo)
     {
-        UI_ResourceInfo->SetResourceInfo(EmptyData);
-    }
+        // 빈 정보로 초기화 (디자인은 보이되 내용 없음)
+        FQuickItemData EmptyData;
+        if (UI_ResourceInfo)
+        {
+            UI_ResourceInfo->SetResourceInfo(EmptyData);
+        }
 
-    // 데이터 테이블 로드 (런타임 안전 방식)
-    ItemInfoDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/LYJ_Test/DT_ItemInfo.DT_ItemInfo"));
-    if (ItemInfoDataTable)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("ItemInfo 데이터 테이블 로드 성공"));
-    }
-    else
-    {
-        UE_LOG(LogTemp, Error, TEXT("ItemInfo 데이터 테이블 로드 실패"));
-    }
+        // 데이터 테이블 로드 (런타임 안전 방식)
+        ItemInfoDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/LYJ_Test/DT_ItemInfo.DT_ItemInfo"));
+        if (ItemInfoDataTable)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("ItemInfo 데이터 테이블 로드 성공"));
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("ItemInfo 데이터 테이블 로드 실패"));
+        }
+    }   
 }
 
 void UGameHUD::ShowResourceInfoByID(const FString& ItemID)

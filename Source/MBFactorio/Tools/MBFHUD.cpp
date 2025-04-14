@@ -17,28 +17,36 @@ void AMBFHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-}
-
-void AMBFHUD::OpenInventory()
-{
 	UWorld* World = GetWorld();
 
 	TSubclassOf<UUserWidget> WidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Gamemode/InGame/MBFInventory.MBFInventory_C'"));
 
 	Inventory = CreateWidget<UUserWidget>(World, WidgetClass);
 
-	Inventory->AddToViewport();
+	
+	
+}
 
+void AMBFHUD::OpenInventory()
+{
+	
+	Inventory->AddToViewport();
 	
 }
 
 void AMBFHUD::CloseInventory()
 {
-
 	Inventory->RemoveFromParent();
-
 }
+
+void AMBFHUD::SlotChanged(int32 InSlot)
+{
+	if (Inventory) {
+		Cast<UMBFInventory>(Inventory)->SlotChanged(InSlot);
+	}
+}
+
+
 
 UCraftList* AMBFHUD::GetCraftListUI()
 {

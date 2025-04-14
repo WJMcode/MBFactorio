@@ -37,10 +37,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	FInventoryItem* GetInventoryIndex(int32 InSlot) { return &Inventory[InSlot]; }
+
 	void SortInventory();
 
-	bool bOpenInventory = false;
+	void SetBringItems();
 
+	void SetInventoryIndex(int32 InIndex,FName InItemID);
+
+	bool bOpenInventory;
 
 	void AddItem(FName ItemID, int32 Count);
 	void RemoveItem(FName ItemID, int32 Count);
@@ -49,12 +54,12 @@ public:
 	void DropItem();
 	void SpawnItem(FName ItemID, FVector Location);
 	
+	
 
 	int32 FindInventoryItem(FName ItemID);												//인벤토리에 해당 아이템이 있는지 검사
 	int32 GetInventoryItemCount(FName ItemID);
-	FInventoryItem* GetInventoryItem(int32 b) { return &Inventory[b]; }
+	FInventoryItem& GetInventoryItem(int32 b) { return Inventory[b]; }
 		
-	void InventoryTogle();
 
 	void SetInventoryNum(int32 Num) { Inventory.SetNum(Num); }
 
@@ -64,4 +69,8 @@ public:
 
 	bool IsValidSlot(int32 SlotIndex) const;
 	void TrySwapOrMoveItems(int32 FromIndex, int32 ToIndex, UMBFInventoryComponent* FromInventory, FInventoryItem* InventoryItem);
+
+	bool CanMoveItem(int32 FromIndex, int32 ToIndex, UMBFInventoryComponent* FromInventory, FInventoryItem* InventoryItem);
+
+	
 };
