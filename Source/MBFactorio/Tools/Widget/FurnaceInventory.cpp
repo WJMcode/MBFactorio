@@ -7,6 +7,7 @@
 #include "Styling/SlateBrush.h"
 #include "Styling/SlateColor.h"
 #include "Tools/MBFInstance.h"
+#include "Character/PlayerCharacter.h"
 #include "Math/Color.h"
 
 void UFurnaceInventory::OnInitialized()
@@ -18,7 +19,13 @@ void UFurnaceInventory::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    OwnerInventory = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetInventoryComponent();
+
+    APlayerCharacter* Character = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+    if (Character)
+    {
+        OwnerInventory = Character->GetInventoryComponent();
+    }
 
     for (int32 i = 0; i < 80; ++i)
     {

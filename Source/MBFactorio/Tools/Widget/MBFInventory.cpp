@@ -18,12 +18,9 @@ void UMBFInventory::OnInitialized()
 void UMBFInventory::NativeConstruct()
 {
     Super::NativeConstruct();
-    AMBFController* MBFController = Cast<AMBFController>(GetWorld()->GetFirstPlayerController());
     APlayerCharacter* Character = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-    if (MBFController) {
-        OwnerInventory = MBFController->GetInventoryComponent();
-    }
-    else if (Character)
+
+    if (Character)
     {
         OwnerInventory = Character->GetInventoryComponent();
     }
