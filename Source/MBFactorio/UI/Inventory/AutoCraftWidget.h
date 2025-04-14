@@ -21,10 +21,13 @@ class MBFACTORIO_API UAutoCraftWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
-
+	UPROPERTY()
 	UMBFSlot* CharactorSlot[80];
+	UPROPERTY()
 	UMBFSlot* RequiredItemSlot[5];
+	UPROPERTY()
 	UBuildReSetWidget* BuildResetWidget;
+	UPROPERTY()
 	ACraftMachine* OwnerActor;
 
 	
@@ -42,9 +45,11 @@ public:
 	void OnChanged();
 
 private:
-
+	UPROPERTY()
 	UProgressBar* ProgressBar;
+	UPROPERTY()
 	UMBFInventoryComponent* OwnerInventory;
+	UPROPERTY()
 	UMBFInventoryComponent* MachineInventory;
 
 	

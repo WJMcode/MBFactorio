@@ -77,8 +77,10 @@ void AMBFController::BeginPlay()
 		{
 			MBFInventoryComponent->RegisterComponent();
 		}
-		MBFInventoryComponent->AddItem(FName(FString::FromInt(5)), 50);
-		MBFInventoryComponent->AddItem(FName(FString::FromInt(4)), 50);
+		MBFInventoryComponent->AddItem(FName("5"), 50);
+		MBFInventoryComponent->AddItem(FName("4"), 50);
+		MBFInventoryComponent->AddItem(FName("3"), 50);
+		MBFInventoryComponent->AddItem(FName("8"), 50);
 		MBFInventoryComponent->SetSortOption(true);
 		MBFInventoryComponent->SortInventory();
 	}
@@ -505,6 +507,7 @@ void AMBFController::InventoryTogle()
 	{
 		MBFHUD->OpenInventory();
 		bOpenInventory = true;
+		
 	}
 }
 

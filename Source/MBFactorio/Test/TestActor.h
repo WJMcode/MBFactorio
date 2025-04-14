@@ -34,11 +34,12 @@ public:
 	UFurnaceInventory* GetFurnaceUI() { return FurnaceUI; }
 
 private:
-
+	UPROPERTY()
 	UFurnaceInventory* FurnaceUI;
-
+	UPROPERTY()
 	UMBFInventoryComponent* InventoryComponent;
-	
+	UPROPERTY()
 	UBakeComponent* BakeComponent;
+	UPROPERTY()
 	UBoxComponent* BoxComponent;
 };

@@ -18,13 +18,13 @@ class MBFACTORIO_API UBuildReSetWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
-
+	UPROPERTY()
 	UImage* ResetImage;
 
 
 	FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent);
 
-
+	UPROPERTY()
 	ACraftMachine* OwnerActor;
 
 public:

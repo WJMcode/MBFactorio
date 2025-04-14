@@ -7,6 +7,7 @@
 #include "Styling/SlateBrush.h"
 #include "Styling/SlateColor.h"
 #include "Tools/MBFInstance.h"
+#include "Character/PlayerCharacter.h"
 #include "Math/Color.h"
 
 void UFurnaceInventory::OnInitialized()
@@ -18,7 +19,13 @@ void UFurnaceInventory::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    OwnerInventory = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetInventoryComponent();
+
+    APlayerCharacter* Character = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+    if (Character)
+    {
+        OwnerInventory = Character->GetInventoryComponent();
+    }
 
     for (int32 i = 0; i < 80; ++i)
     {
@@ -79,48 +86,7 @@ void UFurnaceInventory::NativeConstruct()
             UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
         }
     }
-    FString SlotName = FString::Printf(TEXT("ProgressBar"));
-    FName WidgetName(*SlotName);
-
-    UWidget* FoundWidget = GetWidgetFromName(WidgetName);
-    if (FoundWidget)
-    {
-        UProgressBar* SlotWidget = Cast<UProgressBar>(FoundWidget);
-        if (SlotWidget)
-        {
-            ProgressBar = SlotWidget;
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-    }
     
-
-    SlotName = FString::Printf(TEXT("FuelBar"));
-    WidgetName = FName(*SlotName);
-
-    FoundWidget = GetWidgetFromName(WidgetName);
-    if (FoundWidget)
-    {
-        UProgressBar* SlotWidget = Cast<UProgressBar>(FoundWidget);
-        if (SlotWidget)
-        {
-            FuelBar = SlotWidget;
-        }
-        else
-        {
-            UE_LOG(LogTemp, Warning, TEXT("'%s' �� FuelBar�� �ƴմϴ�."), *SlotName);
-        }
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-    }
     OnChanged();
     SetIsEnabled(true);
     SetVisibility(ESlateVisibility::Visible);

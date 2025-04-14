@@ -7,32 +7,31 @@
 
 AMBFGamemode::AMBFGamemode()
 {
-
     //순서변경 HUD먼저 설정해야 PlayerController의 HUD도 설정된 값으로 생성됨
     HUDClass = AMBFHUD::StaticClass();
     PlayerControllerClass = AMBFController::StaticClass();
-    ConstructorHelpers::FClassFinder<UMBFStartWidget> WidgetClass(TEXT("/Game/UI/UI_Play.UI_Play_C"));
+    /*ConstructorHelpers::FClassFinder<UMBFStartWidget> WidgetClass(TEXT("/Game/UI/UI_Play.UI_Play_C"));
     if (WidgetClass.Succeeded())
     {
         StartWidgetClass = WidgetClass.Class;
-    }
+    }*/ // 테스트 시 호옥시 몰라서 삭제 말고 주석처리
 }
 
 void AMBFGamemode::BeginPlay()
 {
     Super::BeginPlay();
 
-    FString CurrentMap = GetWorld()->GetMapName();
-    CurrentMap.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+    FString CurrentLevelName = GetWorld()->GetMapName();
+    CurrentLevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
 
-    if (CurrentMap.Equals("Factorio"))
+    if (CurrentLevelName == TEXT("Factorio"))
     {
-        if (StartWidgetClass != nullptr)
+        if (StartWidgetClass)
         {
-            CurrentWidget = CreateWidget<UMBFStartWidget>(GetWorld(), StartWidgetClass);
-            if (CurrentWidget)
+            StartWidget = CreateWidget<UMBFStartWidget>(GetWorld(), StartWidgetClass);
+            if (StartWidget)
             {
-                //CurrentWidget->AddToViewport(); // 시작 화면까지 PIE 로 재생할 시 주석 풀기
+                StartWidget->AddToViewport(); // 시작화면 필요 X 시 주석 걸 것
             }
         }
     }

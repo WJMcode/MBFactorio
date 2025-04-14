@@ -3,11 +3,16 @@
 
 #include "UI/Inventory/AutoCraftWidget.h"
 #include "Tools/MBFController.h"
+#include "Character/PlayerCharacter.h"
 
 void UAutoCraftWidget::NativeConstruct()
 {
-    OwnerInventory = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetInventoryComponent();
+    APlayerCharacter* Character = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
+    if (Character)
+    {
+        OwnerInventory = Character->GetInventoryComponent();
+    }
     for (int32 i = 0; i < 80; ++i)
     {
         // �̸� ����: "ItemSlot_0", "ItemSlot_1", ...

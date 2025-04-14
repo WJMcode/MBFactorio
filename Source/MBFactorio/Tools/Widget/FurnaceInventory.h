@@ -20,16 +20,18 @@ class MBFACTORIO_API UFurnaceInventory : public UUserWidget
 	GENERATED_BODY()
 
 
-	UPROPERTY(EditAnywhere
-	)
-
+	UPROPERTY()
 	UMBFSlot* ItemSlot[80];
+	UPROPERTY()
 	UMBFSlot* FurnaceSlot[3];
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UProgressBar* ProgressBar;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UProgressBar* FuelBar;
 
-
+	UPROPERTY()
 	UMBFInventoryComponent* OwnerInventory;
+	UPROPERTY()
 	UMBFInventoryComponent* FurnaceInventory;
 
 public:

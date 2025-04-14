@@ -15,7 +15,7 @@ class MBFACTORIO_API UCraftingSlot : public UMBFSlot
 {
 	GENERATED_BODY()
 protected:
-
+	UPROPERTY()
 	UProgressBar* Progress;
 
 	virtual void NativeConstruct() override;

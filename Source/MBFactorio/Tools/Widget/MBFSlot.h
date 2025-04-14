@@ -30,8 +30,11 @@ protected:
 	UImage* Image;
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* Count;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UBorder* LRBorder;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UBorder* UpBorder;
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UBorder* DownBorder;
 	
 	

@@ -19,13 +19,15 @@ class MBFACTORIO_API UMBFInventory : public UUserWidget
 	GENERATED_BODY()
 	
 
-	UPROPERTY(EditAnywhere
-	)
+	UPROPERTY()
 
 	UMBFSlot* ItemSlot[80];
+	UPROPERTY()
 	UCraftSlot* CraftSlot[70];
+	UPROPERTY()
 	UCraftSelectSlot* SelectedSlot[4];
 	int32 SelectedSlotNum;
+	UPROPERTY()
 	UMBFInventoryComponent* OwnerInventory;
 public:
 	void UpdateInventoryUI();

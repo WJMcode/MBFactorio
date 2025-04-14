@@ -25,5 +25,5 @@ protected:
 
     // 실제 생성된 위젯
     UPROPERTY()
-    class UMBFStartWidget* CurrentWidget;
+    class UMBFStartWidget* StartWidget;
 };

@@ -21,7 +21,7 @@ class MBFACTORIO_API UBuildItemSelectWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
-
+	UPROPERTY()
 	UCraftMachineSlot* CraftMachineSlot[70];
 
 	virtual void NativeConstruct() override;
@@ -36,5 +36,6 @@ public:
 
 
 private:
+	UPROPERTY()
 	ACraftMachine* OwnerActor;
 };

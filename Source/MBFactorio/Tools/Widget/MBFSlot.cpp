@@ -10,83 +10,10 @@
 
 void UMBFSlot::NativeConstruct()
 {
-	{
-		FString SlotName = FString::Printf(TEXT("DownBorder"));
-		FName WidgetName(*SlotName);
+	
 		InventoryManager = Cast<UMBFInstance>(GetWorld()->GetGameInstance())->GetInventoryManager();
 		// �̸����� ���� ã��
-		{
-			UWidget* FoundWidget = GetWidgetFromName(WidgetName);
-			if (FoundWidget)
-			{
-				UBorder* SlotWidget = Cast<UBorder>(FoundWidget);
-				if (SlotWidget)
-				{
-					DownBorder = SlotWidget;
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
-				}
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-			}
-		}
-	}
-
-	{
-		FString SlotName = FString::Printf(TEXT("LRBorder"));
-		FName WidgetName(*SlotName);
-
-		// �̸����� ���� ã��
-		{
-			UWidget* FoundWidget = GetWidgetFromName(WidgetName);
-			if (FoundWidget)
-			{
-				UBorder* SlotWidget = Cast<UBorder>(FoundWidget);
-				if (SlotWidget)
-				{
-					LRBorder = SlotWidget;
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
-				}
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-			}
-		}
-	}
-
-	{
-		FString SlotName = FString::Printf(TEXT("UpBorder"));
-		FName WidgetName(*SlotName);
-
-		// �̸����� ���� ã��
-		{
-			UWidget* FoundWidget = GetWidgetFromName(WidgetName);
-			if (FoundWidget)
-			{
-				UBorder* SlotWidget = Cast<UBorder>(FoundWidget);
-				if (SlotWidget)
-				{
-					UpBorder = SlotWidget;
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("'%s' �� UMBFSlot�� �ƴմϴ�."), *SlotName);
-				}
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
-			}
-		}
-	}
+		
 }
 
 
@@ -114,12 +41,6 @@ FReply UMBFSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPoi
 void UMBFSlot::Changed(int32 InSlot)
 {
     const UMBFInstance* Instance = Cast<UMBFInstance>(GetGameInstance());
-	AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
-
-    /*AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(PC->GetPawn());
-
-    FInventoryItem* Item = PlayerCharacter->GetInventoryComponent()->GetInventoryItem(InSlot);*/
 
     FInventoryItem& Item = OwnerInventory->GetInventoryItem(InSlot);
 
