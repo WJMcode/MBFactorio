@@ -4,6 +4,9 @@
 #include "Tools/Widget/MBFSlot.h"
 #include "Tools/MBFInstance.h"
 #include "Tools/MBFController.h"
+#include "Tools/WJMController.h"
+#include "Character/PlayerCharacter.h"
+#include "Component/MBFInventoryComponent.h"
 
 void UMBFSlot::NativeConstruct()
 {
@@ -89,11 +92,13 @@ void UMBFSlot::NativeConstruct()
 void UMBFSlot::Changed(int32 InSlot)
 {
     const UMBFInstance* Instance = Cast<UMBFInstance>(GetGameInstance());
-    AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
+    //AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
+    AWJMController* PC = Cast<AWJMController>(GetOwningPlayer());
+	APlayerCharacter* p = Cast<APlayerCharacter>(PC->GetPawn());
 
+	UMBFInventoryComponent* d = p->GetInventoryComponent();
 
-
-    FInventoryItem* Item = PC->GetInventoryComponent()->GetInventoryItem(InSlot);
+    FInventoryItem* Item = p->GetInventoryComponent()->GetInventoryItem(InSlot);
 
     const FItemData* itemdata = Instance->GetItemData(Item->ItemID);
 

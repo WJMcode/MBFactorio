@@ -38,10 +38,19 @@ public:
 	// 구조물 타입에 따라 크기를 다르게 설정합니다.
 	void SetStructuresTileScale(EStructuresType InType, float TileSize);
 
+protected:
+	// 자신(구조물) 입장에서 플레이어가 근처에 있는지에 대한 플래그입니다.
+	UPROPERTY(BlueprintReadOnly, Category = "State")
+	bool bIsPlayerNear = false;
+
 private:
 	// 캐릭터와 구조물 사이의 오버랩 판정을 위한 BoxComponent입니다.
 	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* OverlapBox;
+
+	// 캐릭터와 구조물 사이의 충돌 판정을 위한 BoxComponent입니다.
+	UPROPERTY(VisibleAnywhere)
+	class UBoxComponent* CollisionBox;
 
 	// 구조물 타일의 타입
 	UPROPERTY(VisibleAnywhere, Category = "Structures")

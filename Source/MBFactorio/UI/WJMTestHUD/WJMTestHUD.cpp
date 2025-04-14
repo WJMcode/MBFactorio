@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/WJMTestHUD/WJMTestHUD.h"
 #include "Components/ProgressBar.h"
 #include "Components/VerticalBox.h"

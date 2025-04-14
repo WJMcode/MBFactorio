@@ -109,6 +109,18 @@ void UMBFInventory::NativeConstruct()
     }
 }
 
+void UMBFInventory::UpdateInventoryUI()
+{
+    for (int i = 0; i < 80; i++)  // 최대 슬롯 수
+    {
+        UMBFSlot* RefreshSlot = ItemSlot[i];
+        if (RefreshSlot)
+        {
+            RefreshSlot->Changed(i);  // 해당 슬롯의 UI 갱신
+        }
+    }
+}
+
 void UMBFInventory::OnChanged()
 {
     for (int i = 0; i < 80; i++)

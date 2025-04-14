@@ -36,7 +36,7 @@ void ATileGridManager::SpawnResourceTiles()
 void ATileGridManager::SpawnStructuresTile()
 {
 	const FTileInfo& StructuresTileInfo = TileDataAsset->StructuresTileInfo;
-	SpawnTiles(StructuresTileInfo.TileClass, 1.0f, 0.1f, StructuresTileInfo.TileSize, FRotator(0.f, 90.f, 0.f), false);
+	SpawnTiles(StructuresTileInfo.TileClass, 1.0f, 0.2f, StructuresTileInfo.TileSize, FRotator(0.f, 90.f, 0.f), false);
 }
 
 void ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProbability, float ZOffset, float InTileSize, FRotator InRotator, bool bUseRandomRotation)

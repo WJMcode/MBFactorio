@@ -53,7 +53,7 @@ void AResourceTile::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActo
                 PC->SetDetectedStope(this);
 
                 // 플레이어 입장에서 봤을 때에도 광물과 오버랩되었으므로 true를 넘김
-                PC->SetPlayerNearStope(true);
+                PC->SetPlayerNearObject(true);
 
                 // 오버랩된 플레이어에게 자신(광물)을 넘김
                 Player->GetMiningComponent()->SetCurrentTargetTile(this);
@@ -76,7 +76,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
 
                 /* 광물과 플레이어 사이의 오버랩이 해제되면, 
                     중복으로 오버랩되었던 다른 광물을 찾음       */
-                AResourceTile* FoundStope = Cast<AResourceTile>(PC->FindOverlappingStope());
+                AResourceTile* FoundStope = Cast<AResourceTile>(PC->FindOverlappingTile<AResourceTile>());
                 
                  /* 오버랩 해제된 광물 외의 다른 광물이 오버랩된 상태라면
                     그 광물을 DetectedStope으로 설정함                       */
@@ -84,7 +84,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
                 {
                     PC->SetDetectedStope(FoundStope);
                     // 플레이어 입장에서는 광물과 오버랩된 상태이므로 true를 넘김
-                    PC->SetPlayerNearStope(true);
+                    PC->SetPlayerNearObject(true);
                     
                     // 감지된 다른 광물을 플레이어에게 넘김  
                     Player->GetMiningComponent()->SetCurrentTargetTile(FoundStope);
@@ -95,7 +95,7 @@ void AResourceTile::OnBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor*
                 {
                     PC->SetDetectedStope(nullptr);
                     // 플레이어 입장에서도 광물과 오버랩 해제된 상태이므로 false를 넘김
-                    PC->SetPlayerNearStope(false);
+                    PC->SetPlayerNearObject(false);
 
                     // 아무 광물도 감지되지 않았으므로 nullptr을 플레이어에게 넘김
                     Player->GetMiningComponent()->SetCurrentTargetTile(nullptr);

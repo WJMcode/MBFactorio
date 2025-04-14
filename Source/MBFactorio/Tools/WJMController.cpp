@@ -7,8 +7,10 @@
 #include "InputMappingContext.h"
 #include "InputTriggers.h"
 #include "Character/PlayerCharacter.h"
+#include "Component/WJMTest/WJMTestInventoryComponent.h"
 #include "Component/Mining/MiningComponent.h"
 #include "Tiles/TileTypes/ResourceTile.h"
+#include "Tiles/TileTypes/StructuresTile.h"
 
 // LYJController.h의 코드를 복사, 수정한 상태입니다.
 
@@ -17,9 +19,42 @@ AWJMController::AWJMController()
     PrimaryActorTick.bCanEverTick = true;
 }
 
+void AWJMController::SetupInputComponent()
+{
+    Super::SetupInputComponent();
+
+    if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
+    {
+        // 인벤토리 관련 액션
+        EnhancedInput->BindAction(ToggleInventoryAction, ETriggerEvent::Started, this, &AWJMController::OnEKeyPressed);
+        
+        // 아이템 드랍 관련 액션
+        EnhancedInput->BindAction(DropItemAction, ETriggerEvent::Started, this, &AWJMController::OnDropItemStarted);
+
+        // 채굴 관련 액션
+        EnhancedInput->BindAction(MiningAction, ETriggerEvent::Triggered, this, &AWJMController::OnMiningTriggered);
+        EnhancedInput->BindAction(MiningAction, ETriggerEvent::Completed, this, &AWJMController::OnMiningReleased);
+             
+        // 구조물 관련 액션
+        EnhancedInput->BindAction(OpenStructureUIAction, ETriggerEvent::Started, this, &AWJMController::OpenStructuresUI);
+        EnhancedInput->BindAction(CloseStructureUIAction, ETriggerEvent::Started, this, &AWJMController::OnEKeyPressed);
+    }
+}
+
 void AWJMController::BeginPlay()
 {
     Super::BeginPlay();
+
+    if (APlayerController* PC = Cast<APlayerController>(this))
+    {
+        if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+            ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+        {
+            // IMC 등록
+            Subsystem->AddMappingContext(WorkMappingContext, 0);
+            Subsystem->AddMappingContext(StructureInteractionMappingContext, 0);
+        }
+    }
 
     // 커서 UI 생성
     if (CursorWidgetClass)
@@ -42,6 +77,44 @@ void AWJMController::BeginPlay()
             UE_LOG(LogTemp, Warning, TEXT("CursorWidget이 null입니다"));
         }
     }
+
+    //  인벤토리 생성하고 숨겨놓기
+    if (InventoryWidgetClass)
+    {
+        InventoryWidget = CreateWidget<UUserWidget>(this, InventoryWidgetClass);
+        if (InventoryWidget)
+        {
+            InventoryWidget->AddToViewport();
+            InventoryWidget->SetVisibility(ESlateVisibility::Hidden);  // 처음엔 UI를 숨깁니다.
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("InventoryWidget이 nullptr입니다 !"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("InventoryWidgetClass가 nullptr입니다 !"));
+    }
+
+    //  구조물 UI 생성하고 숨겨놓기
+    if (StructureInteractionWidgetClass)
+    {
+        StructureInteractionWidget = CreateWidget<UUserWidget>(this, StructureInteractionWidgetClass);
+        if (StructureInteractionWidget)
+        {
+            StructureInteractionWidget->AddToViewport();
+            StructureInteractionWidget->SetVisibility(ESlateVisibility::Hidden);  // 처음엔 UI를 숨깁니다.
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("StructureInteractionWidget이 nullptr입니다 !"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("StructureInteractionWidgetClass가 nullptr입니다 !"));
+    }
 }
 
 void AWJMController::Tick(float DeltaTime)
@@ -54,15 +127,16 @@ void AWJMController::Tick(float DeltaTime)
     FHitResult HitResult;
     CursorWidget->bHit = GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, false, HitResult); // Visibility
 
-    // 마우스가 감지한 광물(타일)
+    // 마우스가 감지한 광물 또는 구조물
     AResourceTile* HitStope = Cast<AResourceTile>(HitResult.GetActor());
-    if (HitStope)
+    AStructuresTile* HitStructures = Cast<AStructuresTile>(HitResult.GetActor());
+    if (HitStope || HitStructures)
     {
-        bIsCursorOverStope = CursorWidget->bHit;
+        bIsCursorOverObject = CursorWidget->bHit;
     }
     else
     {
-        bIsCursorOverStope = false;
+        bIsCursorOverObject = false;
     }
 
     UpdateCursorVisibility(HitStope);
@@ -88,41 +162,36 @@ void AWJMController::UpdateCursorVisibility(AResourceTile* InStope)
     // 마우스 커서와 광물이 오버랩되지 않았거나,
     // 캐릭터와 오버랩된 광물과 마우스 커서와 오버랩된 광물이 서로 다른 경우,
     // 캐릭터의 채굴 동작을 멈춥니다.
-    if (!bNear || !bIsCursorOverStope || DetectedStope != InStope)
+    if (!bNear || !bIsCursorOverObject || DetectedStope != InStope)
     {
         StopCharacterAction();
     }
 
-    if (!bNear && !bIsCursorOverStope)
+    if (!bNear && !bIsCursorOverObject)
     {
         bShowMouseCursor = true;
         CursorWidget->SetVisibility(ESlateVisibility::Hidden);
     }
-    else if (!bNear && bIsCursorOverStope)
+    else if (!bNear && bIsCursorOverObject)
     {
         bShowMouseCursor = false;
         CursorWidget->SetVisibility(ESlateVisibility::Visible);
         CursorWidget->SetCursorTint(FLinearColor::Red);
     }
-    else if (bNear && bIsCursorOverStope)
+    else if (bNear && bIsCursorOverObject)
     {
         bShowMouseCursor = false;
         CursorWidget->SetVisibility(ESlateVisibility::Visible);
         CursorWidget->SetCursorTint(FLinearColor::Yellow);
     }
-    else if (bNear && !bIsCursorOverStope)
+    else if (bNear && !bIsCursorOverObject)
     {
         bShowMouseCursor = true;
         CursorWidget->SetVisibility(ESlateVisibility::Hidden);
     }
 }
 
-void AWJMController::SetDetectedStope(AResourceTile* InStope)
-{
-    DetectedStope = InStope;
-}
-
-void AWJMController::SetPlayerNearStope(bool bNear)
+void AWJMController::SetPlayerNearObject(bool bNear)
 {
     if (CursorWidget)
     {
@@ -130,34 +199,73 @@ void AWJMController::SetPlayerNearStope(bool bNear)
     }
 }
 
-AActor* AWJMController::FindOverlappingStope()
+void AWJMController::ToggleInventory()
 {
-    // 캐릭터와 오버랩된 Actor들을 저장할 배열
-    TArray<AActor*> OverlappingActors;
+    if (!bOpenInventory)
+    {
+        OpenInventory();
+    }
+    else 
+    {
+        CloseInventory();
+    }
+}
 
+void AWJMController::OpenInventory()
+{
+    if (InventoryWidget->GetVisibility() == ESlateVisibility::Hidden)
+    {
+        InventoryWidget->SetVisibility(ESlateVisibility::Visible);  //  인벤토리 보이기
+        bOpenInventory = true;
+    }
+}
+
+void AWJMController::CloseInventory()
+{
+    if (InventoryWidget->GetVisibility() == ESlateVisibility::Visible)
+    {
+        InventoryWidget->SetVisibility(ESlateVisibility::Hidden);  // 인벤토리  가리기
+        bOpenInventory = false;
+    }
+}
+
+void AWJMController::OnDropItemStarted()
+{
     APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-    if (!PlayerCharacter) 
+    if (!PlayerCharacter)
     {
-        UE_LOG(LogTemp, Error, TEXT("AWJMController::FindOverlappingStope(): PlayerCharacter가 nullptr입니다!"));
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::OnDropItemStarted(): PlayerCharacter가 nullptr입니다 !"));
+        return;
+    }
 
-        return nullptr; 
-    }
-    // 캐릭터와 오버랩된 ResourceTile들을 찾아 OverlappingActors에 저장
-    PlayerCharacter->GetOverlappingActors(OverlappingActors, AResourceTile::StaticClass());
+    PlayerCharacter->GetInventoryComponent()->DropItem();
+}
 
-    if (OverlappingActors.IsEmpty()) 
+void AWJMController::SetDetectedStope(AResourceTile* InStope)
+{
+    DetectedStope = InStope;
+}
+
+void AWJMController::OnMiningTriggered()
+{
+    APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+    if (!PlayerCharacter)
     {
-        return nullptr; 
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::OnMiningTriggered(): PlayerCharacter가 nullptr입니다 !"));
+        return;
     }
-    // 오버랩된 ResourceTile들 중 첫 번째 요소를 반환
-    else if(OverlappingActors[0]) 
+    PlayerCharacter->GetMiningComponent()->TryStartMining();
+}
+
+void AWJMController::OnMiningReleased()
+{
+    APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+    if (!PlayerCharacter)
     {
-        return OverlappingActors[0];
+        UE_LOG(LogTemp, Error, TEXT("AWJMController::OnMiningTriggered(): PlayerCharacter가 nullptr입니다 !"));
+        return;
     }
-    else
-    {
-        return nullptr;
-    }
+    PlayerCharacter->GetMiningComponent()->StopMining();
 }
 
 void AWJMController::StopCharacterAction()
@@ -186,65 +294,49 @@ void AWJMController::StopCharacterAction()
     }
 }
 
-//void AAWJMController::SetupInputComponent()
-//{
-//    Super::SetupInputComponent();
-//
-//    if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
-//    {
-//        // 인벤토리 관련 액션
-//        EnhancedInput->BindAction(ToggleInventoryAction, ETriggerEvent::Started, this, &AAWJMController::ToggleInventory);
-//        // ESC로 닫기
-//        EnhancedInput->BindAction(CancelAction, ETriggerEvent::Started, this, &AAWJMController::CloseInventory);
-//    }
-//}
-//
-//void AAWJMController::BeginPlay()
-//{
-//    Super::BeginPlay();
-//
-//    bShowMouseCursor = true;
-//
-//    if (APlayerController* PC = Cast<APlayerController>(this))
-//    {
-//        if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-//            ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-//            {
-//                // IMC 등록
-//                Subsystem->AddMappingContext(InventoryMappingContext, 0);
-//            }
-//    }
-//}
-//
-//void AAWJMController::ToggleInventory()
-//{
-//    if (InventoryWidget)
-//    {
-//        CloseInventory();
-//    }
-//    else
-//    {
-//        OpenInventory();
-//    }
-//}
-//
-//void AAWJMController::OpenInventory()
-//{
-//    if (!InventoryWidget && InventoryWidgetClass)
-//    {
-//        InventoryWidget = CreateWidget<UUserWidget>(this, InventoryWidgetClass);
-//        InventoryWidget->AddToViewport();
-//
-//        // 마우스로 UI 클릭도 하고, 게임도 조작 가능
-//        SetInputMode(FInputModeGameAndUI());
-//    }
-//}
-//
-//void AAWJMController::CloseInventory()
-//{
-//    if (InventoryWidget)
-//    {
-//        InventoryWidget->RemoveFromParent();  // 화면에서 Widget 제거
-//        InventoryWidget = nullptr;            // 포인터 초기화    
-//    }
-//}
+void AWJMController::SetCanOpenStructuresUI(bool bCanOpen)
+{
+    bCanOpenStructuresUI = bCanOpen;
+}
+
+void AWJMController::SetDetectedStructures(AStructuresTile* InStructures)
+{
+    DetectedStructures = InStructures;
+}
+
+void AWJMController::OpenStructuresUI()
+{
+    /*  캐릭터가 구조물과 닿지 않았거나,
+        마우스 커서가 구조물을 가리키지 않는 경우 구조물 UI를 열 수 없음  */
+    if (!bCanOpenStructuresUI) { return; }
+
+    if (StructureInteractionWidget->GetVisibility() == ESlateVisibility::Hidden)
+    {
+        StructureInteractionWidget->SetVisibility(ESlateVisibility::Visible);  // Structures UI 보이기
+        bOpenStructureUI = true;
+    }
+}
+
+void AWJMController::CloseStructuresUI()
+{
+    if (StructureInteractionWidget->GetVisibility() == ESlateVisibility::Visible)
+    {
+        StructureInteractionWidget->SetVisibility(ESlateVisibility::Hidden);  // Structures UI 숨기기
+        bOpenStructureUI = false;
+    }
+}
+
+void AWJMController::OnEKeyPressed()
+{
+    // 구조물 UI가 열려있다면 해당 UI부터 닫습니다.
+    if (bOpenStructureUI)  
+    {
+        // 구조물 UI 닫기
+        CloseStructuresUI();
+    }
+    else
+    {
+        // 인벤토리 토글
+        ToggleInventory();
+    }
+}

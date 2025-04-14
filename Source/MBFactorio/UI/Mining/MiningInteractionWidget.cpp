@@ -32,7 +32,7 @@ void UMiningInteractionWidget::ShowMiningCompleteMessage(const EResourceType Res
     FString ResourceTypeName = ResourceTypeToString(ResourceType);
 
     // 채굴된 광물의 타입과 우클릭 유지를 통해 캔 광물의 총 개수를 출력
-    FString CompleteMessage = FString::Printf(TEXT("+1 %s ore (%d)"), *ResourceTypeName, 1);
+    FString CompleteMessage = FString::Printf(TEXT("+1 %s ore"), *ResourceTypeName);
 
     // 동적으로 생성한 CompleteText의 값을 세팅
     NewMessage->SetMessageText(FText::FromString(CompleteMessage));

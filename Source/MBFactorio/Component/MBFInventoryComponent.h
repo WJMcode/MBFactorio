@@ -29,7 +29,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	TMap<FName, TSubclassOf<AActor>> ItemBlueprintMap;
 
 	TMap<FName, int32>			BringItems;
 	// Called every frame
@@ -37,12 +39,15 @@ public:
 
 	void SortInventory();
 
-	bool bOpenInventory;
+	bool bOpenInventory = false;
 
 
 	void AddItem(FName ItemID, int32 Count);
 	void RemoveItem(FName ItemID, int32 Count);
 
+public:
+	void DropItem();
+	void SpawnItem(FName ItemID, FVector Location);
 	
 
 	int32 FindInventoryItem(FName ItemID);												//인벤토리에 해당 아이템이 있는지 검사

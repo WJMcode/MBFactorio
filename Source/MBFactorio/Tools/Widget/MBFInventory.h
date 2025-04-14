@@ -28,6 +28,9 @@ class MBFACTORIO_API UMBFInventory : public UUserWidget
 	int32 SelectedSlotNum;
 
 public:
+	void UpdateInventoryUI();
+
+public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UMBFSlot* GetItemSlot(int32 b) { return ItemSlot[b]; }
 	void OnChanged();

@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "UI/WJMTestHUD/WJMTestHUD.h"
 #include "Character/PlayerCharacter.h"
+#include "Component/MBFInventoryComponent.h"
 #include "Tiles/TileTypes/ResourceTile.h"
 
 void UMiningComponent::SetCurrentTargetTile(AResourceTile* InResourceTile)
@@ -101,7 +102,7 @@ void UMiningComponent::StartMining()
 		// 채굴 진행바를 채우기 위한 변수의 값을 점점 올림
 		MiningProgressValue += GetWorld()->GetDeltaSeconds();
 
-		// 채굴 완료, 인벤토리에 채굴한 아이템 삽입
+		// 채굴 완료
 		if (MiningProgressValue >= MiningTimeToComplete)
 		{
 			MiningProgressValue = 0.f;
@@ -109,7 +110,36 @@ void UMiningComponent::StartMining()
 			// 채굴한 광물을 텍스트로 출력하기 위해 HUD에게 Broadcast합니다.
 			OnMiningComplete.Broadcast(CurrentTargetTile->GetResourceType());
 			
-			// add(CurrentTargetTile->GetResourceType());
+			// 인벤토리에 채굴한 아이템 삽입
+			{
+				EResourceType MinedResourceType = CurrentTargetTile->GetResourceType();
+				FName ItemName = NAME_None;
+				switch (MinedResourceType)
+				{
+				case EResourceType::Copper:
+					ItemName = TEXT("7");
+					break;
+				case EResourceType::Iron:
+					ItemName = TEXT("4");
+					break;
+				case EResourceType::Stone:
+					ItemName = TEXT("10");
+					break;
+				case EResourceType::Coal:
+					ItemName = TEXT("3");
+					break;
+				case EResourceType::Unknown:
+					UE_LOG(LogTemp, Error, TEXT("MinedResourceType: 알 수 없는 타입니다 !"));
+					break;
+				default:
+					UE_LOG(LogTemp, Warning, TEXT("MinedResourceType: 처리되지 않은 타입입니다."));
+					break;
+				}
+				if (ItemName != NAME_None)
+				{
+					PlayerCharacter->GetInventoryComponent()->AddItem(ItemName, 1);
+				}
+			}
 		}
 	}
 

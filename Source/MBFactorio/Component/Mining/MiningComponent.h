@@ -73,7 +73,7 @@ protected:
 
 	// 채굴 완료까지 걸리는 시간입니다.
 	UPROPERTY(EditAnywhere)
-	float MiningTimeToComplete = 2.0f;
+	float MiningTimeToComplete = 1.8f;
 
 public:
 	// 채굴이 시작되면 HUD에게 알려 UMiningInteractionWidget의 ProgressBar를 업데이트합니다.

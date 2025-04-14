@@ -13,6 +13,8 @@ APlayerCharacter::APlayerCharacter()
 		bUseControllerRotationYaw = false; // 컨트롤러 Yaw 회전 비활성화
 	}
 
+	InventoryComp = CreateDefaultSubobject<UMBFInventoryComponent>(TEXT("InventoryComponent"));
+	
 	MiningComponent = CreateDefaultSubobject<UMiningComponent>(TEXT("MiningComponent"));
 
 	PickaxeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickaxeMesh"));
@@ -34,7 +36,6 @@ void APlayerCharacter::BeginPlay()
 			{
 				// IMC 등록
 				Subsystem->AddMappingContext(MoveMappingContext, 0);
-				Subsystem->AddMappingContext(WorkMappingContext, 0);
 			}
 		}
 	}
@@ -55,15 +56,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		/* InputAction을 C++ 함수에 바인딩 */
-		// 채굴 관련 액션
-		EnhancedInput->BindAction(MiningAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnMiningTriggered);
-		EnhancedInput->BindAction(MiningAction, ETriggerEvent::Completed, this, &APlayerCharacter::OnMiningReleased);
-
-		// 아이템 드랍 관련 액션
-		EnhancedInput->BindAction(DropItemAction, ETriggerEvent::Triggered, this, &APlayerCharacter::OnDropItemTriggered);
-		EnhancedInput->BindAction(DropItemAction, ETriggerEvent::Started, this, &APlayerCharacter::OnDropItemStarted);
-		EnhancedInput->BindAction(DropItemAction, ETriggerEvent::Completed, this, &APlayerCharacter::OnDropItemReleased);
-
 		// 캐릭터 움직임 관련 액션
 		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::MoveCharacter);
 	}
@@ -71,10 +63,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::MoveCharacter(const FInputActionValue& Value)
 {
-	// 채굴 중에 움직이면 채굴을 멈춤
+	// 채굴 중일 때에는 움직일 수 없음
 	if (MiningComponent->IsMining())
 	{
-		MiningComponent->StopMining();
+		return;
 	}
 
 	FVector2D InputVector = Value.Get<FVector2D>();
@@ -105,16 +97,6 @@ void APlayerCharacter::ShowPickaxe(bool bVisible)
 	}
 }
 
-void APlayerCharacter::OnMiningTriggered()
-{
-	MiningComponent->TryStartMining();
-}
-
-void APlayerCharacter::OnMiningReleased()
-{
-	MiningComponent->StopMining();
-}
-
 void APlayerCharacter::PlayMiningAnimation()
 {
 	if (!MiningMontage || !GetMesh() || !MiningComponent->IsMining()) return;
@@ -143,22 +125,4 @@ void APlayerCharacter::OnMiningMontageEnded(UAnimMontage* Montage, bool bInterru
 {
 	// 채굴 몽타주가 끝났음 (재생 완료)
 	MiningComponent->SetMiningAnimationPlaying(false);
-}
-
-void APlayerCharacter::OnDropItemTriggered()
-{
-	UE_LOG(LogTemp, Warning, TEXT("APlayerCharacter::OnDropItemTriggered()"));
-
-}
-
-void APlayerCharacter::OnDropItemStarted()
-{
-	UE_LOG(LogTemp, Warning, TEXT("AStructuresTile::OnDropItemStarted"));
-
-}
-
-void APlayerCharacter::OnDropItemReleased()
-{
-	UE_LOG(LogTemp, Warning, TEXT("AStructuresTile::OnDropItemReleased"));
-
 }

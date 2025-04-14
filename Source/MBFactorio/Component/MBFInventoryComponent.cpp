@@ -2,12 +2,16 @@
 
 
 #include "Component/MBFInventoryComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Tools/MBFInstance.h"
 #include "Tools/Widget/CraftList.h"
-#include "Struct/MBFStruct.h"
+//#include "Struct/MBFStruct.h"
 #include "Tools/MBFHUD.h"
 #include "Math/UnrealMathUtility.h"
 #include "Tools/MBFController.h"
+
+#include "Character/PlayerCharacter.h"
+#include "Tools/WJMController.h"
 
 // Sets default values for this component's properties
 UMBFInventoryComponent::UMBFInventoryComponent()
@@ -16,8 +20,8 @@ UMBFInventoryComponent::UMBFInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	Inventory.SetNum(80);
-	Inventory[0] = FInventoryItem(FName("5"), 100, 100, EItemType::Smeltable);
-	Inventory[1] = FInventoryItem(FName("8"), 100, 5, EItemType::Smeltable);
+	// Inventory[0] = FInventoryItem(FName("5"), 100, 100, EItemType::Smeltable);
+	// Inventory[1] = FInventoryItem(FName("8"), 100, 5, EItemType::Smeltable);
 	// ...
 }
 
@@ -96,15 +100,65 @@ void UMBFInventoryComponent::AddItem(FName ItemID, int32 Count)
 	
 	BringItems.FindOrAdd(ItemID) += Count;
 	SortInventory();
+
+	// 인벤토리 슬롯 UI 갱신
+	AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
+	if (PC->GetInventoryWidget())
+	{
+		UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
+		InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
+	}
 }
 void UMBFInventoryComponent::RemoveItem(FName ItemID, int32 Count)
 {
 	
 	BringItems.FindOrAdd(ItemID) -= Count;
 	SortInventory();
+
+	// 인벤토리 슬롯 UI 갱신
+	AWJMController* PC = Cast<AWJMController>(GetOwner()->GetInstigatorController());
+	if (PC->GetInventoryWidget())
+	{
+		UMBFInventory* InventoryWidget = Cast<UMBFInventory>(PC->GetInventoryWidget());
+		InventoryWidget->UpdateInventoryUI();  // UI 갱신 함수 호출
+	}
 }
 // 2025.04.06 21:56 shs
 
+void UMBFInventoryComponent::DropItem()
+{
+	// 캐릭터의 전방 방향과 위치를 계산하여 아이템을 스폰
+	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (Character)
+	{
+		FVector SpawnLocation = Character->GetActorLocation() - FVector(0, 0, Character->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+		SpawnLocation += Character->GetActorForwardVector() * 100.0f; // 앞쪽으로 좀 던지기
+		SpawnLocation.Z += 10.f;
+				
+		SpawnItem(Inventory[0].ItemID, SpawnLocation);
+
+		RemoveItem(Inventory[0].ItemID, 1);
+	}
+
+}
+
+void UMBFInventoryComponent::SpawnItem(FName ItemID, FVector Location)
+{
+	if (ItemBlueprintMap.Contains(ItemID))
+	{
+		TSubclassOf<AActor> ItemClass = ItemBlueprintMap[ItemID];
+		if (ItemClass)
+		{
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+			GetWorld()->SpawnActor<AActor>(ItemClass, Location, FRotator::ZeroRotator, Params);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ItemBlueprintMap에 해당 ID (%s)가 없음"), *ItemID.ToString());
+	}
+}
 
 int32 UMBFInventoryComponent::FindInventoryItem(FName ItemID)
 {
