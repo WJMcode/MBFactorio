@@ -35,7 +35,7 @@ class MBFACTORIO_API AMBFController : public APlayerController
 {
 	GENERATED_BODY()
 
-	UInputMappingContext* IMC_Default;
+	//UInputMappingContext* IMC_Default;
 
 	AMBFController();
 	
