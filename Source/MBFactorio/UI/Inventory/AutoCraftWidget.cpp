@@ -80,7 +80,7 @@ void UAutoCraftWidget::NativeConstruct()
             if (SlotWidget)
             {
                 BuildResetWidget = SlotWidget;
-                BuildResetWidget->SetOwnerActor(OwnerActor);
+                BuildResetWidget->SetOwnerActor(OwnerTile);
             }
             else
             {
@@ -116,7 +116,7 @@ void UAutoCraftWidget::NativeConstruct()
             UE_LOG(LogTemp, Warning, TEXT("'%s' ������ ã�� �� �����ϴ�."), *SlotName);
         }
     }
-    OwnerActor->SetInventory();
+    OwnerTile->SetInventory();
     OnChanged();
 }
 

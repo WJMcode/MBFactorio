@@ -14,8 +14,10 @@
 #include "Tiles/TileTypes/StructuresTile.h"
 #include "Character/PlayerCharacter.h"
 #include "Component/MBFInventoryComponent.h"
-#include "Test/TestActor.h"
-#include "Test/CraftMachine.h"
+//#include "Test/TestActor.h"
+//#include "Test/CraftMachine.h"
+#include "Tiles/TileMachine/FurnaceTile.h"
+#include "Tiles/TileMachine/CraftMachineTile.h"
 #include "MBFController.generated.h"
 
 class UGameHUD;
@@ -43,11 +45,11 @@ public:
 	// UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; }	//PlayerCharacter로 이동
 	//UCraftComponent* GetCraftComponent() { return CraftComponent; }						// CraftComponent PlayerCharacter로 이동
 
-	void SetFurnaceOwner(ATestActor* InActor) { FurnaceUIOwnerActor = InActor; }
-	ATestActor* GetFurnaceOwner() { return FurnaceUIOwnerActor; }
+	void SetFurnaceOwner(AFurnaceTile* InTile) { FurnaceOwner = InTile; }
+	AFurnaceTile* GetFurnaceOwner() { return FurnaceOwner; }
 
-	void SetCraftMachineOwner(ACraftMachine* InActor) { CraftMachineUIOwnerActor = InActor; }
-	ACraftMachine* GetCraftMachineOwner() { return CraftMachineUIOwnerActor; }
+	void SetCraftMachineOwner(ACraftMachineTile* InTile) { CraftMachineOwner = InTile; }
+	ACraftMachineTile* GetCraftMachineOwner() { return CraftMachineOwner; }
 
 	bool bOpenInventory;
 
@@ -244,8 +246,10 @@ public:
 private:
 	// MBFInventoryComponent* MBFInventoryComponent;	// InventoryComponent PlayerCharacter
 	//UCraftComponent* CraftComponent;					// CraftComponent PlayerCharacter로 이동
-	ATestActor* FurnaceUIOwnerActor;
-	ACraftMachine* CraftMachineUIOwnerActor;
+	UPROPERTY()
+	AFurnaceTile* FurnaceOwner;
+	UPROPERTY()
+	ACraftMachineTile* CraftMachineOwner;
 
 private:
 	UPROPERTY()

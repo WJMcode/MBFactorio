@@ -1,28 +1,28 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Tiles/TileTypes/StructuresTile.h"
+
 #include "Component/MBFInventoryComponent.h"
 #include "Component/AutoCraftComponent.h"
-#include "Components/BoxComponent.h"
+
 #include "UI/Inventory/AutoCraftWidget.h"
-
-
 #include "UI/Inventory/BuildItemSelectWidget.h"
+#include "CraftMachineTile.generated.h"
 
-#include "CraftMachine.generated.h"
-
+/**
+ * 
+ */
 UCLASS()
-
-class MBFACTORIO_API ACraftMachine : public AActor
+class MBFACTORIO_API ACraftMachineTile : public AStructuresTile
 {
 	GENERATED_BODY()
-
+	
 public:
 	// Sets default values for this actor's properties
-	ACraftMachine();
+	ACraftMachineTile();
 
 protected:
 	// Called when the game starts or when spawned

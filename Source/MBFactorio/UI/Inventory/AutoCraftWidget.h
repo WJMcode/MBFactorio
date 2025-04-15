@@ -28,7 +28,7 @@ class MBFACTORIO_API UAutoCraftWidget : public UUserWidget
 	UPROPERTY()
 	UBuildReSetWidget* BuildResetWidget;
 	UPROPERTY()
-	ACraftMachine* OwnerActor;
+	ACraftMachineTile* OwnerTile;
 
 	
 	void virtual NativeConstruct() override;
@@ -37,8 +37,8 @@ public:
 
 	void SetOwnerInventory(UMBFInventoryComponent* InComponent) { OwnerInventory = InComponent; }
 	void SetMachineInventory(UMBFInventoryComponent* InComponent) { MachineInventory = InComponent; }
-	void SetOwnerActor(ACraftMachine* InActor) { OwnerActor = InActor; }
-	ACraftMachine* GetOwnerActor() { return OwnerActor; }
+	void SetOwnerTile(ACraftMachineTile* InTile) { OwnerTile = InTile; }
+	ACraftMachineTile* GetOwnerTile() { return OwnerTile; }
 	void SetPercent(float Progresspercent) { ProgressBar->SetPercent(Progresspercent); }
 	void CraftMachineChanged();
 	void SlotChanged(int32 InSlot) { CharactorSlot[InSlot]->Changed(InSlot); }

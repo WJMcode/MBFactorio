@@ -44,6 +44,10 @@ void APlayerCharacter::BeginPlay()
 	if (InventoryComp && CraftComp)
 	{
 		CraftComp->SetInventoryComponent(InventoryComp);
+		for (int i = 1; i < 17; i++)
+		{
+			InventoryComp->AddItem(FName("1"), 50);
+		}
 	}
 
 

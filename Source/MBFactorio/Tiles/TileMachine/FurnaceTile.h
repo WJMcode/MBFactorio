@@ -1,30 +1,32 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Tiles/TileTypes/StructuresTile.h"
 #include "Component/MBFInventoryComponent.h"
 #include "Component/BakeComponent.h"
 #include "Components/BoxComponent.h"
 #include "Tools/Widget/FurnaceInventory.h"
+#include "FurnaceTile.generated.h"
 
-#include "TestActor.generated.h"
-
+/**
+ * 
+ */
 UCLASS()
-class MBFACTORIO_API ATestActor : public AActor
+class MBFACTORIO_API AFurnaceTile : public AStructuresTile
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	ATestActor();
+public:
+
+	AFurnaceTile();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION()
@@ -40,6 +42,4 @@ private:
 	UMBFInventoryComponent* InventoryComponent;
 	UPROPERTY()
 	UBakeComponent* BakeComponent;
-	UPROPERTY()
-	UBoxComponent* BoxComponent;
 };

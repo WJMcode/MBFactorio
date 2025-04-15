@@ -70,7 +70,7 @@ void AMBFController::BeginPlay()
 	}
 
 	// 컴포넌트
-	
+
 	// InventoryComponent PlayerCharacter로 이동
 
 	/*if (!MBFInventoryComponent)
@@ -94,7 +94,7 @@ void AMBFController::BeginPlay()
 		CraftComponent = NewObject<UCraftComponent>(this, UCraftComponent::StaticClass());
 		if (CraftComponent)
 		{
-			
+
 			CraftComponent->RegisterComponent();
 			CraftComponent->SetInventoryComponent(MBFInventoryComponent);
 		}
@@ -102,7 +102,7 @@ void AMBFController::BeginPlay()
 }
 
 void AMBFController::SetupInputComponent()
-{	
+{
 	Super::SetupInputComponent();
 
 	// 게임 메뉴 입력
@@ -134,7 +134,7 @@ void AMBFController::SetupInputComponent()
 
 	//IMC_Inventory = NewObject<UInputMappingContext>();
 	//IMC_Inventory->MapKey(OpenInventory, EKeys::E);
-	
+
 
 	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent);
 	ensure(EnhancedInput);
@@ -148,7 +148,7 @@ void AMBFController::SetupInputComponent()
 
 	// 구조물 관련 액션
 	EnhancedInput->BindAction(OpenStructureUIAction, ETriggerEvent::Started, this, &AMBFController::OpenStructuresUI);
-	
+
 	// 구조물 UI 닫기, 인벤토리 관련 액션
 	EnhancedInput->BindAction(InteractOrToggleUIAction, ETriggerEvent::Started, this, &AMBFController::OnEKeyPressed);
 
@@ -495,15 +495,15 @@ void AMBFController::InventoryTogle()
 	AMBFHUD* MBFHUD = Cast<AMBFHUD>(GetHUD());
 	if (!MBFHUD) return;
 
-	if (FurnaceUIOwnerActor)
+	if (FurnaceOwner)
 	{
-		FurnaceUIOwnerActor->CloseFurnace();
-		FurnaceUIOwnerActor = nullptr;
+		FurnaceOwner->CloseFurnace();
+		FurnaceOwner = nullptr;
 	}
-	else if (CraftMachineUIOwnerActor)
+	else if (CraftMachineOwner)
 	{
-		CraftMachineUIOwnerActor->CloseCraftMachine();
-		CraftMachineUIOwnerActor = nullptr;
+		CraftMachineOwner->CloseCraftMachine();
+		CraftMachineOwner = nullptr;
 	}
 	else if (bOpenInventory)
 	{

@@ -7,15 +7,13 @@
 
 
 
-
+class ACraftMachineTile;
 
 #include "CraftMachineSlot.generated.h"
 
 /**
  * 
  */
-
-class ACraftMachine;
 
 UCLASS()
 class MBFACTORIO_API UCraftMachineSlot : public UMBFSlot
@@ -35,11 +33,11 @@ private:
 
 
 	UPROPERTY()
-	ACraftMachine* OwnerActor;
+	ACraftMachineTile* OwnerTile;
 
 
 
 public:
-	void SetOwnerActor(ACraftMachine* InActor) { OwnerActor = InActor; }
+	void SetOwnerActor(ACraftMachineTile* InTile) { OwnerTile = InTile; }
 	void InitSlot(int32 InSlot);
 };

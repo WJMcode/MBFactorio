@@ -248,7 +248,7 @@ void UMBFInventoryComponent::TrySwapOrMoveItems(
 				SortInventory();
 			else if (FromInventory->InventoryType == EInventoryType::Charactor)
 				FromInventory->SortInventory();
-			ACraftMachine* CraftMachineOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftMachineOwner();
+			ACraftMachineTile* CraftMachineOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftMachineOwner();
 			CraftMachineOwner->GetAutoCraftUI()->OnChanged();
 			FromInventory->SortInventory();
 			return; // ✅ 여기서 끝
@@ -274,7 +274,7 @@ void UMBFInventoryComponent::TrySwapOrMoveItems(
 			// ✅ Furnace 조건 처리
 			if (InventoryType == EInventoryType::Furnace || FromInventory->InventoryType == EInventoryType::Furnace)
 			{
-				ATestActor* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
+				AFurnaceTile* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
 				if (FurnaceOwner)
 				{
 					FurnaceOwner->GetFurnaceUI()->FurNaceChagned();
@@ -300,7 +300,7 @@ void UMBFInventoryComponent::TrySwapOrMoveItems(
 			// ✅ Furnace 조건 처리
 			if (InventoryType == EInventoryType::Furnace || FromInventory->InventoryType == EInventoryType::Furnace)
 			{
-				ATestActor* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
+				AFurnaceTile* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
 				if (FurnaceOwner)
 				{
 					FurnaceOwner->GetFurnaceUI()->FurNaceChagned();

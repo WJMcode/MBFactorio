@@ -2,7 +2,7 @@
 
 
 #include "Tools/Widget/BuildReSetWidget.h"
-#include "test/CraftMachine.h"
+#include "Tiles/TileMachine/CraftMachineTile.h"
 
 FReply UBuildReSetWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
@@ -10,9 +10,9 @@ FReply UBuildReSetWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, c
 	{
 
 
-		if (OwnerActor)
+		if (OwnerTile)
 		{
-			OwnerActor->ResetBuildItem();
+			OwnerTile->ResetBuildItem();
 		}
 
 		return FReply::Handled();

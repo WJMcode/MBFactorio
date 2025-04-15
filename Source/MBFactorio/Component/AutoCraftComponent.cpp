@@ -3,7 +3,7 @@
 
 #include "Component/AutoCraftComponent.h"
 #include "Tools/MBFController.h"
-#include "Test/CraftMachine.h"
+#include "Tiles/TileMachine/CraftMachineTile.h"
 
 // Sets default values for this component's properties
 UAutoCraftComponent::UAutoCraftComponent()
@@ -33,7 +33,7 @@ void UAutoCraftComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	if (BuildItemData)
 	{
-		ACraftMachine* MachineOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftMachineOwner();
+		ACraftMachineTile* MachineOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftMachineOwner();
 		if (MachineOwner)
 		{
 			MachineOwner->GetAutoCraftUI()->OnChanged();

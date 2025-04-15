@@ -26,7 +26,7 @@ void UBuildItemSelectWidget::NativeConstruct()
             {
                 CraftMachineSlot[i] = SlotWidget;
                 CraftMachineSlot[i]->SetItemID(FName(FString::FromInt(i)));
-                CraftMachineSlot[i]->SetOwnerActor(OwnerActor);
+                CraftMachineSlot[i]->SetOwnerActor(OwnerTile);
             }
             else
             {

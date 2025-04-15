@@ -31,11 +31,11 @@ class MBFACTORIO_API UBuildItemSelectWidget : public UUserWidget
 public:
 	
 	void OnChanged();
-	void SetOwnerActor(ACraftMachine* InActor) { OwnerActor = InActor; }
+	void SetOwnerTile(ACraftMachineTile* InTile) { OwnerTile = InTile; }
 	
 
 
 private:
 	UPROPERTY()
-	ACraftMachine* OwnerActor;
+	ACraftMachineTile* OwnerTile;
 };

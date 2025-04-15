@@ -1,35 +1,23 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Test/CraftMachine.h"
+#include "Tiles/TileMachine/CraftMachineTile.h"
 #include "Tools/MBFInstance.h"
 #include "Tools/MBFController.h"
-// Sets default values
-ACraftMachine::ACraftMachine()
+
+ACraftMachineTile::ACraftMachineTile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+
 	InventoryComponent = CreateDefaultSubobject<UMBFInventoryComponent>(TEXT("InventoryComponent"));
-	
+
 	AutoCraftComponent = CreateDefaultSubobject<UAutoCraftComponent>(TEXT("AutoCraftComponent"));
+
 
 }
 
-// Called when the game starts or when spawned
-void ACraftMachine::BeginPlay()
+void ACraftMachineTile::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// Setup Box
-	BoxComponent = NewObject<UBoxComponent>(this, TEXT("ClickableBox"));
-	BoxComponent->RegisterComponent();
-	RootComponent = BoxComponent;
-
-	BoxComponent->SetBoxExtent(FVector(50.f));
-	BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	BoxComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	BoxComponent->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-
 	OnClicked.AddDynamic(this, &ThisClass::OpenCraftMachine);
 
 	InventoryComponent->SetInventoryNum(5);
@@ -51,9 +39,9 @@ void ACraftMachine::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("AutoCraftUI 생성 실패"));
 		}
 		AutoCraftUI->SetMachineInventory(InventoryComponent);
-		AutoCraftUI->SetOwnerActor(this);
+		AutoCraftUI->SetOwnerTile(this);
 	}
-	
+
 
 	{
 		UClass* WidgetClass = LoadClass<UUserWidget>(nullptr, TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/Gamemode/InGame/BuildItemSelectWidget.BuildItemSelectWidget_C'"));
@@ -67,18 +55,16 @@ void ACraftMachine::BeginPlay()
 		{
 			UE_LOG(LogTemp, Error, TEXT("BuildItemSelectUI 생성 실패"));
 		}
-		BuildItemSelectUI->SetOwnerActor(this);
+		BuildItemSelectUI->SetOwnerTile(this);
 	}
 }
 
-// Called every frame
-void ACraftMachine::Tick(float DeltaTime)
+void ACraftMachineTile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-void ACraftMachine::SetBuildItem(FName ItemID)
+void ACraftMachineTile::SetBuildItem(FName ItemID)
 {
 	UMBFInstance* Instance = Cast<UMBFInstance>(GetWorld()->GetGameInstance());
 	BuildItem = Instance->GetItemData(ItemID);
@@ -91,11 +77,9 @@ void ACraftMachine::SetBuildItem(FName ItemID)
 			AutoCraftUI->AddToViewport();
 		}
 	}
-	
-
 }
 
-void ACraftMachine::ResetBuildItem()
+void ACraftMachineTile::ResetBuildItem()
 {
 	BuildItem = nullptr;
 	for (int i = 0; i < 5; i++)
@@ -123,7 +107,7 @@ void ACraftMachine::ResetBuildItem()
 	AutoCraftUI->RemoveFromParent();
 }
 
-void ACraftMachine::OpenCraftMachine(AActor* TouchedActor, FKey ButtonPressed)
+void ACraftMachineTile::OpenCraftMachine(AActor* TouchedActor, FKey ButtonPressed)
 {
 	AMBFController* PC = Cast<AMBFController>(GetWorld()->GetFirstPlayerController());
 
@@ -149,10 +133,9 @@ void ACraftMachine::OpenCraftMachine(AActor* TouchedActor, FKey ButtonPressed)
 	}
 
 	PC->SetCraftMachineOwner(this);
-	
 }
 
-void ACraftMachine::CloseCraftMachine()
+void ACraftMachineTile::CloseCraftMachine()
 {
 	if (BuildItem)
 	{
@@ -164,9 +147,8 @@ void ACraftMachine::CloseCraftMachine()
 	}
 }
 
-void ACraftMachine::SetInventory()
+void ACraftMachineTile::SetInventory()
 {
-	
 	for (int32 i = 0; i < BuildItem->RequiredItems.Num(); i++)
 	{
 		InventoryComponent->SetInventoryIndex(i, BuildItem->RequiredItems[i].ItemID);
@@ -174,4 +156,3 @@ void ACraftMachine::SetInventory()
 
 	InventoryComponent->SetInventoryIndex(4, BuildItem->ItemID);
 }
-

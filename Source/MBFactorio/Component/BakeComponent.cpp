@@ -5,7 +5,7 @@
 #include "Component/MBFInventoryComponent.h"
 #include "Tools/MBFHUD.h"
 #include "Tools/Widget/FurnaceInventory.h"
-#include "Test/TestActor.h"
+#include "Tiles/TileMachine/FurnaceTile.h"
 #include "Tools/MBFController.h"
 #include "Tools/MBFInstance.h"
 
@@ -93,7 +93,7 @@ void UBakeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	//제련가능
 
 	// (열) 에너지 관리
-	ATestActor* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
+	AFurnaceTile* FurnaceOwner = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetFurnaceOwner();
 	if (Energy <= 0)
 	{
 		// 0번째 슬롯이 연료슬롯

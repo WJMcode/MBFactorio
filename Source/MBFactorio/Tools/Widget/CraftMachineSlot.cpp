@@ -3,7 +3,7 @@
 
 #include "Tools/Widget/CraftMachineSlot.h"
 #include "Components/Border.h"
-#include "Test/CraftMachine.h"
+#include "Tiles/TileMachine/CraftMachineTile.h"
 #include "Tools/MBFInstance.h"
 #include "Component/MBFInventoryComponent.h"
 
@@ -20,9 +20,9 @@ FReply UCraftMachineSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, c
 	{
 	
         
-        if (OwnerActor)
+        if (OwnerTile)
         {
-            OwnerActor->SetBuildItem(ItemID);
+            OwnerTile->SetBuildItem(ItemID);
         }
 
 		return FReply::Handled();
