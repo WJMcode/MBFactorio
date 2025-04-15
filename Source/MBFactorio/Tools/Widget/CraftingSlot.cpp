@@ -20,6 +20,11 @@ void UCraftingSlot::NativeConstruct()
 
 }
 
+FReply UCraftingSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+    return FReply::Handled();
+}
+
 void UCraftingSlot::SlotChange(FName InItem, int32 InCount)
 {
     UMBFInstance* Instance = Cast<UMBFInstance>(GetGameInstance());

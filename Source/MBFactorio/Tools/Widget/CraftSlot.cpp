@@ -20,19 +20,28 @@ void UCraftSlot::NativeConstruct() {
 
 FReply UCraftSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	UCraftComponent* IVC = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftComponent();
-	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	/*UCraftComponent* IVC = Cast<AMBFController>(GetWorld()->GetFirstPlayerController())->GetCraftComponent();*/
+
+	APlayerCharacter* Character = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (Character)
 	{
-		UE_LOG(LogTemp, Log, TEXT("좌클릭!"));
-		// 좌클릭 처리
-		IVC->CraftItem(ItemID, 1);
+		UCraftComponent* CraftComponent = Character->GetCraftComponent();
+		if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+		{
+			UE_LOG(LogTemp, Log, TEXT("좌클릭!"));
+			// 좌클릭 처리
+			CraftComponent->CraftItem(ItemID, 1);
+		}
+		else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+		{
+			UE_LOG(LogTemp, Log, TEXT("우클릭!"));
+			// 우클릭 처리
+			CraftComponent->CraftItem(ItemID, 5);
+		}
 	}
-	else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
-	{
-		UE_LOG(LogTemp, Log, TEXT("우클릭!"));
-		// 우클릭 처리
-		IVC->CraftItem(ItemID, 5);
-	}
+
+
+	
 
 	return FReply::Handled();
 }

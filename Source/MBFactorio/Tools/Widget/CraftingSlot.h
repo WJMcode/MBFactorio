@@ -21,6 +21,8 @@ protected:
 	virtual void NativeConstruct() override;
 
 public:
+
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	void SlotChange(FName InItem = FName(), int32 InCount = 0);
 	void ProgressChanged(float l = 0.0);
 

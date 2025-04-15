@@ -14,7 +14,7 @@ APlayerCharacter::APlayerCharacter()
 	}
 
 	InventoryComp = CreateDefaultSubobject<UMBFInventoryComponent>(TEXT("InventoryComponent"));
-	
+	CraftComp = CreateDefaultSubobject<UCraftComponent>(TEXT("CraftComponent"));
 	MiningComponent = CreateDefaultSubobject<UMiningComponent>(TEXT("MiningComponent"));
 
 	PickaxeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickaxeMesh"));
@@ -39,6 +39,13 @@ void APlayerCharacter::BeginPlay()
 			}
 		}
 	}
+
+	//CraftComponent의 InventoryComponent셋
+	if (InventoryComp && CraftComp)
+	{
+		CraftComp->SetInventoryComponent(InventoryComp);
+	}
+
 
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
 	{

@@ -42,9 +42,14 @@ void UCraftList::DeltaChange(float Percent)
 
 void UCraftList::CraftChange()
 {
-    AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
+    /*AMBFController* PC = Cast<AMBFController>(GetOwningPlayer());
 
-    TArray<TPair<FName, int32>> Craftings = PC->GetCraftComponent()->GetCraftings();
+    TArray<TPair<FName, int32>> Craftings = PC->GetCraftComponent()->GetCraftings();*/
+
+
+    UCraftComponent* CraftComponent = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn())->GetCraftComponent();
+
+    TArray<TPair<FName, int32>> Craftings = CraftComponent->GetCraftings();
     
     int32 Craftingcount = FMath::Min(Craftings.Num(), 10);
 

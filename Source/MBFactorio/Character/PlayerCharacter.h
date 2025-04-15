@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "InputMappingContext.h"
 #include "Component/MBFInventoryComponent.h"
+#include "Component/CraftComponent.h"
 #include "PlayerCharacter.generated.h"
 
 //@TODO: 
@@ -43,6 +44,8 @@ protected:
 public:
 	UMBFInventoryComponent* GetInventoryComponent() const { return InventoryComp; }
 
+	UCraftComponent* GetCraftComponent() const { return CraftComp; }
+
 // ======= 채굴 관련 함수 =======
 public:
 	UMiningComponent* GetMiningComponent() const { return MiningComponent; }
@@ -75,6 +78,9 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UMBFInventoryComponent* InventoryComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UCraftComponent* CraftComp;
 
 // =======  채굴 관련 변수 =======
 protected:

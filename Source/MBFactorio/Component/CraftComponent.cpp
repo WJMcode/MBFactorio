@@ -154,11 +154,7 @@ bool UCraftComponent::RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>&
 	}
 	for (auto& RequiredItem : Itemdata->RequiredItems)	//electronic
 	{
-		FItemData* RequiredItemData = Instance->GetItemData(RequiredItem.ItemID);
-		if (RequiredItemData->ItemType == EItemType::Smeltable)
-		{
-			return false;
-		}
+		
 		float ratio = static_cast<float>(count) / FMath::Max(Itemdata->CreateCount, 1);	// cable ratio = 1
 		int32 needCount = FMath::CeilToInt(ratio * RequiredItem.RequiredCount);			// cable needCount = 15
 		
@@ -175,6 +171,13 @@ bool UCraftComponent::RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>&
 			needCount -= *(AfterChanged.Find(ID));
 		}
 		if (needCount > 0) {
+
+			FItemData* RequiredItemData = Instance->GetItemData(RequiredItem.ItemID);
+			if (RequiredItemData->ItemType == EItemType::Smeltable || RequiredItemData->ItemType == EItemType::SmeltableAndSmelted)
+			{
+				return false;
+			}
+
 			if (!RequiredItemsCheck(Map, RequiredCraftings, ChangedItems, RequiredItem.ItemID, needCount))
 			{
 				return false;
@@ -189,6 +192,7 @@ bool UCraftComponent::RequiredItemsCheck(TMap<FName, int32>& Map, TArray<FName>&
 
 			RequiredCraftings.Add(ID);
 		}
+		
 	}
 
 	return true;
@@ -204,6 +208,7 @@ void UCraftComponent::CraftItem(FName ItemID, int32 CraftCount)
 	TMap<FName, int32> Map;
 	TArray<FName> RequiredItems;
 	TMap<FName, int32> Changed;
+	InventoryComponent->SetBringItems();
 	if (CanCraftItem(ItemID, CraftCount, &Map, &RequiredItems, &Changed))
 	{
 		for (auto& RequiredItem : RequiredItems)

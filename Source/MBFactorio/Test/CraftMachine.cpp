@@ -103,8 +103,16 @@ void ACraftMachine::ResetBuildItem()
 		FInventoryItem& InventoryItem = InventoryComponent->GetInventoryItem(i);
 		if (InventoryItem.ItemID != FName("0"))
 		{
-			AMBFController* PC = Cast<AMBFController>(GetWorld()->GetFirstPlayerController());
-			PC->GetInventoryComponent()->AddItem(InventoryItem.ItemID, InventoryItem.MCount);
+			/*AMBFController* PC = Cast<AMBFController>(GetWorld()->GetFirstPlayerController());
+			PC->GetInventoryComponent()->AddItem(InventoryItem.ItemID, InventoryItem.MCount);*/
+
+			APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+			if (PlayerCharacter)
+			{
+				PlayerCharacter->GetInventoryComponent()->AddItem(InventoryItem.ItemID, InventoryItem.MCount);
+			}
+
+
 		}
 		InventoryItem.ItemID = FName("0");
 		InventoryItem.MCount = 0;

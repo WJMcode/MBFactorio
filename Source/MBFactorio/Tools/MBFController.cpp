@@ -70,7 +70,10 @@ void AMBFController::BeginPlay()
 	}
 
 	// 컴포넌트
-	if (!MBFInventoryComponent)
+	
+	// InventoryComponent PlayerCharacter로 이동
+
+	/*if (!MBFInventoryComponent)
 	{
 		MBFInventoryComponent = NewObject<UMBFInventoryComponent>(this, UMBFInventoryComponent::StaticClass());
 		if (MBFInventoryComponent)
@@ -83,8 +86,10 @@ void AMBFController::BeginPlay()
 		MBFInventoryComponent->AddItem(FName("8"), 50);
 		MBFInventoryComponent->SetSortOption(true);
 		MBFInventoryComponent->SortInventory();
-	}
-	if (!CraftComponent)
+	}*/
+	// CraftComponent PlayerCharacter로 이동
+
+	/*if (!CraftComponent)
 	{
 		CraftComponent = NewObject<UCraftComponent>(this, UCraftComponent::StaticClass());
 		if (CraftComponent)
@@ -93,7 +98,7 @@ void AMBFController::BeginPlay()
 			CraftComponent->RegisterComponent();
 			CraftComponent->SetInventoryComponent(MBFInventoryComponent);
 		}
-	}
+	}*/
 }
 
 void AMBFController::SetupInputComponent()

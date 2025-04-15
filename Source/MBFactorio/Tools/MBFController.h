@@ -40,8 +40,8 @@ class MBFACTORIO_API AMBFController : public APlayerController
 	AMBFController();
 	
 public:
-	UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; }
-	UCraftComponent* GetCraftComponent() { return CraftComponent; }
+	// UMBFInventoryComponent* GetInventoryComponent() { return MBFInventoryComponent; }	//PlayerCharacter로 이동
+	//UCraftComponent* GetCraftComponent() { return CraftComponent; }						// CraftComponent PlayerCharacter로 이동
 
 	void SetFurnaceOwner(ATestActor* InActor) { FurnaceUIOwnerActor = InActor; }
 	ATestActor* GetFurnaceOwner() { return FurnaceUIOwnerActor; }
@@ -242,8 +242,8 @@ public:
 	bool bIsCursorOverObject = false;    // 커서가 광물이나 구조물 등 오브젝트 위에 있는지 여부
 
 private:
-	UMBFInventoryComponent* MBFInventoryComponent;
-	UCraftComponent* CraftComponent;
+	// MBFInventoryComponent* MBFInventoryComponent;	// InventoryComponent PlayerCharacter
+	//UCraftComponent* CraftComponent;					// CraftComponent PlayerCharacter로 이동
 	ATestActor* FurnaceUIOwnerActor;
 	ACraftMachine* CraftMachineUIOwnerActor;
 
