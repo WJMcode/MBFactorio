@@ -324,6 +324,10 @@ bool UMBFInventoryComponent::CanMoveItem(int32 FromIndex, int32 ToIndex, UMBFInv
 		{
 			return true;
 		}
+		else if (FromIndex == 2) // 화로의 제련된 아이템이 나오는 슬롯
+		{
+			return true;
+		}
 		else
 		{
 			return false;
