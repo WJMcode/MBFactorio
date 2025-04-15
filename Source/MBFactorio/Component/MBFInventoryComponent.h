@@ -51,9 +51,7 @@ public:
 public:
 	void DropItem();
 	void SpawnItem(FName ItemID, FVector Location);
-	
-	
-
+		
 	int32 FindInventoryItem(FName ItemID);												//인벤토리에 해당 아이템이 있는지 검사
 	int32 GetInventoryItemCount(FName ItemID);
 	FInventoryItem& GetInventoryItem(int32 b) { return Inventory[b]; }
@@ -70,5 +68,5 @@ public:
 
 	bool CanMoveItem(int32 FromIndex, int32 ToIndex, UMBFInventoryComponent* FromInventory, FInventoryItem* InventoryItem);
 
-	
+
 };

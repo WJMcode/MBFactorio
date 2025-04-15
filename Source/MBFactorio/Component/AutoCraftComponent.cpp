@@ -59,8 +59,8 @@ void UAutoCraftComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 			
 			BuildMTime -= BuildItemData->BuildTime;
 		}
-		
-	}
+
+	}	
 	// ...
 }
 

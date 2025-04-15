@@ -21,10 +21,10 @@ public:
 
     /** 퀘스트 텍스트를 업데이트 */
     UFUNCTION(BlueprintCallable)
-    void UpdateQuestText(int32 DrillCount, int32 FurnaceCount);
+    void UpdateQuestText(int32 Coal, int32 Stone);
 
     /** 퀘스트 텍스트 초기화 (비우기) */
-    void ClearQuestText();
+    void ClearQuestText(); 
 
 protected:
     UPROPERTY(meta = (BindWidget))

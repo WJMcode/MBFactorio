@@ -22,7 +22,7 @@ public:
     void ShowResourceInfoByID(const FString& ItemID);
 
     /** 퀘스트 상태 업데이트 */
-    void UpdateQuestStatus(int32 DrillCount, int32 FurnaceCount);
+    void UpdateQuestStatus(int32 Coal, int32 Stone);
 
     /** 리소스 정보 직접 전달 */
     void ShowResourceInfo(const FQuickItemData& ResourceInfo);
@@ -31,17 +31,17 @@ public:
     void ClearResourceInfo();
 
     /** 퀵 인벤토리 초기화 */
-    void InitializeQuickInventory();
+    //void InitializeQuickInventory();
 
     /** 외부 접근용 위젯 Getter */
-    FORCEINLINE UQuickInventoryWidget* GetQuickInventory() const { return UI_QuickInventory; }
+    //FORCEINLINE UQuickInventoryWidget* GetQuickInventory() const { return UI_QuickInventory; }
     FORCEINLINE UQuestWidget* GetQuestWidget() const { return UI_Quest; }
     FORCEINLINE UResourceInfoWidget* GetResourceInfo() const { return UI_ResourceInfo; }
 
 protected:
     /** 바인딩된 위젯 */
-    UPROPERTY(meta = (BindWidget))
-    UQuickInventoryWidget* UI_QuickInventory;
+    /*UPROPERTY(meta = (BindWidget))
+    UQuickInventoryWidget* UI_QuickInventory;*/
 
     UPROPERTY(meta = (BindWidget))
     UQuestWidget* UI_Quest;

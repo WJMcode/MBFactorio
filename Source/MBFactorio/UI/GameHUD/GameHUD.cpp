@@ -9,7 +9,7 @@ void UGameHUD::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    InitializeQuickInventory();
+    //InitializeQuickInventory();
     UpdateQuestStatus(0, 0);
     ClearResourceInfo();
 
@@ -43,19 +43,19 @@ void UGameHUD::ShowResourceInfoByID(const FString& ItemID)
     UI_ResourceInfo->SetResourceInfo(Item);
 }
 
-void UGameHUD::InitializeQuickInventory()
-{
-    if (UI_QuickInventory)
-    {
-        UI_QuickInventory->InitSlots();
-    }
-}
+//void UGameHUD::InitializeQuickInventory()
+//{
+//    if (UI_QuickInventory)
+//    {
+//        UI_QuickInventory->InitSlots();
+//    }
+//}
 
-void UGameHUD::UpdateQuestStatus(int32 DrillCount, int32 FurnaceCount)
-{
+void UGameHUD::UpdateQuestStatus(int32 Coal, int32 Stone)
+{  
     if (UI_Quest)
     {
-        UI_Quest->UpdateQuestText(DrillCount, FurnaceCount);
+        UI_Quest->UpdateQuestText(Coal, Stone);
     }
     else
     {

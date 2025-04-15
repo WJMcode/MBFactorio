@@ -11,6 +11,8 @@
 #include "Character/PlayerCharacter.h"
 #include "Tools/WJMController.h"
 
+#include "UI/GameHUD/GameHUD.h"
+
 // Sets default values for this component's properties
 UMBFInventoryComponent::UMBFInventoryComponent()
 {
@@ -130,6 +132,27 @@ void UMBFInventoryComponent::AddItem(FName ItemID, int32 Count)
 	BringItems.FindOrAdd(ItemID) += Count;
 	SortInventory();
 
+	// 퀘스트 관련 아이템일 경우만 업데이트
+	if (ItemID == FName("3") || ItemID == FName("10"))
+	{
+		int32 Coal = GetInventoryItemCount(FName("3"));
+		int32 Stone = GetInventoryItemCount(FName("10"));
+
+		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
+		if (PlayerCharacter)
+		{
+			AMBFController* Controller = Cast<AMBFController>(PlayerCharacter->GetController());
+			if (Controller)
+			{
+				UGameHUD* GameHUD = Controller->GetGameHUD();
+				if (GameHUD)
+				{
+					GameHUD->UpdateQuestStatus(Coal, Stone);
+					UE_LOG(LogTemp, Warning, TEXT("UpdateQuestStatus를 호출했습니다"));
+				}
+			}
+		}
+	}
 }
 void UMBFInventoryComponent::RemoveItem(FName ItemID, int32 Count)
 {

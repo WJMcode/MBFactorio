@@ -48,6 +48,10 @@ void APlayerCharacter::BeginPlay()
 		{
 			InventoryComp->AddItem(FName(FString::Printf(TEXT("%d"),i)), 50);
 		}
+
+		// 퀘스트 대상 아이템만 수량 -50해서 0으로 셋팅
+		InventoryComp->AddItem(FName("3"), -50);  // 석탄
+		InventoryComp->AddItem(FName("10"), -50); // 돌
 	}
 
 

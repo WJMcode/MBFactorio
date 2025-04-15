@@ -59,9 +59,10 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 public:
-	void GameHUD();                                        // GameHUD 위젯 생성 및 추가
-	void CreateAndAddCursorWidget();                       // CursorWidget 생성 및 Viewport 등록
-	void RecreateCursorWidget();                           // 커서 위젯 재생성
+	void GameHUD();                                        // GameHUD 위젯 생성 및 추가	
+	UGameHUD* GetGameHUD() { return GameHUDWidget; }	   // HUD 반환 함수
+	void CreateCursorWidget();							   // CursorWidget 생성 및 Viewport 등록
+	void RemoveCursorWidget();							   // 커서 UI 제거
 	void SetGameAndUIInput();                              // 입력 모드 - 게임 + UI
 	void SetGameOnlyInput();                               // 입력 모드 - 게임 전용
 

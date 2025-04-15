@@ -46,7 +46,7 @@ void UGameMenuWidget::OnClickContinue()
     // 커서 UI 재생성
     if (AMBFController* PlayerController = Cast<AMBFController>(UGameplayStatics::GetPlayerController(this, 0)))
     {
-        PlayerController->RecreateCursorWidget();
+        PlayerController->CreateCursorWidget();
     }
 }
 

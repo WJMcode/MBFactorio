@@ -133,6 +133,7 @@ void ACraftMachineTile::OpenCraftMachine(AActor* TouchedActor, FKey ButtonPresse
 	}
 
 	PC->SetCraftMachineOwner(this);
+	PC->RemoveCursorWidget(); // 커서 위젯 삭제 
 }
 
 void ACraftMachineTile::CloseCraftMachine()

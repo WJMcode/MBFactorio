@@ -46,10 +46,8 @@ void AMBFController::BeginPlay()
 	}
 
 	// 커서, 구조물 UI 생성
-	CreateAndAddCursorWidget();
+	CreateCursorWidget();
 	CreateStructuresWidget();
-
-	SetGameAndUIInput();
 
 	// IMC 등록
 	if (APlayerController* PC = Cast<APlayerController>(this))
@@ -244,18 +242,6 @@ void AMBFController::GameHUD()
 	}
 }
 
-void AMBFController::CreateAndAddCursorWidget()
-{
-	if (CursorWidgetClass && !CursorWidget)
-	{
-		CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
-		if (CursorWidget)
-		{
-			CursorWidget->AddToViewport(10);
-		}
-	}
-}
-
 void AMBFController::SetGameAndUIInput()
 {
 	SetShowMouseCursor(true);
@@ -350,13 +336,7 @@ void AMBFController::UnfreezeCursorAndShowUI()
 {
 	bCursorActive = true;
 
-	SetGameAndUIInput(); // 커서 표시
-
-	CreateAndAddCursorWidget();
-	if (CursorWidget)
-	{
-		CursorWidget->SetVisibility(ESlateVisibility::Visible);
-	}
+	CreateCursorWidget();
 }
 
 void AMBFController::CheckVelocity()
@@ -428,11 +408,7 @@ void AMBFController::OpenGameMenu()
 	SetGameAndUIInput();
 
 	// 커서 UI 제거
-	if (CursorWidget)
-	{
-		CursorWidget->RemoveFromParent();
-		CursorWidget = nullptr; // 꼭 nullptr로 만들어줘야 이후 재생성됨
-	}
+	RemoveCursorWidget();
 
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
 	bIsGameMenuOpen = true;
@@ -446,15 +422,7 @@ void AMBFController::CloseGameMenu()
 		GameMenuWidget = nullptr;
 	}
 
-	SetGameOnlyInput();
-
-	// 커서 UI 복원 (있으면 활성화, 없으면 생성)
-	CreateAndAddCursorWidget();
-
-	if (CursorWidget)
-	{
-		CursorWidget->SetVisibility(ESlateVisibility::Visible);
-	}
+	CreateCursorWidget();
 
 	UGameplayStatics::SetGamePaused(GetWorld(), false);
 	bIsGameMenuOpen = false;
@@ -478,7 +446,23 @@ void AMBFController::OpenReplayMenu()
 	}
 }
 
-void AMBFController::RecreateCursorWidget()
+void AMBFController::CreateCursorWidget()
+{
+	if (CursorWidgetClass && !CursorWidget)
+	{
+		CursorWidget = CreateWidget<UMBFCursorWidget>(this, CursorWidgetClass);
+		if (CursorWidget)
+		{
+			CursorWidget->AddToViewport(10);
+
+			CursorWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+
+	SetGameAndUIInput(); // 커서
+}
+
+void AMBFController::RemoveCursorWidget()
 {
 	if (CursorWidget)
 	{
@@ -486,10 +470,10 @@ void AMBFController::RecreateCursorWidget()
 		CursorWidget = nullptr;
 	}
 
-	CreateAndAddCursorWidget();
+	SetGameAndUIInput();
 }
 
-void AMBFController::InventoryTogle()
+void AMBFController::InventoryTogle() 
 {
 
 	AMBFHUD* MBFHUD = Cast<AMBFHUD>(GetHUD());
@@ -499,25 +483,22 @@ void AMBFController::InventoryTogle()
 	{
 		FurnaceOwner->CloseFurnace();
 		FurnaceOwner = nullptr;
+
+		CreateCursorWidget();
 	}
 	else if (CraftMachineOwner)
 	{
 		CraftMachineOwner->CloseCraftMachine();
 		CraftMachineOwner = nullptr;
+
+		CreateCursorWidget();
 	}
 	else if (bOpenInventory)
 	{
 		MBFHUD->CloseInventory();
 		bOpenInventory = false;
 
-		CreateAndAddCursorWidget(); // 커서 UI 복원
-
-		if (CursorWidget)
-		{
-			CursorWidget->SetVisibility(ESlateVisibility::Visible);
-		}
-
-		SetGameAndUIInput(); // 커서 복원
+		CreateCursorWidget();
 	}
 	else
 	{
@@ -525,13 +506,7 @@ void AMBFController::InventoryTogle()
 		bOpenInventory = true;
 			
 		// 커서 UI 제거
-		if (CursorWidget)
-		{
-			CursorWidget->RemoveFromParent();
-			CursorWidget = nullptr;
-		}
-
-		SetGameAndUIInput();
+		RemoveCursorWidget();
 	}
 }
 

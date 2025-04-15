@@ -73,6 +73,7 @@ void AFurnaceTile::OpenFurnace(AActor* TouchedActor, FKey ButtonPressed)
 	FurnaceUI->AddToViewport();
 
 	PC->SetFurnaceOwner(this);
+	PC->RemoveCursorWidget(); // 커서 위젯 삭제 
 }
 
 void AFurnaceTile::CloseFurnace()
