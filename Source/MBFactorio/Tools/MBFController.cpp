@@ -509,12 +509,29 @@ void AMBFController::InventoryTogle()
 	{
 		MBFHUD->CloseInventory();
 		bOpenInventory = false;
+
+		CreateAndAddCursorWidget(); // 커서 UI 복원
+
+		if (CursorWidget)
+		{
+			CursorWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+
+		SetGameAndUIInput(); // 커서 복원
 	}
 	else
 	{
 		MBFHUD->OpenInventory();
 		bOpenInventory = true;
-		
+			
+		// 커서 UI 제거
+		if (CursorWidget)
+		{
+			CursorWidget->RemoveFromParent();
+			CursorWidget = nullptr;
+		}
+
+		SetGameAndUIInput();
 	}
 }
 

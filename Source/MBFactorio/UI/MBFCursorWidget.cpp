@@ -10,6 +10,8 @@
 #include "Tiles/TileTypes/ResourceTile.h"
 #include "Tiles/TileTypes/StructuresTile.h"
 
+#include "Tools/MBFHUD.h"
+
 void UMBFCursorWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
