@@ -50,10 +50,9 @@
 ---
 
 ## 💡 설계 포인트
-
-- **데이터 기반 구조**로 설계하여 캐릭터/몬스터/스킬 등 데이터 확장 용이
-- **Blueprint & C++ 혼용**으로 직관성과 성능 모두 확보
-- **하드코딩 최소화**, **에디터 친화적 구조**
+- 데이터 에셋/컴포넌트 기반 구조로 확장성/재사용성 강화
+- 랜덤 맵 생성 및 확률적 타일 배치로 플레이 다양성 확보
+- 코드 분리 및 예외처리로 UX와 안정성 향상
 
 ---
 
@@ -697,10 +696,15 @@ Straight Projectile이 날아가는 동안 Projectile 주변에 몬스터가 있
 
 ---
 
+## 📝 참고 사항
+- 빌드/실행 오류 발생 시 Content 경로 확인 필수
+  
+---
+
 ### ✉️ Contact
 
 - 이메일 : uoipoip@gmail.com
-- GitHub : [https://github.com/WJMcode/Project_CavesBasic](https://github.com/WJMcode/Project_CavesBasic)
+- GitHub : [WJMcode/MBFactorio](https://github.com/WJMcode/MBFactorio)
 
 ---
 
