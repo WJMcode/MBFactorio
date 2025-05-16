@@ -5,8 +5,7 @@
 - **목표** : 플레이어는 자원을 채굴하고, 이를 조합하여 다양한 아이템을 제작하는 것이 목표 
 - **기간** : 2025.04.03 ~ 2025.04.17
 - **참여 인원** : 3명(전원 개발 참여) <br></br>
-![alt text](README_content/main2.png "Title Text")
-![alt text](README_content/main.png "Title Text") <br></br>
+![alt text](README_content/Main.png "Title Text")<br></br>
 
 ---
 
@@ -27,11 +26,11 @@
 
 2. **프로젝트 다운로드**
     ```bash
-    git clone https://github.com/WJMcode/Project_CavesBasic.git
+    git clone https://github.com/WJMcode/MBFactorio.git
     ```
 
 3. **프로젝트 열기**
-   - `CavesBasic.uproject` 더블클릭 또는 언리얼 에디터에서 직접 열기
+   - `MBFactorio.uproject` 더블클릭 또는 언리얼 에디터에서 직접 열기
 
 4. **빌드**
    - `Generate Visual Studio Project files` 후, Visual Studio에서 빌드
@@ -43,15 +42,10 @@
 
 ## ✨ 주요 기능 요약
 
-- **Player**
-  - 4방향 이동, 점프, 웅크리기, 스킬 사용(무기별)
-  - 피격 시 무적 & 깜빡임, 사망 시 리스폰
-- **Monster**
-  - 랜덤 AI 움직임, 사망 시 투명화 및 제거
-- **UI**
-  - 플레이어/몬스터 체력바, 사망 리스폰 창
-- **DataTable 기반 데이터 관리**  
-  - 캐릭터, 무기, 스킬, 투사체, 이펙트 등
+- 자원 채굴 및 아이템 제작 중심의 샌드박스 시스템
+- 타일 기반 맵 랜덤 생성
+- 컴포넌트 기반 자원 채굴 시스템 (MiningComponent)
+- 효율적인 버전 관리 및 협업 환경 구성
 
 ---
 
@@ -66,19 +60,55 @@
 ## 🧠 프로젝트 구조
 
 ```text
-Project_CavesBasic/
-├── Source/CavesBasic/
-│   ├── Actors/         # 플레이어, 몬스터 등 주요 액터
-│   ├── Components/     # 플레이어 상태 등 기능별 컴포넌트
-│   ├── UI/             # 위젯, HUD
-│   └── GameframeWork/  # GameMode 등
-├── Config/
-├── Content/
-├── CavesBasic.uproject
-└── README.md
+MBFactorio/
+├── Source/
+│   └── MBFactorio/
+│       ├── Components/   # 채굴 등 각종 게임 컴포넌트 (예: MiningComponent)
+│       ├── Tiles/        # 타일 관리, 랜덤 배치 등 타일 관련 코드
+│       └── ...           # 기타 게임 모듈 및 코드
+├── Content/              # 언리얼 에셋
+├── README.md
+└── ...
 ```
 ---
-	
+
+## 👤 기여한 부분
+
+### 1. TileGridManager 시스템
+- **타일 클래스 설계**: 공통 기능/메시를 관리하는 Tile 클래스와, Ground/Resource/Structures 등 다양한 하위 클래스 설계
+- **타일 데이터 구조화**: TileDataAsset을 활용하여 타일 정보를 관리
+- **타일 랜덤 배치**: TileGridManager에서 플레이어 중심으로 다양한 타입의 타일을 확률적으로, 랜덤 회전/머티리얼로 배치
+- **핵심 함수**:  
+  - `SpawnTiles` 하나로 다양한 타일의 생성 통합  
+  - TileDataAsset을 참조해 타입/머티리얼 자동 할당
+
+### 2. MiningComponent 시스템
+- **채굴 시스템 설계**: 플레이어가 광물 타일을 오버랩 + 우클릭으로 채굴 가능
+- **진행도 시각화**: 채굴 진행 시 HUD에 실시간 진행도 표시, 완료 시 인벤토리 반영
+- **컴포넌트화**: 캐릭터에 독립적으로 부착 가능, 재사용성/유지보수성 강화
+- **핵심 함수**:  
+  - MiningComponent에서 채굴 로직 분리  
+  - 채굴 성공 시 HUD/InventoryComponent 연동
+
+---
+
+## 🔍 구현 시 고민 및 문제 해결
+
+- **복수 오버랩 처리**:  
+  - 여러 광물 타일과 동시 오버랩 시, 첫 번째 타일만 인식하던 문제
+  - → 오버랩 해제 시 `FindOverlappingTile()` 호출, 주변 타일 재탐색 및 상태 동기화
+
+- **UX 개선**:  
+  - 채굴 도중 우클릭 미유지/커서 이탈 등 예외처리 강화  
+  - 애니메이션 반복 방지 등 사용자 경험 개선
+
+- **구조 리팩토링**:  
+  - 컴포넌트 기반 구조 적용으로 코드 재사용성/유지보수성 강화
+
+---
+
+현재 여기까지 진행함
+ 
 ## 🔎 세부 구현 (주요 코드/로직)
 
 ### 🧍 Player
