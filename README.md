@@ -247,7 +247,7 @@ for (int32 X = 0; X < GridWidth; ++X)
 	       }
        }
        ```
-      </details><br>
+      </details>
 
   - **인게임 적용** :
 <br></br>
