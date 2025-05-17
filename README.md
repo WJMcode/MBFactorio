@@ -117,7 +117,7 @@ MBFactorio/
   };
   ```
 
-위 구조를 바탕으로, TileGridManager 클래스의 SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치합니다.  
+위 구조를 바탕으로, SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치합니다.  
 SpawnTiles 함수는 타일의 종류(Ground/Resource/Structures)에 따라 타입, 머티리얼, 크기를 유연하게 할당하는 함수입니다.
 
 > **이 시스템을 통해 매번 다른 땅과 자원이 배치되어
