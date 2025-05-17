@@ -131,11 +131,7 @@ for (int32 X = 0; X < GridWidth; ++X)
       else if (StructuresTile == NewTile) { 지정값 적용 }
       else                                { 잘못된 타일 클래스 }
 ```
-
-
   - **상세 코드** :
-<br></br>
-![alt text](README_content/TileGridManager2.png "Title Text")<br></br>
       <details>
         <summary> TileGridManager 클래스의 SpawnTiles 함수 전체 코드 </summary>
 	      
@@ -252,6 +248,10 @@ for (int32 X = 0; X < GridWidth; ++X)
        }
        ```
       </details><br>
+
+  - **인게임 적용** :
+<br></br>
+![alt text](README_content/TileGridManager2.png "Title Text")
 
 
   - Projectile이 ***Ground Projectile***로 설정된 Skill 사용 시
