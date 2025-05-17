@@ -120,7 +120,7 @@ TileGridManager 클래스의 SpawnTiles 함수는 플레이어 주변에 다양�
   - **Structures 타일 :** 미리 지정된 타입/머티리얼/크기로 설정
     <br>
     
-  - **SpawnTiles 함수의 대표 로직** :
+  - **대표 로직** :
 ```cpp
 for (int32 X = 0; X < GridWidth; ++X)
   for (int32 Y = 0; Y < GridHeight; ++Y)
@@ -131,6 +131,9 @@ for (int32 X = 0; X < GridWidth; ++X)
       else if (StructuresTile == NewTile) { 지정값 적용 }
       else                                { 잘못된 타일 클래스 }
 ```
+<br></br>
+![alt text](README_content/TileGridManager2.png "Title Text")<br></br>
+
   - **상세 코드** :
       <details>
         <summary> TileGridManager 클래스의 SpawnTiles 함수 전체 코드 </summary>
