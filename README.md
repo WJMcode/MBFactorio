@@ -131,10 +131,11 @@ for (int32 X = 0; X < GridWidth; ++X)
       else if (StructuresTile == NewTile) { 지정값 적용 }
       else                                { 잘못된 타일 클래스 }
 ```
-<br></br>
-![alt text](README_content/TileGridManager2.png "Title Text")<br></br>
+
 
   - **상세 코드** :
+<br></br>
+![alt text](README_content/TileGridManager2.png "Title Text")<br></br>
       <details>
         <summary> TileGridManager 클래스의 SpawnTiles 함수 전체 코드 </summary>
 	      
