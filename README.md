@@ -105,8 +105,6 @@ MBFactorio/
   - 컴포넌트 기반 구조 적용으로 코드 재사용성/유지보수성 강화
 
 ---
-
-현재 여기까지 진행함
  
 ## 🔎 세부 구현 (주요 코드/로직)
 
@@ -114,6 +112,9 @@ MBFactorio/
 
 TileGridManager 클래스의 SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치하고,  
 타일의 종류(Ground/Resource/Structures)에 따라 타입, 머티리얼, 크기를 유연하게 할당하는 함수입니다.
+
+> **이 시스템을 통해 매번 다른 땅과 자원 배치가 생성되어
+> 새 게임 시작 시, 새로운 재미를 제공합니다.**
 
   - **Ground 타일 :** 머티리얼만 랜덤 지정
   - **Resource 타일 :** 광물 타입 + 머티리얼 세트 중 하나를 랜덤 선택 후 지정
@@ -133,7 +134,7 @@ for (int32 X = 0; X < GridWidth; ++X)
 ```
   - **상세 코드** :
       <details>
-        <summary> TileGridManager 클래스의 SpawnTiles 함수 전체 코드 </summary>
+        <summary> TileGridManager 클래스의 SpawnTiles 함수 코드 </summary>
 	      
        ```cpp
        /* @param TileClass		생성할 타일 명시 (땅, 광물, 구조물 등)
@@ -252,8 +253,85 @@ for (int32 X = 0; X < GridWidth; ++X)
   - **인게임 적용** :
 <br></br>
 ![alt text](README_content/TileGridManager2.png "Title Text")
+<br></br>
 
+### 2. MiningComponent의 채굴 시스템
 
+플레이어가 ResourceTile 위에서 우클릭(마우스 Hold)하면 채굴이 진행되며,
+진행도는 HUD에 표시되고, 완료 시 인벤토리에 자원이 추가됩니다.
+
+  - **진행 흐름** : 
+  1. 플레이어가 타일과 오버랩 + 우클릭 Hold → `StartMining()` 호출  
+  2. 채굴 진행도(HUD) 실시간 반영  
+  3. 완료 시 인벤토리 반영, 채굴 자원 텍스트 애니메이션 처리  
+  4. 예외(정지, 중단) 처리 등은 별도 함수에서 관리
+
+  - **상세 코드** :
+      <details>
+        <summary> MiningComponent 클래스의 StartMining 함수 코드 </summary>
+	      
+       ```cpp
+       void UMiningComponent::StartMining()
+       {
+	       APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
+	       if (!PlayerCharacter)
+	       {
+		       UE_LOG(LogTemp, Error, TEXT("UMiningComponent::StartMining(): Owner가 nullptr입니다 !"));
+		       return;
+	       }
+
+	       // 플레이어가 채굴 중이 아니라면
+	       if (!IsMining())
+	       {
+		       SetIsMining(true);
+
+		       PlayerCharacter->ShowPickaxe(true);
+	       }
+
+	       // 채굴 시작
+	       {
+		        /* 프로그래스바를 채우기 위해 채굴이 시작되면 HUD에게 Broadcast합니다.
+			        프로그래스바는 0.f ~ 1.f의 값을 받아 바를 채웁니다.					*/
+		       OnMiningProgress.Broadcast(MiningProgressValue / MiningTimeToComplete);
+
+		       // 채굴 진행바를 채우기 위한 변수의 값을 점점 올림
+		       MiningProgressValue += GetWorld()->GetDeltaSeconds();
+
+		       // 채굴 완료
+		       if (MiningProgressValue >= MiningTimeToComplete)
+		       {
+			       MiningProgressValue = 0.f;
+
+			       // 채굴한 광물을 텍스트로 출력하기 위해 HUD에게 Broadcast합니다.
+			       OnMiningComplete.Broadcast(CurrentTargetTile->GetResourceType());
+			
+			       // 인벤토리에 채굴한 아이템 삽입
+			       {
+				       EResourceType MinedResourceType = CurrentTargetTile->GetResourceType();
+				       FName ItemName = NAME_None;
+				       switch (MinedResourceType){...}
+				       if (ItemName != NAME_None)
+				       {
+					       PlayerCharacter->GetInventoryComponent()->AddItem(ItemName, 1);
+				       }
+			       }
+		       }
+	       }
+
+	       // 채굴 몽타주가 재생되고 있지 않다면, 채굴 몽타주 재생
+	       if (!bIsMiningAnimationPlaying)
+	       {
+		       PlayerCharacter->PlayMiningAnimation();
+	       }
+       }
+       ```
+      </details>
+
+  - **인게임 적용** :
+<br></br>
+![alt text](README_content/MiningComponent2.png "Title Text")
+<br></br>
+       
   - Projectile이 ***Ground Projectile***로 설정된 Skill 사용 시
 <br></br>
 ***Ground Projectile***은 Player 앞에 땅이 있어야 생성되는 발사체.<br>
