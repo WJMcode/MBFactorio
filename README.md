@@ -75,7 +75,7 @@ MBFactorio/
 
 ### 1. TileGridManager 시스템
 - **타일 클래스 설계** : 공통 기능/메시를 관리하는 Tile 클래스와, Ground/Resource/Structures 등 다양한 하위 클래스 설계
-- **타일 데이터 구조화** : TileDataAsset을 활용하여 타일 정보를 관리
+- **타일 데이터 구조화** : C++ 구조체(TileStructs)로 타입/머티리얼 정의, 언리얼 에디터의 DataAsset에서 실제 데이터 관리
 - **타일 랜덤 배치** : TileGridManager에서 플레이어 중심으로 다양한 타입의 타일을 확률적으로, 랜덤 회전/머티리얼로 배치
 - **핵심 함수** :  
   - `SpawnTiles` 하나로 다양한 타일의 생성 통합  
@@ -94,6 +94,28 @@ MBFactorio/
 ## 🔎 세부 구현 (주요 코드/로직)
 
 ### 1. 타일 랜덤 배치 및 타입/머티리얼 자동 할당
+
+타일 타입과 머티리얼 정보는 아래와 같이 C++ 구조체로 설계되며,  
+언리얼 에디터의 Data Asset에서 실제 값들을 관리합니다.
+
+  (대표 예시)
+  ```cpp
+  UENUM(BlueprintType)
+  enum class EResourceType : uint8
+  {
+      Copper, Iron, Stone, Coal, Unknown UMETA(Hidden)
+  };
+
+  USTRUCT(BlueprintType)
+  struct FResourceTypeAndMaterials
+  {
+      GENERATED_BODY()
+      UPROPERTY(EditAnywhere, BlueprintReadWrite)
+      EResourceType ResourceType;
+      UPROPERTY(EditAnywhere, BlueprintReadWrite)
+      TArray<UMaterialInterface*> Materials;
+  };
+  ```
 
 TileGridManager 클래스의 SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치하고,  
 타일의 종류(Ground/Resource/Structures)에 따라 타입, 머티리얼, 크기를 유연하게 할당하는 함수입니다.
