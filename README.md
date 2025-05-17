@@ -95,10 +95,10 @@ MBFactorio/
 
 ### 1. 타일 랜덤 배치 및 타입/머티리얼 자동 할당
 
-타일 타입과 머티리얼 정보는 아래와 같이 C++ 구조체로 설계되며,  
+타일 타입과 머티리얼 정보는 C++ 구조체로 설계되며,  
 언리얼 에디터의 Data Asset에서 실제 값들을 관리합니다.
 
-  (대표 예시)
+  (아래는 데이터 구조 코드 중 일부 내용입니다.)
   ```cpp
   UENUM(BlueprintType)
   enum class EResourceType : uint8
