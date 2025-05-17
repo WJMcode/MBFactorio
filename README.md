@@ -110,86 +110,142 @@ MBFactorio/
  
 ## 🔎 세부 구현 (주요 코드/로직)
 
-### 🧍 Player
+### 1. 타일 랜덤 배치 및 타입/머티리얼 자동 할당
 
-  - Weapon을 습득한 Player는 Skill 사용 가능
+TileGridManager 클래스의 SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치하고,  
+타일의 종류(Ground/Resource/Structures)에 따라 타입, 머티리얼, 크기를 유연하게 할당하는 함수입니다.
+
+  - **Ground 타일 :** 머티리얼만 랜덤 지정
+  - **Resource 타일 :** 광물 타입 + 머티리얼 세트 중 하나를 랜덤 선택 후 지정
+  - **Structures 타일 :** 미리 지정된 타입/머티리얼/크기로 설정
+    <br>
     
+  - **SpawnTiles 함수의 대표 로직** :
+```cpp
+for (int32 X = 0; X < GridWidth; ++X)
+  for (int32 Y = 0; Y < GridHeight; ++Y)
+    if (생성될 확률 통과)
+      NewTile = SpawnActor(...);
+      if (GroundTile == NewTile)          { 랜덤 머티리얼 }
+      else if (ResourceTile == NewTile)   { 타입+머티리얼 세트 랜덤 적용 }
+      else if (StructuresTile == NewTile) { 지정값 적용 }
+      else                                { 잘못된 타일 클래스 }
+```
+  - **상세 코드** :
       <details>
-        <summary> OnSkill 함수 코드 ( Skill 실행 코드 )</summary>
-    
-     
-
-    
+        <summary> TileGridManager 클래스의 SpawnTiles 함수 전체 코드 </summary>
+	      
        ```cpp
-       /* Player가 키 입력을 통해 Skill을 사용하면 OnSkill 함수가 호출됩니다.
-        * 기본적으로 Player가 웅크리지 않은 상태에서만 OnSkill 함수가 실행됩니다.
-        * Weapon은 에디터 내에 존재하는 Weapon 전용 InputMappingContext를 통해
-        * Skill InputAction들을 바인딩하고 있습니다.
-        * OnSkill 함수가 호출되는 시점에 어떤 Skill InputAction이 들어왔는지 체크합니다.
-        * ( 이때 InputAction 파일의 이름 규칙은 "IA_Skill*"이며 *은 1부터 시작하는 Skill 번호입니다. )
-        * 체크한 Skill InputAction의 번호를 통해 Weapon 데이터 테이블이 저장하고 있는
-        * Skill 데이터 테이블의 행에 접근합니다.
-        * Skill 데이터 테이블에는 *번 스킬이 실행될 때 재생되는 몽타주가 저장되어 있어 해당 몽타주를 재생합니다.
+       /* @param TileClass		생성할 타일 명시 (땅, 광물, 구조물 등)
+        * @param SpawnProbability   	타일이 생성될 확률 (0.0 ~ 1.0)
+        * @param ZOffset		생성 위치의 Z축 보정값(예 : 광물을 땅 위에 살짝 띄우는 용도)
+        * @param InTileSize		타일의 크기 설정
+        * @param InRotator		타일에 적용할 회전값
+        * @param bUseRandomRotation	랜덤 회전값 사용 여부
         */
-	void AWeaponBase::OnSkill(const FInputActionInstance& Instance)
-	{
-	    ACharacter* OwningCharacter = Cast<ACharacter>(OwningPawn);
-       	    // 캐릭터가 웅크리지 않은 상태라면
-	    if (!OwningCharacter->bIsCrouched)
-	    {
-		// 호출된 InputAction을 통해 어떤 키가 입력되었는지 확인
-		const UInputAction* TriggeredAction = Instance.GetSourceAction();
-		FString ActionName = TriggeredAction->GetName();
-		// 스킬 번호만 남김
-		ActionName.RemoveFromStart(TEXT("IA_Skill"));
-		int32 ExecutedSkillNum = FCString::Atoi(*ActionName);
-	
-		// 어떤 키가 입력되었느냐에 따라 다른 스킬을 실행함
-		const FString Skill_Number = TEXT("Skill") + FString::FromInt(ExecutedSkillNum);
-	
-		if (SkillRowHandleNum >= ExecutedSkillNum)
-		{
-		    FSkillTableRow* SkillRow = WeaponTableRow->SkillRowHandle[ExecutedSkillNum - 1].GetRow<FSkillTableRow>(Skill_Number);
-	
-		    if (!SkillRow) { ensure(false); return; }
-	
-		    UAnimMontage* CurrentMontage = BasicAnimInstance->GetCurrentActiveMontage();
-	
-		    // 현재 몽타주가 재생 중이지 않을 때
-		    if (nullptr == CurrentMontage)
-		    {
-			if (ABasicPlayer* WeaponOwner = Cast<ABasicPlayer>(OwningCharacter))
-			{
-			    UStatusComponent* StatusComponent = WeaponOwner->GetComponentByClass<UStatusComponent>();
-			    if (StatusComponent->IsPlayer())
-			    {
-				UAnimMontage* PlayingMontage = WeaponOwner->GetPlayingMontage();
-				if (PlayingMontage)
-				{
-				    WeaponOwner->SetPlayingMontage(nullptr);
-				}
-	
-				// 스킬 데이터 테이블에 있는 몽타주를 재생
-				WeaponOwner->SetPlayingMontage(SkillRow->SkillMotionMontage);
-			    }
-			    else
-			    {
-				if (ADefaultMonster* WeaponOwnerIsMonster = Cast<ADefaultMonster>(OwningCharacter))
-				{
-				    UAnimMontage* PlayingMontage = WeaponOwnerIsMonster->GetPlayingMontage();
-				    if (PlayingMontage)
-				    {
-					WeaponOwnerIsMonster->SetPlayingMontage(nullptr);
-				    }
-				    WeaponOwnerIsMonster->SetPlayingMontage(SkillRow->SkillMotionMontage);
-				}
-			    }
-			}
-			BasicAnimInstance->Montage_Play(SkillRow->SkillMotionMontage);
-		    }
-		}
-	    }
-	}
+       void ATileGridManager::SpawnTiles(TSubclassOf<ATile> TileClass, float SpawnProbability, float ZOffset, float InTileSize, FRotator InRotator, bool bUseRandomRotation)
+       {
+	       // 캐릭터 가져오기
+	       ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	       if (!PlayerCharacter || !TileClass) 
+	       {
+		       UE_LOG(LogTemp, Warning, TEXT("타일 생성 실패: 캐릭터 또는 TileClass 없음"));
+		       return;
+	       }
+       
+	       // 캐릭터 발바닥 높이 계산
+	       float HalfHeight = PlayerCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	       FVector PlayerLocation = PlayerCharacter->GetActorLocation();
+	       float FootZValue = PlayerLocation.Z - HalfHeight;
+
+	       // 생성할 타일의 개수
+	       int32 GridWidth = TileDataAsset->GridWidth;
+	       int32 GridHeight = TileDataAsset->GridHeight;
+
+	       // 구조물 타일인 경우 하나만 생성
+	       if(TileClass->IsChildOf(AStructuresTile::StaticClass()))
+	       {
+		       GridWidth = 1;
+		       GridHeight = 1;
+	       }
+
+	       // 타일 그리드 중심이 캐릭터 위치로 가도록 보정
+	       FVector Origin = PlayerLocation - FVector((GridWidth - 1) * InTileSize * 0.5f, (GridHeight - 1) * InTileSize * 0.5f, 0.f);
+
+	       for (int32 Y = 0; Y < GridHeight; ++Y)
+	       {
+		       for (int32 X = 0; X < GridWidth; ++X)
+		       {
+			
+			       // 0.0 ~ 1.0 사이의 난수를 뽑아서 확률적으로 타일을 생성
+			       // Resource 타일은 부분적으로 생성하기 위함.
+			       if (FMath::FRand() > SpawnProbability) continue;
+
+			       FVector Location = Origin + FVector(X * InTileSize, Y * InTileSize, 0.f);
+			       Location.Z = FootZValue + ZOffset;	// 발바닥 높이에 생성
+
+			       // bUseRandomRotation가 ture면 랜덤 회전값 적용
+			       // false면 인자로 받은 회전값 사용
+			       FRotator Rotation = 
+										       // 타일을 0, 90, 180, 270도 중 하나로 회전
+				       bUseRandomRotation ? FRotator(0.f, FMath::RandRange(0, 3) * 90, 0.f) : InRotator;
+
+			       ATile* NewTile = GetWorld()->SpawnActor<ATile>(TileClass, Location, Rotation);
+			       if (NewTile)
+			       {
+				       // 타일 크기 설정
+				       NewTile->SetTileScale(InTileSize);
+
+				       // 땅 타일일 경우 머티리얼만 랜덤으로 설정
+				       if (AGroundTile* GroundTile = Cast<AGroundTile>(NewTile))
+				       {
+					       if (TileDataAsset && TileDataAsset->GroundTileMaterials.Num() > 0)
+					       {
+						       GroundTile->SetRandomTileMaterial(TileDataAsset->GroundTileMaterials);
+					       }
+				       }
+				       // 리소스 타일일 경우 타입 설정 및 랜덤 머티리얼 설정
+				       else if (AResourceTile* ResourceTile = Cast<AResourceTile>(NewTile))
+				       {
+					       if (TileDataAsset && TileDataAsset->ResourceTileTypeAndMaterialSet.Num() > 0)
+					       {
+						       const TArray<FResourceTypeAndMaterials>& Sets = TileDataAsset->ResourceTileTypeAndMaterialSet;
+						       int32 Index = FMath::RandRange(0, Sets.Num() - 1);
+						       // Sets에 있는 여러 개의 타입 중 하나를 뽑아, 
+						       // 타입과 머티리얼 정보를 SelectedSet에 저장
+						       const FResourceTypeAndMaterials& SelectedSet = Sets[Index];
+
+						       // SelectedSet에 담긴 타입 정보로 생성된 타일 타입을 설정
+						       ResourceTile->SetResourceType(SelectedSet.ResourceType);
+						       // SelectedSet에 담긴 머티리얼 배열을 통해 생성된 타일의 머티리얼을 설정
+						       ResourceTile->SetRandomTileMaterial(SelectedSet.Materials);
+					       }
+				       }
+				       // 구조물 타일일 경우 한 가지의 머티리얼로 세팅
+				       else if (AStructuresTile* StructuresTile = Cast<AStructuresTile>(NewTile))
+				       {
+					       if (TileDataAsset && TileDataAsset->StructuresTypeAndMaterial.Material)
+					       {
+						       // StructuresTypeAndMaterial에 담긴 타입 정보로 생성된 타일 타입을 설정
+						       StructuresTile->SetStructuresType(TileDataAsset->StructuresTypeAndMaterial.StructuresType);
+						       // StructuresTypeAndMaterial에 담긴 머티리얼을 통해 생성된 타일의 머티리얼을 설정
+						       StructuresTile->SetTileMaterial(TileDataAsset->StructuresTypeAndMaterial.Material);
+						       // 구조물 타입에 따라 크기를 조정 (예: 화로는 세로로 2칸 차지)
+						       StructuresTile->SetStructuresTileScale(StructuresTile->GetStructuresType(), InTileSize);
+					       }
+				       }
+				       else
+				       {
+					       UE_LOG(LogTemp, Warning, TEXT("잘못된 타일 클래스입니다."));
+				       }
+			       }
+			       else
+			       {
+				       UE_LOG(LogTemp, Warning, TEXT("타일 스폰 실패: (%d, %d)"), X, Y);
+			       }
+		       }
+	       }
+       }
        ```
       </details><br>
 
