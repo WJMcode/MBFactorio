@@ -98,7 +98,7 @@ MBFactorio/
 타일 타입과 머티리얼 정보는 C++ 구조체로 설계되며,  
 언리얼 에디터의 Data Asset에서 실제 값들을 관리합니다.
 
-  (아래는 데이터 구조 코드 중 일부 내용입니다.)
+  타일 타입과 머티리얼 등 주요 속성 관리는 아래와 같은 데이터 구조(Struct/Enum)로 정의합니다 :
   ```cpp
   UENUM(BlueprintType)
   enum class EResourceType : uint8
@@ -117,8 +117,8 @@ MBFactorio/
   };
   ```
 
-TileGridManager 클래스의 SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치하고,  
-타일의 종류(Ground/Resource/Structures)에 따라 타입, 머티리얼, 크기를 유연하게 할당하는 함수입니다.
+위 구조를 바탕으로, TileGridManager 클래스의 SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치합니다.  
+SpawnTiles 함수는 타일의 종류(Ground/Resource/Structures)에 따라 타입, 머티리얼, 크기를 유연하게 할당하는 함수입니다.
 
 > **이 시스템을 통해 매번 다른 땅과 자원이 배치되어
 > 새 게임 시작 시, 새로운 재미를 제공합니다.**
