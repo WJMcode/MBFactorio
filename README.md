@@ -257,7 +257,7 @@ for (int32 X = 0; X < GridWidth; ++X)
 
 ### 2. MiningComponent의 채굴 시스템
 
-플레이어가 ResourceTile 위에서 우클릭(마우스 Hold)하면 채굴이 진행되며,
+플레이어가 ResourceTile 위에서 우클릭(마우스 Hold)하면 채굴이 진행되며,  
 진행도는 HUD에 표시되고, 완료 시 인벤토리에 자원이 추가됩니다.
 
   - **진행 흐름** : 
