@@ -27,18 +27,19 @@
    - Visual Studio 2022
    - Windows 10/11 64bit
 
-2. **프로젝트 다운로드**
+2. **프로젝트 클론**
     ```bash
     git clone https://github.com/WJMcode/MBFactorio.git
     ```
 
 3. **프로젝트 열기**
-   - `MBFactorio.uproject` 더블클릭 또는 언리얼 에디터에서 직접 열기
+   - `MBFactorio.uproject` 파일을 더블 클릭하거나, 언리얼 에디터에서 직접 열기
 
-4. **빌드**
-   - `Generate Visual Studio Project files` 후, Visual Studio에서 빌드
+4. **Visual Studio 프로젝트 생성 및 빌드**
+   - `MBFactorio.uproject` 파일 우클릭 → `Generate Visual Studio project files`
+   - 생성된 `.sln` 파일을 Visual Studio에서 열고 빌드 실행 (`Ctrl + Shift + B`)
 
-5. **실행**
+5. **게임 실행**
    - 언리얼 에디터에서 `Play` 클릭
 
 ---
