@@ -103,8 +103,7 @@ MBFactorio/
 	- `MiningComponent` 클래스를 설계하여 캐릭터에 **독립적으로 부착 가능한 구조**로 제작하였습니다.  
 	이를 통해 **재사용성과 유지보수성**을 높였습니다.
 - **핵심 함수**  
-	- `TryStartMining`, `StartMining`, `StopMining` 등의 함수로  
-	**채굴 로직을 모듈화**하여 관리하였습니다.
+	- `TryStartMining`, `StartMining`, `StopMining` 등의 함수로 **채굴 로직을 모듈화**하여 관리하였습니다.
 
 ---
  
