@@ -74,10 +74,10 @@ MBFactorio/
 ├── Source/
 │   └── MBFactorio/
 │       ├── Components/   # 채굴 등 각종 게임 컴포넌트 (예: MiningComponent)
-│       ├── Tiles/        # 타일 관리, 랜덤 배치 등 타일 관련 코드
-│       └── ...           # 기타 게임 모듈 및 코드
+│       ├── Tiles/        # 타일 시스템(타일 관련 클래스, 랜덤 배치 매니저, 데이터 구조체 등)
+│       ├── Character/    # 플레이어 캐릭터 관련
+│       └── ...
 ├── Content/              # 언리얼 에셋
-├── README.md
 └── ...
 ```
 ---
