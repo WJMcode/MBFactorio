@@ -8,7 +8,7 @@
 | **기간**        | 2025.04.03 ~ 2025.04.17           |
 | **참여 인원**      | 3명(전원 개발 참여)                            |
 
-![alt text](README_content/Main.png "Title Text")<br></br>
+![alt text](README_content/Main.png "Title Text")
 
 ---
 
@@ -166,25 +166,49 @@ MBFactorio/
   	- 랜덤 머티리얼 및 회전을 통해 **매번 다른 지형과 자원을 배치**하여 플레이어로부터 흥미를 유발합니다.
 
 <br>
+
+> 📸 아래는 ******* 실제 게임 장면입니다.
+> <br>
+> <br>
+> ![alt text](README_content/TileGridManager2.png "Title Text")
+
+<br>
     
-  - **대표 로직** :
+> 📄 아래는 ******** 핵심 구현 코드입니다.
 ```cpp
-for (int32 X = 0; X < GridWidth; ++X)
-  for (int32 Y = 0; Y < GridHeight; ++Y)
-    if (생성될 확률 통과)
-      NewTile = SpawnActor(...);
-      if (GroundTile == NewTile)          { 랜덤 머티리얼 }
-      else if (ResourceTile == NewTile)   { 타입+머티리얼 세트 랜덤 적용 }
-      else if (StructuresTile == NewTile) { 지정값 적용 }
-      else                                { 잘못된 타일 클래스 }
+// BeginPlay에서 타일별 생성 함수 호출
+void ATileGridManager::BeginPlay()
+{
+  // 각각 내부에서 SpawnTiles(...) 호출
+  SpawnGroundTiles();     // 100% 확률, 랜덤 머티리얼 적용
+  SpawnResourceTiles();   // 30% 확률, 랜덤 타입 + 머티리얼 세트 적용
+  SpawnStructuresTile();  // 1개만 고정 생성, 지정 타입 + 머티리얼 적용
+}
+
+// 예시: Resource 타일 생성 함수
+void ATileGridManager::SpawnResourceTiles()
+{
+  // SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타일 크기, 회전값, 랜덤 회전 여부)
+  SpawnTiles(ResourceTileInfo.TileClass, 0.3f, 0.1f, ResourceTileInfo.TileSize, FRotator(0.f, 90.f, 0.f), false);
+}
+
+// 타일 생성 공통 함수
+void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타일 크기, 회전값, 랜덤 회전 여부)
+{
+  for (int32 X = 0; X < GridWidth; ++X)
+    for (int32 Y = 0; Y < GridHeight; ++Y)
+      if (생성 확률 통과)
+        NewTile = SpawnActor(...);
+        if (GroundTile == NewTile)          { 랜덤 머티리얼 }
+        else if (ResourceTile == NewTile)   { 랜덤 타입 + 머티리얼 세트 랜덤 적용 }
+        else if (StructuresTile == NewTile) { 지정 타입 + 머티리얼 + 크기 조정 }
+        else                                { 경고 로그 출력 }
+}
 ```
 
 >  🔗 전체 소스는 [TileGridManager.cpp](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Tiles/TileManager/TileGridManager.cpp)에서 확인하실 수 있습니다.
 
-  - **인게임 적용** :
-<br></br>
-![alt text](README_content/TileGridManager2.png "Title Text")
-<br></br>
+<br>
 
 ### 2. MiningComponent의 채굴 시스템
 
