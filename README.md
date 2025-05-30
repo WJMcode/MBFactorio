@@ -135,8 +135,7 @@ MBFactorio/
 #### **1.1 TileDataAsset의 도입**
   - **개요**  
 언리얼 엔진의 DataAsset을 상속받아 **타일 전용 DataAsset인 TileDataAsset을 설계**했습니다.  
-각 **타일 유형(Ground, Resource, Structures)에 따라** 클래스, 크기, 머티리얼, 종류(예 : 구리, 철, 화로 등) **정보를 
-관리**합니다.
+**타일 유형(Ground, Resource, Structures)에 따라** 클래스, 크기, 머티리얼, 종류(예 : 구리, 철, 화로 등) **정보를 관리**합니다.
 
 - **설계 장점**
 	- 타일의 정보를 코드에 직접 작성하는 대신 `TileDataAsset`으로 관리함으로써 **데이터 중심의 설계**할 수 있습니다.
@@ -201,7 +200,7 @@ public:
 #### **1.2 타일의 랜덤 배치 및 타입/머티리얼 자동 할당**
 
   - **개요**  
-`TileGridManager`는 플레이어 주변에 **Ground**, **Resource**, **Structures** 타일을 **랜덤 확률 기반으로 배치**하여 환경을 자동 생성합니다.  
+`TileGridManager`는 **Ground**, **Resource**, **Structures** 타일을 **랜덤 확률 기반으로 배치**하여 환경을 자동 생성합니다.
 각 타일의 속성은 `TileDataAsset`을 기반으로 **자동 설정**됩니다.
 
 - **핵심 로직**  
@@ -227,7 +226,7 @@ public:
 
 <br>
     
-> 📄 아래는 `TileDataAsset`을 기반으로 타일을 랜덤 배치하는 TileGridManager의 핵심 구현 코드입니다.
+> 📄 아래는 `TileDataAsset`을 기반으로 타일을 랜덤 배치하는 `TileGridManager`의 핵심 구현 코드입니다.
 ```cpp
 // BeginPlay에서 타일별 생성 함수 호출
 void ATileGridManager::BeginPlay()
