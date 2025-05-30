@@ -154,7 +154,7 @@ MBFactorio/
 
 <br>
 
-> 📄 아래는 타일 데이터를 정의하는 구조체 TileStructs와 DataAsset 클래스 TileDataAsset의 핵심 구현 코드입니다.
+> 📄 아래는 타일 데이터를 정의하는 구조체 `TileStructs`와 DataAsset 클래스 `TileDataAsset`의 핵심 구현 코드입니다.
 ```cpp
 // Resource 타일 종류와 그에 따른 머티리얼 세트
 USTRUCT(BlueprintType)
