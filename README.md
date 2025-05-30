@@ -158,11 +158,11 @@ MBFactorio/
 // Resource 타일 : 종류(예: 구리, 철)와 머티리얼 세트를 함께 정의
 struct FResourceTypeAndMaterials
 {
-	// 자원 종류 (예 : 구리, 철)
-	EResourceType ResourceType;
+  // 자원 종류 (예 : 구리, 철)
+  EResourceType ResourceType;
 
-	// 해당 자원에 사용될 머티리얼 목록
-	TArray<UMaterialInterface*> Materials;
+  // 해당 자원에 사용될 머티리얼 목록
+  TArray<UMaterialInterface*> Materials;
 };
 ```
 >  🔗 전체 코드는 [TileStructs.h](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Tiles/TileBase/TileStructs.h)에서 확인하실 수 있습니다.
@@ -173,22 +173,22 @@ struct FResourceTypeAndMaterials
 class MBFACTORIO_API UTileDataAsset : public UDataAsset
 {
 public:
-	// 생성할 타일의 개수
-	int32 GridWidth, GridHeight;
+  // 생성할 타일의 개수
+  int32 GridWidth, GridHeight;
 
-	// Ground / Resource / Structures 타일에 대한 정보
-	FTileInfo GroundTileInfo;
-	FTileInfo ResourceTileInfo;
-	FTileInfo StructuresTileInfo;
+  // Ground / Resource / Structures 타일에 대한 정보
+  FTileInfo GroundTileInfo;
+  FTileInfo ResourceTileInfo;
+  FTileInfo StructuresTileInfo;
 
-	// Ground 타일용 머티리얼 배열
-	TArray<UMaterialInterface*> GroundTileMaterials;
+  // Ground 타일용 머티리얼 배열
+  TArray<UMaterialInterface*> GroundTileMaterials;
 
-	// Resource 타일 종류별 머티리얼 세트
-	TArray<FResourceTypeAndMaterials> ResourceTileTypeAndMaterialSet;
+  // Resource 타일 종류별 머티리얼 세트
+  TArray<FResourceTypeAndMaterials> ResourceTileTypeAndMaterialSet;
 
-	// Structures 타일용 머티리얼
-	FStructuresTypeAndMaterial StructuresTypeAndMaterial;
+  // Structures 타일용 머티리얼
+  FStructuresTypeAndMaterial StructuresTypeAndMaterial;
 };
 
 ```
@@ -231,7 +231,7 @@ public:
 // BeginPlay에서 타일별 생성 함수 호출
 void ATileGridManager::BeginPlay()
 {
-  // 각각 내부에서 SpawnTiles(...) 호출
+  // 각 함수는 SpawnTiles(...)를 호출하여, 타일 종류에 따라 클래스, 확률, 크기, 회전값 등을 전달합니다.
   SpawnGroundTiles();     // 100% 확률, 랜덤 머티리얼 적용
   SpawnResourceTiles();   // 30% 확률, 랜덤 타입 + 머티리얼 세트 적용
   SpawnStructuresTile();  // 1개만 고정 생성, 지정 타입 + 머티리얼 적용
