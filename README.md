@@ -156,53 +156,40 @@ MBFactorio/
 
 > 📄 아래는 타일 데이터를 정의하는 구조체 `TileStructs`와 DataAsset 클래스 `TileDataAsset`의 핵심 구현 코드입니다.
 ```cpp
-// Resource 타일 종류와 그에 따른 머티리얼 세트
-USTRUCT(BlueprintType)
+// Resource 타일 : 종류(예: 구리, 철)와 머티리얼 세트를 함께 정의
 struct FResourceTypeAndMaterials
 {
-	GENERATED_BODY()
-
-	// 예 : 구리, 철
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// 자원 종류 (예 : 구리, 철)
 	EResourceType ResourceType;
 
-	// 타일 종류에 따른 머티리얼 세트
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// 해당 자원에 사용될 머티리얼 목록
 	TArray<UMaterialInterface*> Materials;
 };
-
-// Structures 타일 종류와 그에 따른 머티리얼
-struct FStructuresTypeAndMaterial
-{...}
 ```
 >  🔗 전체 코드는 [TileStructs.h](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Tiles/TileBase/TileStructs.h)에서 확인하실 수 있습니다.
 
 <br>
 
 ```cpp
-UCLASS(BlueprintType)
 class MBFACTORIO_API UTileDataAsset : public UDataAsset
 {
-	GENERATED_BODY()
-
 public:
 	// 생성할 타일의 개수
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Grid")
 	int32 GridWidth, GridHeight;
 
-	// FTileInfo는 타일의 클래스와 크기를 정의한 타일 정보 구조체 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FTileInfo GroundTileInfo, ResourceTileInfo, StructuresTileInfo;
+	// Ground / Resource / Structures 타일에 대한 정보
+	FTileInfo GroundTileInfo;
+	FTileInfo ResourceTileInfo;
+	FTileInfo StructuresTileInfo;
 
-	// Ground 타일 머티리얼 배열
-	(...)
+	// Ground 타일용 머티리얼 배열
+	TArray<UMaterialInterface*> GroundTileMaterials;
 
 	// Resource 타일 종류별 머티리얼 세트
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource")
 	TArray<FResourceTypeAndMaterials> ResourceTileTypeAndMaterialSet;
 
-	// Structures 타일 머티리얼
-	(...)
+	// Structures 타일용 머티리얼
+	FStructuresTypeAndMaterial StructuresTypeAndMaterial;
 };
 
 ```
