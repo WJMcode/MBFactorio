@@ -164,35 +164,7 @@ MBFactorio/
    	**새로운 종류 추가 시 코드 변경 없이 데이터만 수정하면 됩니다.**
   	- 랜덤 머티리얼 및 회전을 통해 **매번 다른 지형과 자원을 배치**하여 플레이어로부터 흥미를 유발합니다.
 
-타일 타입과 머티리얼 정보는 C++ 구조체로 설계되며,  
-언리얼 에디터의 Data Asset에서 실제 값들을 관리합니다.
-
-  타일 타입과 머티리얼 등 주요 속성 관리는 아래와 같은 데이터 구조(Struct/Enum)로 정의합니다 :
-  ```cpp
-  UENUM(BlueprintType)
-  enum class EResourceType : uint8
-  {
-      Copper, Iron, Stone, Coal, Unknown UMETA(Hidden)
-  };
-
-  USTRUCT(BlueprintType)
-  struct FResourceTypeAndMaterials
-  {
-      GENERATED_BODY()
-      UPROPERTY(EditAnywhere, BlueprintReadWrite)
-      EResourceType ResourceType;
-      UPROPERTY(EditAnywhere, BlueprintReadWrite)
-      TArray<UMaterialInterface*> Materials;
-  };
-  ```
-
-위 구조를 바탕으로, SpawnTiles 함수는 플레이어 주변에 다양한 종류의 타일을 랜덤 확률로 배치합니다.  
-SpawnTiles 함수는 타일의 종류(Ground/Resource/Structures)에 따라 타입, 머티리얼, 크기를 유연하게 할당하는 함수입니다.
-
-  - **Ground 타일 :** 머티리얼만 랜덤 지정
-  - **Resource 타일 :** 자원 타입 + 머티리얼 세트 중 하나를 랜덤 선택 후 지정
-  - **Structures 타일 :** 미리 지정된 타입/머티리얼/크기로 설정
-    <br>
+<br>
     
   - **대표 로직** :
 ```cpp
