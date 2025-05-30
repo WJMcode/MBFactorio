@@ -177,6 +177,8 @@ struct FStructuresTypeAndMaterial
 ```
 >  🔗 전체 코드는 [TileStructs.h](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Tiles/TileBase/TileStructs.h)에서 확인하실 수 있습니다.
 
+<br>
+
 ```cpp
 UCLASS(BlueprintType)
 class MBFACTORIO_API UTileDataAsset : public UDataAsset
