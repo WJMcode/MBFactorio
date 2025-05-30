@@ -154,12 +154,58 @@ MBFactorio/
 
 <br>
 
-> 📄 아래는 123123123 핵심 구현 코드입니다.
+> 📄 아래는 TileStructs와 TileDataAsset의 핵심 정의 코드입니다.
 ```cpp
-asdf
+// Resource 타일 종류와 그에 따른 머티리얼 세트
+USTRUCT(BlueprintType)
+struct FResourceTypeAndMaterials
+{
+	GENERATED_BODY()
+
+	// 예 : 구리, 철
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EResourceType ResourceType;
+
+	// 타일 종류에 따른 머티리얼 세트
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UMaterialInterface*> Materials;
+};
+
+// Structures 타일 종류와 그에 따른 머티리얼
+struct FStructuresTypeAndMaterial
+{...}
+```
+>  🔗 전체 코드는 [TileStructs.h](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Tiles/TileBase/TileStructs.h)에서 확인하실 수 있습니다.
+
+```cpp
+UCLASS(BlueprintType)
+class MBFACTORIO_API UTileDataAsset : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	// 생성할 타일의 개수
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Grid")
+	int32 GridWidth, GridHeight;
+
+	// FTileInfo는 타일의 클래스와 크기를 정의한 타일 정보 구조체 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FTileInfo GroundTileInfo, ResourceTileInfo, StructuresTileInfo;
+
+	// Ground 타일 머티리얼 배열
+	(...)
+
+	// Resource 타일 종류별 머티리얼 세트
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Resource")
+	TArray<FResourceTypeAndMaterials> ResourceTileTypeAndMaterialSet;
+
+	// Structures 타일 머티리얼
+	(...)
+};
+
 ```
 
->  🔗 전체 코드는 [asd.cpp](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Tiles/TileManager/TileGridManager.cpp)에서 확인하실 수 있습니다.
+>  🔗 전체 코드는 [TileDataAsset.h](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Tiles/TileManager/TileDataAsset.h)에서 확인하실 수 있습니다.
 
 <br>
      
@@ -192,7 +238,7 @@ asdf
 
 <br>
     
-> 📄 아래는 타일 랜덤 배치 기능의 핵심 구현 코드입니다.
+> 📄 아래는 TileGridManager의 핵심 구현 코드입니다.
 ```cpp
 // BeginPlay에서 타일별 생성 함수 호출
 void ATileGridManager::BeginPlay()
