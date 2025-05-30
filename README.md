@@ -135,7 +135,8 @@ MBFactorio/
 #### **1.1 TileDataAsset의 도입**
   - **개요**  
 언리얼 엔진의 DataAsset을 상속받아 **타일 전용 DataAsset인 TileDataAsset을 설계**했습니다.  
-**각 타일 유형별로 별도의 클래스(예 : Ground, Resource, Structures)/크기/머티리얼/종류(예 : 구리, 철, 화로 등)을 지정해 분리 관리**합니다.
+**각 타일 유형별로 별도의 클래스(예 : Ground, Resource, Structures)/크기/머티리얼/종류(예 : 구리, 철, 화로 등)를  
+지정해 분리 관리**합니다.
 
 - **설계 장점**
 	- 타일의 정보를 코드에 직접 작성하는 대신 `TileDataAsset`으로 관리함으로써 **데이터 중심의 설계**할 수 있습니다.
