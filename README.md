@@ -201,7 +201,7 @@ public:
 #### **1.2 타일의 랜덤 배치 및 타입/머티리얼 자동 할당**
 
   - **개요**  
-플레이어 주변에 **Ground**, **Resource**, **Structures** 타일을 **랜덤 확률 기반으로 배치**하여 환경을 자동 생성합니다.  
+`TileGridManager`는 플레이어 주변에 **Ground**, **Resource**, **Structures** 타일을 **랜덤 확률 기반으로 배치**하여 환경을 자동 생성합니다.  
 각 타일의 속성은 `TileDataAsset`을 기반으로 **자동 설정**됩니다.
 
 - **핵심 로직**  
@@ -227,7 +227,7 @@ public:
 
 <br>
     
-> 📄 아래는 TileGridManager의 핵심 구현 코드입니다.
+> 📄 아래는 `TileDataAsset`을 기반으로 타일을 랜덤 배치하는 TileGridManager의 핵심 구현 코드입니다.
 ```cpp
 // BeginPlay에서 타일별 생성 함수 호출
 void ATileGridManager::BeginPlay()
