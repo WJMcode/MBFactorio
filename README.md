@@ -44,7 +44,7 @@
 
 ---
 
-## ✨ 주요 기능 요약
+## ⚙️ 주요 기능 요약
 
 - **타일 기반 맵 시스템**  
 **플레이어 중심의 무작위 타일 배치**를 통해 지형 및 자원을 생성하는 **샌드박스 환경을 구성**합니다.
@@ -262,7 +262,7 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 
 <br>
 
-### 2. MiningComponent를 활용한 채굴 기능 설계
+### 2. MiningComponent
 
 - **개요**  
 `MiningComponent`는 플레이어가 Resource 타일과 오버랩된 상태에서 **우클릭(Hold) 입력을 통해  
@@ -271,7 +271,7 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 해당 기능은 컴포넌트화되어 **다른 캐릭터에도 재사용할 수 있습니다.**
 
 - **핵심 로직**
-	1. **TryStartMining**
+	- 1. **TryStartMining**
      - 캐릭터가 **채굴 가능한 상태인지 확인**합니다.  
        (Resource 타일과 오버랩 상태이며, 우클릭 Hold 시간이 충분한 경우)
      - **조건이 충족**되면, 캐릭터가 **자원이 있는 방향으로 회전**하고 `StartMining()`을 호출합니다.
