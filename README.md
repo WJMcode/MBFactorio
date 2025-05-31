@@ -262,22 +262,43 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 
 <br>
 
-### 2. MiningComponent의 채굴 시스템
+### 2. MiningComponent를 활용한 채굴 기능 설계
 
-플레이어가 ResourceTile 위에서 우클릭(마우스 Hold)하면 채굴이 진행되며,  
-진행도는 HUD에 표시되고, 완료 시 인벤토리에 자원이 추가됩니다.
+- **개요**  
+`MiningComponent`는 플레이어가 Resource 타일과 오버랩된 상태에서 **우클릭(Hold) 입력을 통해 자원을 채굴**할 수 있도록 구현된 컴포넌트입니다.
+채굴 진행은 **HUD를 통해 시각적으로 표현되며**, 채굴 완료 시 **자원이 인벤토리에 자동으로 추가**됩니다. 해당 기능은 컴포넌트화되어 **다른 캐릭터에도 재사용할 수 있습니다.**
 
-  - **진행 흐름** : 
-  1. 플레이어가 타일과 오버랩 + 우클릭 Hold → `StartMining()` 호출  
-  2. 채굴 진행도(HUD) 실시간 반영  
-  3. 완료 시 인벤토리 반영, 채굴 자원 텍스트 애니메이션 처리  
-  4. 예외(정지, 중단) 처리 등은 별도 함수에서 관리
+- **핵심 로직**
+  1. **TryStartMining**
+     - 캐릭터가 **채굴 가능한 상태인지 확인**합니다.  
+       (Resource 타일과 오버랩 상태이며, 우클릭 Hold 시간이 충분한 경우)
+     - **조건이 충족**되면, 캐릭터가 **자원이 있는 방향으로 회전**하고 `StartMining()`을 호출합니다.
 
-  - **상세 코드** :
-      <details>
-        <summary> MiningComponent 클래스의 StartMining 함수 코드 </summary>
-	      
-       ```cpp
+  2. **StartMining**
+     - HUD를 통해 **채굴 진행도(0.0 ~ 1.0)를 표시**합니다.  
+     - 일정 시간이 경과하면 **채굴 완료 처리를 진행**합니다.  
+       → 자원의 종류를 확인한 후, **해당 자원을 인벤토리에 추가**합니다.  
+       → **HUD에 채굴 완료를 알리는 텍스트 애니메이션을 출력**합니다.
+
+  3. **StopMining**
+     - 우클릭이 해제되거나 채굴 조건이 더 이상 충족되지 않는 경우 호출됩니다.  
+     - **채굴 관련 상태를 초기화**하며, HUD를 숨기고 애니메이션을 정지시킵니다.  
+     - 내부 변수들도 함께 리셋됩니다.
+
+- **설계 장점**
+- asd
+
+<br>
+
+> 📸 아래는 실제 게임 장면입니다.
+> <br>
+> <br>
+> ![alt text](README_content/MiningComponent2.png "Title Text")
+
+<br>
+    
+> 📄 아래는 핵심 구현 코드입니다.
+```cpp
        void UMiningComponent::StartMining()
        {
 	       APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
@@ -331,14 +352,6 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 		       PlayerCharacter->PlayMiningAnimation();
 	       }
        }
-       ```
-      </details>
-
-  - **인게임 적용** :
-<br></br>
-![alt text](README_content/MiningComponent2.png "Title Text")
-<br></br>
-
 ---
 
 ## 🔍 구현 시 고민 및 문제 해결
