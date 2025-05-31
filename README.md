@@ -301,37 +301,21 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 > ![alt text](README_content/InGameGif_Mining.gif "Title Text")
 
 <br>
-[플레이어가 우클릭(Hold) 입력]
-    └─> TryStartMining()
-        ├─ 채굴 가능 상태 & 타일 오버랩 확인
-        ├─ Hold 시간 누적
-        ├─ Hold 시간 충족 시
-        │    ├─ 캐릭터가 채굴 중이 아니면 자원 방향으로 회전
-        │    └─ StartMining() 호출
-
-StartMining()
-    ├─ 채굴 상태/애니메이션 시작
-    ├─ HUD에 채굴 진행도 표시
-    ├─ 진행 시간 누적
-    ├─ 진행 완료 시
-    │    ├─ 인벤토리에 자원 추가
-    │    └─ 완료 애니메이션/텍스트 출력
-
-StopMining()
-    ├─ 입력 해제 or 조건 미충족 시 호출
-    ├─ 채굴 상태/진행도/HUD 초기화
-    └─ 채굴 애니메이션 정지
-
 
 ```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+flowchart TD
+    S[우클릭(Hold) 입력] --> A{채굴 조건 충족?}
+    A -- No --> E[아무 동작 없음]
+    A -- Yes --> B[Hold 시간 누적]
+    B --> C{Hold 시간 충족?}
+    C -- No --> E
+    C -- Yes --> D[StartMining()]
+    D --> F{채굴 완료?}
+    F -- No --> D
+    F -- Yes --> G[자원 인벤토리 반영 & 완료 애니메이션]
+    S -. 입력 해제 .-> H[StopMining()]
+    H --> I[상태/진행도/HUD 초기화]
 ```
-
-<pre> ```mermaid flowchart TD S[우클릭(Hold) 입력] --> A{채굴 조건 충족?} A -- No --> E[아무 동작 없음] A -- Yes --> B[Hold 시간 누적] B --> C{Hold 시간 충족?} C -- No --> E C -- Yes --> D[StartMining()] D --> F{채굴 완료?} F -- No --> D F -- Yes --> G[자원 인벤토리 반영 & 완료 애니메이션] S -. 입력 해제 .-> H[StopMining()] H --> I[상태/진행도/HUD 초기화] ``` </pre>
 
 > 📄 아래는 MiningComponent의 핵심 구현 코드입니다.
 ```cpp
