@@ -298,7 +298,7 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 > 📸 아래는 실제 게임 장면입니다.
 > <br>
 > <br>
-> ![alt text](README_content/GIF_Mining.gif "Title Text")
+> ![alt text](README_content/InGameGif_Mining.gif "Title Text")
 
 <br>
     
