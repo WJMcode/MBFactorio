@@ -271,7 +271,7 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 해당 기능은 컴포넌트화되어 **다른 캐릭터에도 재사용할 수 있습니다.**
 
 - **핵심 로직**
-1. **TryStartMining**
+	1. **TryStartMining**
      - 캐릭터가 **채굴 가능한 상태인지 확인**합니다.  
        (Resource 타일과 오버랩 상태이며, 우클릭 Hold 시간이 충분한 경우)
      - **조건이 충족**되면, 캐릭터가 **자원이 있는 방향으로 회전**하고 `StartMining()`을 호출합니다.
