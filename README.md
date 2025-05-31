@@ -265,7 +265,8 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 ### 2. MiningComponent를 활용한 채굴 기능 설계
 
 - **개요**  
-`MiningComponent`는 플레이어가 Resource 타일과 오버랩된 상태에서 **우클릭(Hold) 입력을 통해 자원을 채굴**할 수 있도록 구현된 컴포넌트입니다.  
+`MiningComponent`는 플레이어가 Resource 타일과 오버랩된 상태에서 **우클릭(Hold) 입력을 통해  
+자원을 채굴**할 수 있도록 구현된 컴포넌트입니다.  
 채굴 진행은 **HUD를 통해 시각적으로 표현되며**, 채굴 완료 시 **자원이 인벤토리에 자동으로 추가**됩니다.  
 해당 기능은 컴포넌트화되어 **다른 캐릭터에도 재사용할 수 있습니다.**
 
