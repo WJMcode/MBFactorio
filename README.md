@@ -208,7 +208,18 @@ public:
 `TileGridManager`는 **Ground**, **Resource**, **Structures** 타일을 **랜덤 확률 기반으로 배치**하여 환경을 자동 생성합니다.  
 각 타일의 속성은 `TileDataAsset`을 기반으로 **자동 설정**됩니다.
 
-- **핵심 로직**  
+- **핵심 로직**
+ ```mermaid 
+flowchart TD
+    Start["SpawnTiles 호출"] --> Class["타일 클래스 분기"]
+    Class -- "Ground" --> GroundMat["랜덤 머티리얼 적용"]
+    Class -- "Resource" --> ResType["랜덤 자원 타입/머티리얼 적용"]
+    Class -- "Structures" --> StructSet["지정된 타입/머티리얼 적용"]
+    GroundMat --> Place["타일 배치"]
+    ResType --> Place
+    StructSet --> Place
+    Place --> End["환경에 타일 생성 완료"]
+```
 	- `SpawnTiles` 함수에서 **타일 클래스, 확률, 크기, 회전 등**을 받아, **지정된 확률과 조건**에 따라 타일을 **배치**합니다.  
 	- **Resource 타일**의 경우 `TileDataAsset`에 정의된 **자원 타입 및 머티리얼 세트 중 하나를 무작위로 적용**합니다.  
 	- **Ground 타일**은 **머티리얼만 무작위로 적용**되며, **Structures 타일**은 **미리 지정된 값으로 설정**됩니다.
