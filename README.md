@@ -298,7 +298,7 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 > 📸 아래는 실제 게임 장면입니다.
 > <br>
 > <br>
-> ![alt text](README_content/MiningComponent2.png "Title Text")
+> ![alt text](README_content/InGame_Mining.gif "Title Text")
 
 <br>
     
@@ -357,6 +357,8 @@ void ATileGridManager::SpawnTiles(타일 클래스, 생성 확률, Z-offset, 타
 		       PlayerCharacter->PlayMiningAnimation();
 	       }
        }
+```
+
 ---
 
 ## 🔍 구현 시 고민 및 문제 해결
