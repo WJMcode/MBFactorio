@@ -311,20 +311,10 @@ graph TD;
 ```
 
 ```mermaid
-
 flowchart TD
-
-    S[우클릭(Hold) 입력] --> A{채굴 조건 충족?};
-    A -- No --> E[아무 동작 없음];
-    A -- Yes --> B[Hold 시간 누적];
-    B --> C{Hold 시간 충족?};
-    C -- No --> E;
-    C -- Yes --> D[StartMining()];
-    D --> F{채굴 완료?};
-    F -- No --> D;
-    F -- Yes --> G[자원 인벤토리 반영 & 완료 애니메이션];
-    S -. 입력 해제 .-> H[StopMining()];
-    H --> I[상태/진행도/HUD 초기화];
+    A[시작] --> B{조건?}
+    B -- 예 --> C[진행]
+    B -- 아니오 --> D[종료]
 ```
 
 > 📄 아래는 MiningComponent의 핵심 구현 코드입니다.
