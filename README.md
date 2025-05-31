@@ -331,59 +331,47 @@ flowchart TD
 
 > 📄 아래는 MiningComponent의 핵심 구현 코드입니다.
 ```cpp
-       void UMiningComponent::StartMining()
-       {
-	       APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner());
-	       if (!PlayerCharacter)
-	       {
-		       UE_LOG(LogTemp, Error, TEXT("UMiningComponent::StartMining(): Owner가 nullptr입니다 !"));
-		       return;
-	       }
+// 우클릭(Hold) 입력이 유지되는 동안 호출됨
+void UMiningComponent::TryStartMining()
+{
+    // 오버랩된 타일이 없거나 채굴 불가 상태면 무시
+    if (!CurrentTargetTile || !bCanMine) return;
 
-	       // 플레이어가 채굴 중이 아니라면
-	       if (!IsMining())
-	       {
-		       SetIsMining(true);
+    // Hold 시간 누적
+    MiningHoldTime += GetWorld()->GetDeltaSeconds();
 
-		       PlayerCharacter->ShowPickaxe(true);
-	       }
+    // 충분히 Hold하면 채굴 방향 회전, 채굴 시작
+    if (MiningHoldTime >= MinHoldTimeToPlayAnim)
+    {
+        RotateToMiningTarget();   // 타겟 자원 쪽으로 캐릭터 회전
+        StartMining();           // 채굴 진행
+    }
+}
 
-	       // 채굴 시작
-	       {
-		        /* 프로그래스바를 채우기 위해 채굴이 시작되면 HUD에게 Broadcast합니다.
-			        프로그래스바는 0.f ~ 1.f의 값을 받아 바를 채웁니다.					*/
-		       OnMiningProgress.Broadcast(MiningProgressValue / MiningTimeToComplete);
+// 채굴 진행 로직
+void UMiningComponent::StartMining()
+{
+    // 채굴 진행도 증가
+    MiningProgressValue += GetWorld()->GetDeltaSeconds();
 
-		       // 채굴 진행바를 채우기 위한 변수의 값을 점점 올림
-		       MiningProgressValue += GetWorld()->GetDeltaSeconds();
+    // 채굴 완료 시점
+    if (MiningProgressValue >= MiningTimeToComplete)
+    {
+        // 자원 아이템 인벤토리에 추가
+        PlayerCharacter->GetInventoryComponent()->AddItem(...);
 
-		       // 채굴 완료
-		       if (MiningProgressValue >= MiningTimeToComplete)
-		       {
-			       MiningProgressValue = 0.f;
+        // 진행도 초기화(다음 채굴을 위해)
+        MiningProgressValue = 0.f;
+    }
+}
 
-			       // 채굴한 광물을 텍스트로 출력하기 위해 HUD에게 Broadcast합니다.
-			       OnMiningComplete.Broadcast(CurrentTargetTile->GetResourceType());
-			
-			       // 인벤토리에 채굴한 아이템 삽입
-			       {
-				       EResourceType MinedResourceType = CurrentTargetTile->GetResourceType();
-				       FName ItemName = NAME_None;
-				       switch (MinedResourceType){...}
-				       if (ItemName != NAME_None)
-				       {
-					       PlayerCharacter->GetInventoryComponent()->AddItem(ItemName, 1);
-				       }
-			       }
-		       }
-	       }
-
-	       // 채굴 몽타주가 재생되고 있지 않다면, 채굴 몽타주 재생
-	       if (!bIsMiningAnimationPlaying)
-	       {
-		       PlayerCharacter->PlayMiningAnimation();
-	       }
-       }
+// 입력 해제 또는 조건 미충족 시 호출
+void UMiningComponent::StopMining()
+{
+    // 채굴 진행도와 Hold 시간 초기화
+    MiningProgressValue = 0.0f;
+    MiningHoldTime = 0.0f;
+}
 ```
 
 >  🔗 전체 코드는 [MiningComponent.cpp](https://github.com/WJMcode/MBFactorio/blob/main/Source/MBFactorio/Component/Mining/MiningComponent.cpp)에서 확인하실 수 있습니다.
