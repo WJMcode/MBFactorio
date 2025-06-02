@@ -30,7 +30,7 @@
 | **기간**        | 2025.04.03 ~ 2025.04.17           |
 | **참여 인원**      | 3명(전원 개발 참여)                            |
 
-📺 **[시연 영상 보러가기](https://your-video-link.com)**
+📺 **[시연 영상 보러가기]([https://your-video-link.com](https://www.youtube.com/watch?v=4VeSlks8sT0))**
 
 ![alt text](README_content/Main.png "Title Text")
 
