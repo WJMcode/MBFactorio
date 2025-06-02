@@ -32,7 +32,7 @@
 | **참여 인원**      | 3명(전원 개발 참여)                            |
 
 ![alt text](README_content/Main.png "Title Text")
-> 📺 **[시연 영상 유튜브 링크](https://www.youtube.com/watch?v=4VeSlks8sT0)** 입니다.
+> 📺 시연 영상은 **[유튜브 링크](https://www.youtube.com/watch?v=4VeSlks8sT0)** 에서 확인하실 수 있습니다.
 
 ---
 
