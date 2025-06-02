@@ -18,7 +18,7 @@
   - [2. MiningComponent](#2-miningcomponent)
 - [📝 참고 사항](#-참고-사항)
 - [🌱 회고](#-회고)
-- [✉️ Contact](#-contact)
+- [✉️ Contact](#️-contact)
 ---
 
 ## 🎮 프로젝트 개요
