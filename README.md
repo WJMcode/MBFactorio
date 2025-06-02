@@ -104,7 +104,7 @@ MBFactorio/
 - **주요 함수** 
   - `SpawnTiles` 함수 하나로 다양한 타일의 생성을 통합하였습니다.  
 - **오버랩 문제 해결**  
-타일의 다중 오버랩 인식 문제를 직접 디버깅하고 `FindOverlappingTile` 함수를 설계하여 개선하였습니다.
+	- 타일의 다중 오버랩 인식 문제를 직접 디버깅하고 `FindOverlappingTile` 함수를 설계하여 개선하였습니다.
 
 ### 2. MiningComponent 구현
 - **채굴 시스템 설계**
