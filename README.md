@@ -10,7 +10,7 @@
 - [👨‍💻 담당 역할 및 구현 내용](#-담당-역할-및-구현-내용)
   - [1. TileGridManager 시스템](#1-tilegridmanager-시스템)
   - [2. MiningComponent 구현](#2-miningcomponent-구현)
-- [⚠️ 트러블슈팅 경험 (문제 해결 사례)](#-트러블슈팅-경험-문제-해결-사례)
+- [⚠️ 트러블슈팅 경험 (문제 해결 사례)](#️-트러블슈팅-경험-문제-해결-사례)
 - [🔎 세부 구현 (주요 코드/로직)](#-세부-구현-주요-코드로직)
   - [1. TileGridManager](#1-tilegridmanager)
     - [1.1 TileDataAsset의 도입](#11-tiledataasset의-도입)
