@@ -40,70 +40,100 @@ test2
 
 ```mermaid
 classDiagram
-    %% 타일 베이스 클래스
+    %% --- Tile Base Class ---
     class ATile {
-        +SetTileScale(InTileSize)
-        +SetTileMaterial(Material)
+        +SetTileScale(float TileSize)
+        +SetTileMaterial(UMaterialInterface* Material)
+        +SetRandomTileMaterial(TArray<UMaterialInterface*> Materials)
+        - TileMesh: UStaticMeshComponent*
+        <<AActor>>
     }
 
-    %% 각 타일 타입
+    %% --- Tile Type: Ground Tile ---
     class AGroundTile {
-        +SetRandomTileMaterial(Materials)
+        <<ATile>>
+        +SetRandomTileMaterial(TArray<UMaterialInterface*> Materials)
+        // 추가 GroundTile 기능이 있다면 여기에
     }
-    class AResourceTile {
-        +SetResourceType(ResourceType)
-        +SetRandomTileMaterial(Materials)
-    }
-    class AStructuresTile {
-        +SetStructuresType(Type)
-        +SetStructuresTileScale(Type, InTileSize)
-    }
-
     ATile <|-- AGroundTile
+
+    %% --- Tile Type: Resource Tile ---
+    class AResourceTile {
+        <<ATile>>
+        +SetResourceType(EResourceType)
+        +SetRandomTileMaterial(TArray<UMaterialInterface*> Materials)
+        - ResourceType: EResourceType
+    }
     ATile <|-- AResourceTile
+
+    %% --- Tile Type: Structures Tile ---
+    class AStructuresTile {
+        <<ATile>>
+        +SetStructuresType(EStructuresType)
+        +SetTileMaterial(UMaterialInterface* Material)
+        +SetStructuresTileScale(EStructuresType, float TileSize)
+        - StructuresType: EStructuresType
+    }
     ATile <|-- AStructuresTile
 
-    %% 타일 데이터 에셋
+    %% --- Tile Data Asset ---
     class UTileDataAsset {
+        +GridWidth: int32
+        +GridHeight: int32
         +GroundTileInfo: FTileInfo
+        +GroundTileMaterials: TArray<UMaterialInterface*>
         +ResourceTileInfo: FTileInfo
+        +ResourceTileTypeAndMaterialSet: TArray<FResourceTypeAndMaterials>
         +StructuresTileInfo: FTileInfo
-        +GroundTileMaterials: Material[]
-        +ResourceTileTypeAndMaterialSet: FResourceTypeAndMaterials[]
         +StructuresTypeAndMaterial: FStructuresTypeAndMaterial
-        +GridWidth: int
-        +GridHeight: int
+        <<UDataAsset>>
     }
 
-    %% TileGridManager
+    %% --- Tile Info Structs ---
+    class FTileInfo {
+        +TileClass: TSubclassOf<ATile>
+        +TileSize: float
+    }
+    class FResourceTypeAndMaterials {
+        +ResourceType: EResourceType
+        +Materials: TArray<UMaterialInterface*>
+    }
+    class FStructuresTypeAndMaterial {
+        +StructuresType: EStructuresType
+        +Material: UMaterialInterface*
+    }
+
+    %% --- Enum Types (just as references, not classes) ---
+    class EResourceType
+    class EStructuresType
+
+    %% --- TileGridManager ---
     class ATileGridManager {
-        - TileDataAsset: UTileDataAsset
+        - TileDataAsset: UTileDataAsset*
         +SpawnGroundTiles()
         +SpawnResourceTiles()
         +SpawnStructuresTile()
         +SpawnTiles(TileClass, SpawnProbability, ZOffset, InTileSize, InRotator, bUseRandomRotation)
+        <<AActor>>
     }
-    ATileGridManager --> UTileDataAsset
-    ATileGridManager --> ATile
+    ATileGridManager --> UTileDataAsset : uses
+    ATileGridManager --> ATile : spawns
 
-    %% 타일 정보 구조체
-    class FTileInfo {
-        +TileClass
-        +TileSize
-    }
-    class FResourceTypeAndMaterials {
-        +ResourceType
-        +Materials: Material[]
-    }
-    class FStructuresTypeAndMaterial {
-        +StructuresType
-        +Material
-    }
-
+    %% --- Data Asset uses Info Structs ---
     UTileDataAsset --> FTileInfo
     UTileDataAsset --> FResourceTypeAndMaterials
     UTileDataAsset --> FStructuresTypeAndMaterial
 
+    %% --- Tile Types Enum Usage (for reference only) ---
+    AResourceTile --> EResourceType
+    AStructuresTile --> EStructuresType
+    FResourceTypeAndMaterials --> EResourceType
+    FStructuresTypeAndMaterial --> EStructuresType
+
+    %% --- Inheritance (for clarity) ---
+    UTileDataAsset <|-- UObject
+    ATile <|-- AActor
+    ATileGridManager <|-- AActor
 
 ```
 
