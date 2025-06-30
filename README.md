@@ -1,50 +1,17 @@
 test
 ```mermaid
 classDiagram
-    %% --- 핵심 클래스들 ---
-    class PlayerCharacter {
-        +MiningComponent: UMiningComponent
-        +InventoryComponent: UMBFInventoryComponent
-        +ShowPickaxe(bool)
-        +PlayMiningAnimation()
-        +StopMiningAnimation()
-    }
+    class PlayerCharacter
+    class MiningComponent
+    class ResourceTile
+    class Inventory
+    class HUD
 
-    class UMiningComponent {
-        +SetCurrentTargetTile(ResourceTile)
-        +TryStartMining()
-        +StartMining()
-        +StopMining()
-        +RotateToMiningTarget()
-        +OnMiningProgress
-        +OnMiningComplete
-        +OnMiningStopped
-        - CurrentTargetTile: ResourceTile
-        - bCanMine: bool
-        - bIsMining: bool
-        - bIsMiningAnimationPlaying: bool
-    }
+    PlayerCharacter o-- MiningComponent : 부착
+    MiningComponent --> ResourceTile : 채굴대상
+    MiningComponent --> Inventory : 자원추가
+    MiningComponent --> HUD : 진행도 표시
 
-    class ResourceTile {
-        +GetResourceType()
-    }
-
-    class UMBFInventoryComponent {
-        +AddItem(ItemName, Count)
-    }
-
-    class HUD {
-        +ShowMiningProgress()
-        +HideMiningProgress()
-        +DisplayMinedResource()
-    }
-
-    %% --- 관계 ---
-    PlayerCharacter "1" o-- "1" UMiningComponent : has
-    PlayerCharacter "1" o-- "1" UMBFInventoryComponent : has
-    UMiningComponent --> ResourceTile : targets
-    UMiningComponent --> HUD : updates
-    UMiningComponent --> UMBFInventoryComponent : gives item
 ```
 
 # MBFactorio 팀 프로젝트
