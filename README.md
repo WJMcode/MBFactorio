@@ -40,100 +40,32 @@ test2
 
 ```mermaid
 classDiagram
-    %% --- Tile Base Class ---
-    class ATile {
-        +SetTileScale(float TileSize)
-        +SetTileMaterial(UMaterialInterface* Material)
-        +SetRandomTileMaterial(TArray<UMaterialInterface*> Materials)
-        - TileMesh: UStaticMeshComponent*
-        <<AActor>>
+    %% --- 타일 클래스 구조 ---
+    class Tile {
+        +SetMaterial()
+        +SetRotation()
     }
+    class GroundTile
+    class ResourceTile
+    class StructuresTile
 
-    %% --- Tile Type: Ground Tile ---
-    class AGroundTile {
-        <<ATile>>
-        +SetRandomTileMaterial(TArray<UMaterialInterface*> Materials)
-        // 추가 GroundTile 기능이 있다면 여기에
+    Tile <|-- GroundTile
+    Tile <|-- ResourceTile
+    Tile <|-- StructuresTile
+
+    %% --- 데이터 관리 ---
+    class TileDataAsset {
+        +타일종류/머티리얼 데이터 관리
     }
-    ATile <|-- AGroundTile
+    TileDataAsset o-- Tile
 
-    %% --- Tile Type: Resource Tile ---
-    class AResourceTile {
-        <<ATile>>
-        +SetResourceType(EResourceType)
-        +SetRandomTileMaterial(TArray<UMaterialInterface*> Materials)
-        - ResourceType: EResourceType
+    %% --- 그리드 매니저 ---
+    class TileGridManager {
+        +타일랜덤배치()
+        +타입/확률/회전/머티리얼 적용
     }
-    ATile <|-- AResourceTile
-
-    %% --- Tile Type: Structures Tile ---
-    class AStructuresTile {
-        <<ATile>>
-        +SetStructuresType(EStructuresType)
-        +SetTileMaterial(UMaterialInterface* Material)
-        +SetStructuresTileScale(EStructuresType, float TileSize)
-        - StructuresType: EStructuresType
-    }
-    ATile <|-- AStructuresTile
-
-    %% --- Tile Data Asset ---
-    class UTileDataAsset {
-        +GridWidth: int32
-        +GridHeight: int32
-        +GroundTileInfo: FTileInfo
-        +GroundTileMaterials: TArray<UMaterialInterface*>
-        +ResourceTileInfo: FTileInfo
-        +ResourceTileTypeAndMaterialSet: TArray<FResourceTypeAndMaterials>
-        +StructuresTileInfo: FTileInfo
-        +StructuresTypeAndMaterial: FStructuresTypeAndMaterial
-        <<UDataAsset>>
-    }
-
-    %% --- Tile Info Structs ---
-    class FTileInfo {
-        +TileClass: TSubclassOf<ATile>
-        +TileSize: float
-    }
-    class FResourceTypeAndMaterials {
-        +ResourceType: EResourceType
-        +Materials: TArray<UMaterialInterface*>
-    }
-    class FStructuresTypeAndMaterial {
-        +StructuresType: EStructuresType
-        +Material: UMaterialInterface*
-    }
-
-    %% --- Enum Types (just as references, not classes) ---
-    class EResourceType
-    class EStructuresType
-
-    %% --- TileGridManager ---
-    class ATileGridManager {
-        - TileDataAsset: UTileDataAsset*
-        +SpawnGroundTiles()
-        +SpawnResourceTiles()
-        +SpawnStructuresTile()
-        +SpawnTiles(TileClass, SpawnProbability, ZOffset, InTileSize, InRotator, bUseRandomRotation)
-        <<AActor>>
-    }
-    ATileGridManager --> UTileDataAsset : uses
-    ATileGridManager --> ATile : spawns
-
-    %% --- Data Asset uses Info Structs ---
-    UTileDataAsset --> FTileInfo
-    UTileDataAsset --> FResourceTypeAndMaterials
-    UTileDataAsset --> FStructuresTypeAndMaterial
-
-    %% --- Tile Types Enum Usage (for reference only) ---
-    AResourceTile --> EResourceType
-    AStructuresTile --> EStructuresType
-    FResourceTypeAndMaterials --> EResourceType
-    FStructuresTypeAndMaterial --> EStructuresType
-
-    %% --- Inheritance (for clarity) ---
-    UTileDataAsset <|-- UObject
-    ATile <|-- AActor
-    ATileGridManager <|-- AActor
+    TileGridManager --> TileDataAsset
+    TileGridManager --> Tile
 
 ```
 
