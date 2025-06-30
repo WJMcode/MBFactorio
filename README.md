@@ -1,5 +1,5 @@
 test
-
+```mermaid
 classDiagram
     class Tile {
         +타입: ETileType
@@ -33,6 +33,7 @@ classDiagram
     TileGridManager --> Tile
     TileGridManager --> TileDataAsset
     TileDataAsset --> TileStructs
+```
 
 # MBFactorio 팀 프로젝트
 
