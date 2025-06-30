@@ -40,25 +40,21 @@ test2
 
 ```mermaid
 classDiagram
-    %% 매니저와 데이터 에셋 관계
-    ATileGridManager o-- UTileDataAsset : uses
+  ATileGridManager o-- UTileDataAsset : Uses
+  ATileGridManager : +BeginPlay()
+  ATileGridManager : +SpawnTiles(...)
 
-    %% 매니저 메서드
-    ATileGridManager : +BeginPlay()
-    ATileGridManager : +SpawnTiles(...)
+  class UTileDataAsset {
+    +int GridWidth
+    +int GridHeight
+    +Map<ETileType, UMaterialInstance[]> TileMaterials
+  }
 
-    %% 데이터 에셋 주요 속성
-    UTileDataAsset : +int GridWidth
-    UTileDataAsset : +int GridHeight
-    UTileDataAsset : +FTileInfo GroundInfo
-    UTileDataAsset : +FTileInfo ResourceInfo
-    UTileDataAsset : +FTileInfo StructuresInfo
+  class ATile
+  ATile <|-- AGroundTile
+  ATile <|-- AResourceTile
+  ATile <|-- AStructureTile
 
-    %% Tile 계층 구조
-    class ATile
-    ATile <|-- AGroundTile
-    ATile <|-- AResourceTile
-    ATile <|-- AStructuresTile
 
 
 ```
