@@ -1,3 +1,39 @@
+test
+
+classDiagram
+    class Tile {
+        +타입: ETileType
+        +머티리얼: UMaterialInstance
+        +SetMaterial()
+        +SetRotation()
+    }
+    class GroundTile
+    class ResourceTile
+    class StructureTile
+
+    Tile <|-- GroundTile
+    Tile <|-- ResourceTile
+    Tile <|-- StructureTile
+
+    class TileGridManager {
+        +타일배치()
+        +랜덤회전()
+        +타일데이터적용()
+        +타일리스트: Tile[][]
+    }
+    class TileDataAsset {
+        +타입별머티리얼: Map<ETileType, UMaterialInstance[]>
+        +타입설정()
+    }
+    class TileStructs {
+        +자원타입별: UMaterialInstance[]
+        +구조물: UMaterialInstance
+    }
+
+    TileGridManager --> Tile
+    TileGridManager --> TileDataAsset
+    TileDataAsset --> TileStructs
+
 # MBFactorio 팀 프로젝트
 
 ## 📑 목차
