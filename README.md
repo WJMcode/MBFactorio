@@ -7,10 +7,11 @@ classDiagram
     class Inventory
     class HUD
 
-    PlayerCharacter o-- MiningComponent : 부착
+    PlayerCharacter *-- MiningComponent : 포함
     MiningComponent --> ResourceTile : 채굴대상
     MiningComponent --> Inventory : 자원추가
     MiningComponent --> HUD : 진행도 표시
+
 
 ```
 
