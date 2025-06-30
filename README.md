@@ -40,21 +40,69 @@ test2
 
 ```mermaid
 classDiagram
-  ATileGridManager o-- UTileDataAsset : Uses
-  ATileGridManager : +BeginPlay()
-  ATileGridManager : +SpawnTiles(...)
+    %% 타일 베이스 클래스
+    class ATile {
+        +SetTileScale(InTileSize)
+        +SetTileMaterial(Material)
+    }
 
-  class UTileDataAsset {
-    +int GridWidth
-    +int GridHeight
-    +Map<ETileType, UMaterialInstance[]> TileMaterials
-  }
+    %% 각 타일 타입
+    class AGroundTile {
+        +SetRandomTileMaterial(Materials)
+    }
+    class AResourceTile {
+        +SetResourceType(ResourceType)
+        +SetRandomTileMaterial(Materials)
+    }
+    class AStructuresTile {
+        +SetStructuresType(Type)
+        +SetStructuresTileScale(Type, InTileSize)
+    }
 
-  class ATile
-  ATile <|-- AGroundTile
-  ATile <|-- AResourceTile
-  ATile <|-- AStructureTile
+    ATile <|-- AGroundTile
+    ATile <|-- AResourceTile
+    ATile <|-- AStructuresTile
 
+    %% 타일 데이터 에셋
+    class UTileDataAsset {
+        +GroundTileInfo: FTileInfo
+        +ResourceTileInfo: FTileInfo
+        +StructuresTileInfo: FTileInfo
+        +GroundTileMaterials: Material[]
+        +ResourceTileTypeAndMaterialSet: FResourceTypeAndMaterials[]
+        +StructuresTypeAndMaterial: FStructuresTypeAndMaterial
+        +GridWidth: int
+        +GridHeight: int
+    }
+
+    %% TileGridManager
+    class ATileGridManager {
+        - TileDataAsset: UTileDataAsset
+        +SpawnGroundTiles()
+        +SpawnResourceTiles()
+        +SpawnStructuresTile()
+        +SpawnTiles(TileClass, SpawnProbability, ZOffset, InTileSize, InRotator, bUseRandomRotation)
+    }
+    ATileGridManager --> UTileDataAsset
+    ATileGridManager --> ATile
+
+    %% 타일 정보 구조체
+    class FTileInfo {
+        +TileClass
+        +TileSize
+    }
+    class FResourceTypeAndMaterials {
+        +ResourceType
+        +Materials: Material[]
+    }
+    class FStructuresTypeAndMaterial {
+        +StructuresType
+        +Material
+    }
+
+    UTileDataAsset --> FTileInfo
+    UTileDataAsset --> FResourceTypeAndMaterials
+    UTileDataAsset --> FStructuresTypeAndMaterial
 
 
 ```
