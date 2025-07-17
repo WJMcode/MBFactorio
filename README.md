@@ -1,5 +1,6 @@
 ```mermaid
 classDiagram
+    %% 주요 클래스 정의
     class UMiningComponent {
         -AResourceTile* CurrentTargetTile
         -bool bCanMine
@@ -27,7 +28,10 @@ classDiagram
     class AResourceTile {
         +GetActorLocation()
         +GetResourceType()
+        <<자원 타입 판별>>
+        -EResourceType ResourceType
     }
+
     class APlayerCharacter {
         +ShowPickaxe(bShow)
         +PlayMiningAnimation()
@@ -36,13 +40,16 @@ classDiagram
         +SetActorRotation(Rotation)
         +GetActorLocation()
     }
+
     class UMBFInventoryComponent {
         +AddItem(ItemName, Count)
     }
 
-    UMiningComponent --> AResourceTile : CurrentTargetTile 참조
-    UMiningComponent --> APlayerCharacter : Owner 캐스팅 및 기능 호출
+    %% 관계 표시
+    UMiningComponent --> AResourceTile : 오버랩/타겟 참조
+    UMiningComponent --> APlayerCharacter : Owner(플레이어) 참조
     APlayerCharacter --> UMBFInventoryComponent : 인벤토리 접근
+    UMiningComponent ..> UMBFInventoryComponent : 아이템 추가(간접)
 ```
 
 # MBFactorio 팀 프로젝트
