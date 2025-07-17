@@ -1,55 +1,17 @@
 ```mermaid
 classDiagram
-    %% 주요 클래스 정의
     class UMiningComponent {
-        -AResourceTile* CurrentTargetTile
-        -bool bCanMine
-        -bool bIsMining
-        -bool bIsMiningAnimationPlaying
-        -float MiningHoldTime
-        -float MinHoldTimeToPlayAnim
-        -float MiningProgressValue
-        -float MiningTimeToComplete
-        +SetCurrentTargetTile(InResourceTile)
-        +SetCanMine(CanMine)
-        +SetIsMining(IsMining)
-        +SetMiningAnimationPlaying(bPlaying)
-        +RotateToMiningTarget()
         +TryStartMining()
         +StartMining()
         +StopMining()
-        +IsMining()
-        <<Broadcast Events>>
-        +OnMiningProgress
-        +OnMiningComplete
-        +OnMiningStopped
     }
+    class AResourceTile
+    class APlayerCharacter
+    class UMBFInventoryComponent
 
-    class AResourceTile {
-        +GetActorLocation()
-        +GetResourceType()
-        <<자원 타입 판별>>
-        -EResourceType ResourceType
-    }
-
-    class APlayerCharacter {
-        +ShowPickaxe(bShow)
-        +PlayMiningAnimation()
-        +StopMiningAnimation()
-        +GetInventoryComponent()
-        +SetActorRotation(Rotation)
-        +GetActorLocation()
-    }
-
-    class UMBFInventoryComponent {
-        +AddItem(ItemName, Count)
-    }
-
-    %% 관계 표시
-    UMiningComponent --> AResourceTile : 오버랩/타겟 참조
-    UMiningComponent --> APlayerCharacter : Owner(플레이어) 참조
+    UMiningComponent --> AResourceTile : 자원 타일 참조
+    UMiningComponent --> APlayerCharacter : 플레이어 참조
     APlayerCharacter --> UMBFInventoryComponent : 인벤토리 접근
-    UMiningComponent ..> UMBFInventoryComponent : 아이템 추가(간접)
 ```
 
 # MBFactorio 팀 프로젝트
