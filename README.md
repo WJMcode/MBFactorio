@@ -1,24 +1,46 @@
 ```mermaid
 classDiagram
-    class APlayerCharacter {
-        -UMiningComponent* MiningComponent
-        -UMBFInventoryComponent* InventoryComponent
-    }
-    class UMiningComponent {
-        -AResourceTile* CurrentTargetTile
-        +HUD에 진행도 표시
-        +채굴 완료 시 인벤토리에 저장
-    }
-    class AResourceTile
-    class UMBFInventoryComponent {
-        +AddItem()
-    }
-    class HUD
+class MiningComponent {
+    -CurrentTargetTile : ResourceTile*
+    -bCanMine : bool
+    -bIsMining : bool
+    -bIsMiningAnimationPlaying : bool
+    -MiningHoldTime : float
+    -MiningProgressValue : float
+    -MiningTimeToComplete : float
+    +SetCurrentTargetTile(ResourceTile*)
+    +SetCanMine(bool)
+    +SetIsMining(bool)
+    +SetMiningAnimationPlaying(bool)
+    +TryStartMining()
+    +StartMining()
+    +StopMining()
+    +RotateToMiningTarget()
+    +OnMiningProgress
+    +OnMiningComplete
+    +OnMiningStopped
+}
 
-    APlayerCharacter --> UMiningComponent : 참조(포인터)
-    UMiningComponent --> AResourceTile : 참조(포인터)
-    UMiningComponent --> HUD : 진행도 표시
-    UMiningComponent --> UMBFInventoryComponent : AddItem 호출(자원 저장)
+class ResourceTile {
+    +GetActorLocation()
+    +GetResourceType()
+}
+
+class PlayerCharacter {
+    +ShowPickaxe(bool)
+    +PlayMiningAnimation()
+    +StopMiningAnimation()
+    +GetInventoryComponent()
+}
+
+class InventoryComponent {
+    +AddItem(ItemName, Count)
+}
+
+MiningComponent --> ResourceTile : 채굴 대상 참조
+MiningComponent --> PlayerCharacter : Owner 참조 및 기능 호출
+MiningComponent --> InventoryComponent : AddItem 호출(자원 저장)
+MiningComponent ..> HUD : 진행도 표시 (이벤트 Broadcast)
 ```
 
 # MBFactorio 팀 프로젝트
