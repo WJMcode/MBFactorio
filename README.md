@@ -1,3 +1,50 @@
+```mermaid
+classDiagram
+    class UMiningComponent {
+        -AResourceTile* CurrentTargetTile
+        -bool bCanMine
+        -bool bIsMining
+        -bool bIsMiningAnimationPlaying
+        -float MiningHoldTime
+        -float MinHoldTimeToPlayAnim
+        -float MiningProgressValue
+        -float MiningTimeToComplete
+        +SetCurrentTargetTile(InResourceTile)
+        +SetCanMine(CanMine)
+        +SetIsMining(IsMining)
+        +SetMiningAnimationPlaying(bPlaying)
+        +RotateToMiningTarget()
+        +TryStartMining()
+        +StartMining()
+        +StopMining()
+        +IsMining()
+        <<Broadcast Events>>
+        +OnMiningProgress
+        +OnMiningComplete
+        +OnMiningStopped
+    }
+
+    class AResourceTile {
+        +GetActorLocation()
+        +GetResourceType()
+    }
+    class APlayerCharacter {
+        +ShowPickaxe(bShow)
+        +PlayMiningAnimation()
+        +StopMiningAnimation()
+        +GetInventoryComponent()
+        +SetActorRotation(Rotation)
+        +GetActorLocation()
+    }
+    class UMBFInventoryComponent {
+        +AddItem(ItemName, Count)
+    }
+
+    UMiningComponent --> AResourceTile : CurrentTargetTile 참조
+    UMiningComponent --> APlayerCharacter : Owner 캐스팅 및 기능 호출
+    APlayerCharacter --> UMBFInventoryComponent : 인벤토리 접근
+```
+
 # MBFactorio 팀 프로젝트
 
 ## 📑 목차
