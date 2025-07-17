@@ -1,17 +1,24 @@
 ```mermaid
 classDiagram
+    class APlayerCharacter {
+        -UMiningComponent* MiningComponent
+        -UMBFInventoryComponent* InventoryComponent
+    }
     class UMiningComponent {
-        +TryStartMining()
-        +StartMining()
-        +StopMining()
+        -AResourceTile* CurrentTargetTile
+        +HUD에 진행도 표시
+        +채굴 완료 시 인벤토리에 저장
     }
     class AResourceTile
-    class APlayerCharacter
-    class UMBFInventoryComponent
+    class UMBFInventoryComponent {
+        +AddItem()
+    }
+    class HUD
 
-    UMiningComponent --> AResourceTile : 자원 타일 참조
-    UMiningComponent --> APlayerCharacter : 플레이어 참조
-    APlayerCharacter --> UMBFInventoryComponent : 인벤토리 접근
+    APlayerCharacter --> UMiningComponent : 참조(포인터)
+    UMiningComponent --> AResourceTile : 참조(포인터)
+    UMiningComponent --> HUD : 진행도 표시
+    UMiningComponent --> UMBFInventoryComponent : AddItem 호출(자원 저장)
 ```
 
 # MBFactorio 팀 프로젝트
