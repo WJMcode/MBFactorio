@@ -16,10 +16,10 @@ class InventoryComponent {
     +AddItem()
 }
 
-PlayerCharacter o-- MiningComponent : owns
-PlayerCharacter o-- InventoryComponent : owns
-MiningComponent --> ResourceTile : references (target for mining)
-MiningComponent --> InventoryComponent : adds mined item
+PlayerCharacter o-- MiningComponent : "소유"
+PlayerCharacter o-- InventoryComponent : "소유"
+MiningComponent --> ResourceTile : "채굴 대상 참조"
+MiningComponent --> InventoryComponent : "채굴 아이템 저장"
 ```
 
 # MBFactorio 팀 프로젝트
