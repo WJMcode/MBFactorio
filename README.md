@@ -1,5 +1,12 @@
 ```mermaid
 classDiagram
+class PlayerCharacter {
+    -MiningComponent : MiningComponent*
+    -InventoryComponent : InventoryComponent*
+    +GetMiningComponent()
+    +GetInventoryComponent()
+}
+
 class MiningComponent {
     -CurrentTargetTile : ResourceTile*
     +StartMining()
@@ -8,15 +15,14 @@ class MiningComponent {
 
 class ResourceTile
 
-class PlayerCharacter
-
 class InventoryComponent {
     +AddItem()
 }
 
+PlayerCharacter --> MiningComponent : 채굴 기능 보유
+PlayerCharacter --> InventoryComponent : 인벤토리 보유
 MiningComponent --> ResourceTile : 채굴 대상 참조
-MiningComponent --> PlayerCharacter : Owner 참조
-MiningComponent --> InventoryComponent : AddItem 호출
+MiningComponent --> InventoryComponent : AddItem 호출(자원 저장)
 ```
 
 # MBFactorio 팀 프로젝트
