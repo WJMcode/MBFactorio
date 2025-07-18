@@ -1,15 +1,4 @@
 ```mermaid
-It seems you're still running into a parsing error with your Mermaid diagram, specifically on line 37. The error message, "Expecting 'EOF', 'acc_title', etc., got 'LINE'," indicates that Mermaid is encountering an unexpected character or structure at that point.
-
-Given the line --- Relationships & Flow ---, the & symbol is likely the culprit. While & is common in prose, it can be interpreted differently or cause issues within diagramming syntaxes like Mermaid, especially when used in a context that's not explicitly for text labels or specific operators.
-
-To fix this, you have a couple of good options:
-
-Option 1: Remove the Ampersand
-The simplest solution is to remove the & and use "and" instead. This keeps your section header clear and avoids any potential parsing conflicts.
-
-코드 스니펫
-
 classDiagram
     direction TB
 
