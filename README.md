@@ -25,7 +25,7 @@ classDiagram
     }
 
     %%
-    PlayerCharacter "1" *-- "1" MiningComponent : 소유
+    PlayerCharacter *-- MiningComponent : 소유
     PlayerCharacter "1" *-- "1" InventoryComponent : 소유
 
     MiningComponent ..> ResourceTile : 채굴 대상 지정
