@@ -26,7 +26,7 @@ classDiagram
 
     %%
     PlayerCharacter *-- MiningComponent : 소유
-    PlayerCharacter "1" *-- "1" InventoryComponent : 소유
+    PlayerCharacter *-- InventoryComponent : 소유
 
     MiningComponent ..> ResourceTile : 채굴 대상 지정
     MiningComponent ..> HUD : 진행도 표시
