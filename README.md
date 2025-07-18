@@ -21,7 +21,7 @@ classDiagram
     }
 
     class InventoryComponent {
-
+        + AddItem()
     }
 
     %%
