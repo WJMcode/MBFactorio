@@ -3,42 +3,24 @@ classDiagram
     direction TB
 
     class APlayerCharacter {
-        <<Controller & Visuals>>
-        +UMiningComponent* MiningComponent
-        -OnInputMine_Pressed()
-        -OnInputMine_Released()
-        +PlayMiningAnimation()
-        +ShowPickaxe(bool)
+        + MiningComponent
     }
 
     class UMiningComponent {
-        <<Core Logic>>
-        +TryStartMining()
-        +StopMining()
-        -StartMining()
-        #AResourceTile* CurrentTargetTile
-        #bool bIsMining
-        +DELEGATE: OnMiningProgress(float)
-        +DELEGATE: OnMiningComplete(EResourceType)
-        +DELEGATE: OnMiningStopped()
+        + TryStartMining()
+        + StopMining()
+        - StartMining()
+        # CurrentTargetTile
     }
     
     class HUD {
-         <<UI / View>>
-         +UpdateProgressBar(float)
-         +ShowCompleteText(EResourceType)
-         +HideUI()
     }
 
     class AResourceTile {
-        <<Data / Target>>
-        +GetResourceType()
     }
 
     class UInventoryComponent {
-        <<Data / Logic>>
-        +AddResource(EResourceType, int32 Quantity)
-        +GetResourceCount(EResourceType) : int32
+
     }
 
     %%
