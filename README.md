@@ -36,7 +36,6 @@ classDiagram
     }
 
     %% Relationships and Flow
-    ---
     APlayerCharacter "1" *-- "1" UMiningComponent : (1. 소유)
     APlayerCharacter --> UMiningComponent : (2. 채굴 시도/중단 요청)
     UMiningComponent ..> APlayerCharacter : (4. 애니메이션/메시 출력 요청)
