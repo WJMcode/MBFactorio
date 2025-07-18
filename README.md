@@ -31,7 +31,7 @@ classDiagram
     MiningComponent ..> ResourceTile : 채굴 대상 지정
     MiningComponent ..> HUD : 진행도 표시
     
-    MiningComponent --> UInventoryComponent : 아이템 저장
+    MiningComponent --> InventoryComponent : 아이템 저장
 ```
 
 # MBFactorio 팀 프로젝트
