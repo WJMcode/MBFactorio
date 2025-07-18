@@ -35,12 +35,20 @@ classDiagram
         +GetResourceType()
     }
 
-    %% Relationships and Flow
+    class UInventoryComponent {
+        <<Data / Logic>>
+        +AddResource(EResourceType, int32 Quantity)
+        +GetResourceCount(EResourceType) : int32
+    }
+
+    %%
     APlayerCharacter "1" *-- "1" UMiningComponent : (1. 소유)
     APlayerCharacter --> UMiningComponent : (2. 채굴 시도/중단 요청)
     UMiningComponent ..> APlayerCharacter : (4. 애니메이션/메시 출력 요청)
     UMiningComponent ..> AResourceTile : (3. 채굴 대상 지정)
     UMiningComponent ..> HUD : (5. UI 업데이트 이벤트 방송)
+    
+    UMiningComponent --> UInventoryComponent : (6. 채굴 완료 시 자원 추가)
 ```
 
 # MBFactorio 팀 프로젝트
