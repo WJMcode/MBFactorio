@@ -2,45 +2,21 @@
 classDiagram
 class MiningComponent {
     -CurrentTargetTile : ResourceTile*
-    -bCanMine : bool
-    -bIsMining : bool
-    -bIsMiningAnimationPlaying : bool
-    -MiningHoldTime : float
-    -MiningProgressValue : float
-    -MiningTimeToComplete : float
-    +SetCurrentTargetTile(ResourceTile*)
-    +SetCanMine(bool)
-    +SetIsMining(bool)
-    +SetMiningAnimationPlaying(bool)
-    +TryStartMining()
     +StartMining()
     +StopMining()
-    +RotateToMiningTarget()
-    +OnMiningProgress
-    +OnMiningComplete
-    +OnMiningStopped
 }
 
-class ResourceTile {
-    +GetActorLocation()
-    +GetResourceType()
-}
+class ResourceTile
 
-class PlayerCharacter {
-    +ShowPickaxe(bool)
-    +PlayMiningAnimation()
-    +StopMiningAnimation()
-    +GetInventoryComponent()
-}
+class PlayerCharacter
 
 class InventoryComponent {
-    +AddItem(ItemName, Count)
+    +AddItem()
 }
 
 MiningComponent --> ResourceTile : 채굴 대상 참조
-MiningComponent --> PlayerCharacter : Owner 참조 및 기능 호출
-MiningComponent --> InventoryComponent : AddItem 호출(자원 저장)
-MiningComponent ..> HUD : 진행도 표시 (이벤트 Broadcast)
+MiningComponent --> PlayerCharacter : Owner 참조
+MiningComponent --> InventoryComponent : AddItem 호출
 ```
 
 # MBFactorio 팀 프로젝트
