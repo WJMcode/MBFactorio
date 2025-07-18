@@ -1,16 +1,46 @@
 ```mermaid
 classDiagram
-class PlayerCharacter {
-    -miningComponent : MiningComponent*
-    -inventoryComponent : InventoryComponent*
-}
-class MiningComponent {
-    -currentTargetTile : ResourceTile*
-}
-class ResourceTile
+    direction TB
 
-PlayerCharacter --> MiningComponent : 연관관계
-MiningComponent ..> ResourceTile : 의존관계
+    class APlayerCharacter {
+        <<Controller & Visuals>>
+        +UMiningComponent* MiningComponent
+        -OnInputMine_Pressed()
+        -OnInputMine_Released()
+        +PlayMiningAnimation()
+        +ShowPickaxe(bool)
+    }
+
+    class UMiningComponent {
+        <<Core Logic>>
+        +TryStartMining()
+        +StopMining()
+        -StartMining()
+        #AResourceTile* CurrentTargetTile
+        #bool bIsMining
+        +DELEGATE: OnMiningProgress(float)
+        +DELEGATE: OnMiningComplete(EResourceType)
+        +DELEGATE: OnMiningStopped()
+    }
+    
+    class HUD {
+         <<UI / View>>
+         +UpdateProgressBar(float)
+         +ShowCompleteText(EResourceType)
+         +HideUI()
+    }
+
+    class AResourceTile {
+        <<Data / Target>>
+        +GetResourceType()
+    }
+
+    ' --- Relationships & Flow ---
+    APlayerCharacter "1" *-- "1" UMiningComponent : (1. 소유)
+    APlayerCharacter --> UMiningComponent : (2. 채굴 시도/중단 요청)
+    UMiningComponent ..> APlayerCharacter : (4. 애니메이션/메시 출력 요청)
+    UMiningComponent ..> AResourceTile : (3. 채굴 대상 지정)
+    UMiningComponent ..> HUD : (5. UI 업데이트 이벤트 방송)
 ```
 
 # MBFactorio 팀 프로젝트
