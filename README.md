@@ -3,8 +3,8 @@ classDiagram
     direction TB
 
     class PlayerCharacter {
-        + MiningComponent
-        + InventoryComponent
+        # MiningComponent
+        # InventoryComponent
     }
 
     class MiningComponent {
