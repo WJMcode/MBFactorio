@@ -1,29 +1,16 @@
 ```mermaid
 classDiagram
-class 플레이어캐릭터 {
-    -채굴컴포넌트 : MiningComponent*
-    -인벤토리컴포넌트 : InventoryComponent*
+class PlayerCharacter {
+    -miningComponent : MiningComponent*
+    -inventoryComponent : InventoryComponent*
 }
-class 채굴컴포넌트 {
-    -대상타일 : ResourceTile*
-    +OnMiningProgress
-    +OnMiningComplete
-    +OnMiningStopped
+class MiningComponent {
+    -currentTargetTile : ResourceTile*
 }
-class 자원타일
-class 인벤토리컴포넌트 {
-    +AddItem()
-}
-class HUD {
-    +UpdateProgress()
-    +ShowComplete()
-}
+class ResourceTile
 
-플레이어캐릭터 o-- 채굴컴포넌트 : "포함"
-플레이어캐릭터 o-- 인벤토리컴포넌트 : "포함"
-채굴컴포넌트 --> 자원타일 : "채굴 대상 참조"
-채굴컴포넌트 --> 인벤토리컴포넌트 : "채굴 아이템 저장"
-채굴컴포넌트 ..> HUD : "진행도/완료 이벤트 전달"
+PlayerCharacter --> MiningComponent : 연관관계
+MiningComponent ..> ResourceTile : 의존관계
 ```
 
 # MBFactorio 팀 프로젝트
