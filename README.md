@@ -41,6 +41,7 @@ classDiagram
     UMiningComponent ..> APlayerCharacter : (4. 애니메이션/메시 출력 요청)
     UMiningComponent ..> AResourceTile : (3. 채굴 대상 지정)
     UMiningComponent ..> HUD : (5. UI 업데이트 이벤트 방송)
+
 ```
 
 # MBFactorio 팀 프로젝트
