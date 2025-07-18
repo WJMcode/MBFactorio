@@ -1,39 +1,3 @@
-```mermaid
-classDiagram
-    direction TB
-
-    class PlayerCharacter {
-        # MiningComponent
-        # InventoryComponent
-    }
-
-    class MiningComponent {
-        + TryStartMining()
-        + StopMining()
-        - StartMining()
-        # CurrentTargetTile
-    }
-    
-    class HUD {
-    }
-
-    class ResourceTile {
-    }
-
-    class InventoryComponent {
-        + AddItem()
-    }
-
-    %%
-    PlayerCharacter *-- MiningComponent : 소유
-    PlayerCharacter *-- InventoryComponent : 소유
-
-    MiningComponent ..> ResourceTile : 채굴 대상 지정
-    MiningComponent ..> HUD : 진행도 표시
-    
-    MiningComponent ..> InventoryComponent : 아이템 저장
-```
-
 # MBFactorio 팀 프로젝트
 
 ## 📑 목차
